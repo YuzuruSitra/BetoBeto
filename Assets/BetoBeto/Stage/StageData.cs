@@ -38,13 +38,18 @@ namespace BetoBeto.Stage
         [HideInInspector] public float iceLifetime = 5f;
         public float droolLifetime = 10f;
         public int cookieHits = 3;
-        public float cookieRespawnSeconds = 5f;
+        public float cookieRespawnSeconds = 20f;
+        public float sconeRespawnSeconds = 5f;
         public float movingShredderSpeed = 1f;
         public float freezerSeconds = 3f;
         public float frozenSpeedMultiplier = .35f;
 
         public bool Contains(Vector2Int cell) => cell.x >= 0 && cell.y >= 0 && cell.x < width && cell.y < height;
-        public char At(Vector2Int cell) => Contains(cell) ? rows[cell.y][cell.x] : 'E';
+        public char At(Vector2Int cell)
+        {
+            char symbol = Contains(cell) ? rows[cell.y][cell.x] : '.';
+            return symbol == 'E' ? '.' : symbol;
+        }
         public Vector3 World(Vector2Int cell, float y = 0) => new Vector3(cell.x - (width - 1) * .5f, y, (height - 1) * .5f - cell.y);
         public Vector2Int Cell(Vector3 world) => new Vector2Int(Mathf.RoundToInt(world.x + (width - 1) * .5f), Mathf.RoundToInt((height - 1) * .5f - world.z));
 
@@ -76,7 +81,6 @@ namespace BetoBeto.Stage
                     if (c == 'P') { pipes++; if (y != 0) errors.Add("パイプは最上段に置いてください。"); }
                     if (GimmickRules.IsShredder(c)) shredders++;
                     if (c == 'G') ghosts++;
-                    if (c == 'E' && x != 0 && y != 0 && x != width - 1 && y != height - 1) errors.Add("出口は外周に置いてください。");
                 }
             }
             if (pipes < 2 || pipes > 3) errors.Add("パイプは2〜3基必要です。");
@@ -88,6 +92,7 @@ namespace BetoBeto.Stage
             if (float.IsNaN(droolLifetime) || float.IsInfinity(droolLifetime) || droolLifetime < 1 || droolLifetime > 60) errors.Add("よだれの寿命は1〜60秒にしてください。");
             if (cookieHits < 1 || cookieHits > 10) errors.Add("クッキーの耐久は1〜10回にしてください。");
             ValidateRange(cookieRespawnSeconds, 1, 30, "クッキーの復帰時間", errors);
+            ValidateRange(sconeRespawnSeconds, 1, 30, "スコーンの復帰時間", errors);
             ValidateRange(movingShredderSpeed, .25f, 3, "移動シュレッダーの速度", errors);
             ValidateRange(freezerSeconds, .5f, 10, "凍結時間", errors);
             ValidateRange(frozenSpeedMultiplier, .1f, .9f, "凍結中の速度倍率", errors);
@@ -105,15 +110,16 @@ namespace BetoBeto.Stage
                     {
                         var c = pending.Dequeue();
                         if (GimmickRules.IsShredder(At(c))) reachesShredder = true;
-                        if (At(c) == 'E' || (c.y == height - 1 || c.x == 0 || c.x == width - 1)) reachesExit = true;
+                        if (c != pipe && (c.y == 0 || c.y == height - 1 || c.x == 0 || c.x == width - 1)) reachesExit = true;
                         foreach (var direction in Directions.All)
                         {
+                            if (c == pipe && direction != Directions.Down) continue;
                             var next = c + direction;
                             if (Contains(next) && !GimmickRules.BlocksConnectivity(At(next)) && visited.Add(next)) pending.Enqueue(next);
                         }
                     }
                     if (!reachesShredder) errors.Add($"パイプ({pipe.x},{pipe.y})からシュレッダーへ到達できません。");
-                    if (!reachesExit) errors.Add($"パイプ({pipe.x},{pipe.y})から出口へ到達できません。");
+                    if (!reachesExit) errors.Add($"パイプ({pipe.x},{pipe.y})から盤外へ到達できません。");
                 }
             }
             return errors;
@@ -131,6 +137,9 @@ namespace BetoBeto.Stage
             try { data = JsonUtility.FromJson<StageData>(json); }
             catch (Exception e) { throw new FormatException("JSONを読み込めません: " + e.Message); }
             if (data == null) throw new FormatException("ステージデータが空です。");
+            // Legacy exit tiles are ordinary floor; the board boundary is the only escape trigger.
+            if (data.rows != null)
+                for (int i = 0; i < data.rows.Length; i++) data.rows[i] = data.rows[i]?.Replace('E', '.');
             var errors = data.Validate();
             if (errors.Count > 0) throw new FormatException(string.Join("\n", errors));
             return data;

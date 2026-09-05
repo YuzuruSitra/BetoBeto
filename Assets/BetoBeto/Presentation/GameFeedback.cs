@@ -106,15 +106,21 @@ namespace BetoBeto.Presentation
             Wobble(fruit.TargetCell, fruit.Forward);
             game.Audio.Play("wall");
         }
-        public void Ricochet(FruitAgent fruit, Vector2Int cell, bool scone)
+        public void Ricochet(FruitAgent fruit, Vector2Int cell, bool scone, int hitsLeft = -1)
         {
             Vector3 point = game.Board.Data.World(cell);
             Color color = scone ? new Color(1, .78f, .38f) : new Color(.83f, .57f, 1);
+            if (scone && !fruit.Sliding)
+            {
+                Ring(point, color, .12f, .5f, .2f);
+                game.Audio.Play("scone");
+                return;
+            }
             Ring(point, color, .18f, 1.25f, .28f);
             Splash(point, fruit.Forward, 10, scone ? game.assets.cookieMaterial : game.assets.jellyMaterial, 2.5f);
             Wobble(cell, fruit.Forward);
             Kick(.09f, .025f);
-            game.Hud.FloatMessage(point + Vector3.up * 1.15f, scone ? "カーン！" : "ぷるん！", color, 26);
+            game.Hud.FloatMessage(point + Vector3.up * 1.15f, scone ? "カーン！" + (hitsLeft >= 0 ? " あと" + hitsLeft + "回" : "") : "ぷるん！", color, 26);
             game.Audio.Play(scone ? "scone" : "jelly");
         }
         public void CookieImpact(FruitAgent fruit, Vector2Int cell, bool broken, int hitsLeft)
@@ -127,7 +133,7 @@ namespace BetoBeto.Presentation
             game.Hud.FloatMessage(point + Vector3.up * 1.15f, broken ? "パリーン！" : "あと " + hitsLeft + " 回", new Color(1, .88f, .64f), broken ? 30 : 23);
             game.Audio.Play(broken ? "cookieBreak" : "wall");
         }
-        public void CookieRestored(Vector3 point)
+        public void GimmickRestored(Vector3 point)
         {
             Ring(point, new Color(1, .86f, .6f), .1f, .65f, .3f);
             Splash(point, Vector3.zero, 5, game.assets.cookieMaterial, .7f);

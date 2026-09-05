@@ -336,7 +336,7 @@ namespace BetoBeto.Editor
         }
         public static GameObject PlacementPrefab(GameAssets assets, char symbol) => symbol switch
         {
-            '#' => assets.wall, 'P' => assets.pipe, 'X' => assets.shredder, 'E' => assets.exit, 'G' => assets.playerStart,
+            '#' => assets.wall, 'P' => assets.pipe, 'X' => assets.shredder, 'G' => assets.playerStart,
             'J' => assets.jelly, 'C' => assets.cookie, 'H' => assets.movingShredder, 'V' => assets.movingShredder,
             '1' or '2' or '3' or '4' => assets.scone, 'F' => assets.freezer, _ => null
         };

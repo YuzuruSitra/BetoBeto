@@ -11,6 +11,7 @@ namespace BetoBeto.Stage
         readonly GameController game;
         readonly StageBoard board;
         readonly Dictionary<StageObject, Vector3> homes = new Dictionary<StageObject, Vector3>();
+        readonly Dictionary<Vector2Int, float> sconeRespawnRemaining = new Dictionary<Vector2Int, float>();
         public GimmickController(GameController controller)
         {
             game = controller; board = game.Board;
@@ -20,11 +21,14 @@ namespace BetoBeto.Stage
                 homes[view] = view.transform.position;
             }
             foreach (var cookie in board.Cookies) UpdateCookie(cookie.Key, cookie.Value);
+            foreach (var scone in board.SconeHitsLeft) UpdateScone(scone.Key, scone.Value);
         }
         public void Reset()
         {
+            sconeRespawnRemaining.Clear();
             foreach (var pair in homes) if (pair.Key != null) pair.Key.transform.position = pair.Value;
             foreach (var pair in board.Cookies) UpdateCookie(pair.Key, new CookieState(pair.Value.MaxHits, pair.Value.RespawnSeconds));
+            foreach (var pair in board.SconeHitsLeft) UpdateScone(pair.Key, GimmickRules.SconeMaxHits);
         }
         bool Occupied(Vector2Int cell, bool walkingOnly = false)
         {
@@ -41,14 +45,26 @@ namespace BetoBeto.Stage
                 if (pair.Value.Tick(dt, Occupied(pair.Key) || board.MoverReserves(pair.Key)))
                 {
                     game.ClearDrool(pair.Key);
-                    game.Feedback.CookieRestored(board.Data.World(pair.Key));
+                    game.Feedback.GimmickRestored(board.Data.World(pair.Key));
                 }
                 UpdateCookie(pair.Key, pair.Value);
+            }
+            foreach (var cell in board.Scones.Keys)
+            {
+                if (!sconeRespawnRemaining.TryGetValue(cell, out float remaining)) continue;
+                remaining = Mathf.Max(0, remaining - dt);
+                sconeRespawnRemaining[cell] = remaining;
+                if (remaining > 0 || Occupied(cell) || board.MoverReserves(cell)) continue;
+                sconeRespawnRemaining.Remove(cell);
+                board.SconeHitsLeft[cell] = GimmickRules.SconeMaxHits;
+                game.ClearDrool(cell);
+                UpdateScone(cell, GimmickRules.SconeMaxHits);
+                game.Feedback.GimmickRestored(board.Data.World(cell));
             }
             foreach (var mover in board.Movers)
             {
                 bool reversed = mover.Tick(dt, board.Data.movingShredderSpeed, cell => !board.Data.Contains(cell)
-                    || board.Blocked(cell) || board.Shredders.Contains(cell) || board.Pipes.Contains(cell) || board.Exits.Contains(cell)
+                    || board.Blocked(cell) || board.Shredders.Contains(cell) || board.Pipes.Contains(cell)
                     || board.MoverReserves(cell, mover) || Occupied(cell, true));
                 var view = board.Objects[mover.Start];
                 view.transform.position = board.MoverWorld(mover.Position);
@@ -87,6 +103,40 @@ namespace BetoBeto.Stage
             UpdateCookie(cell, cookie);
             game.Feedback.CookieImpact(fruit, cell, broken, cookie.HitsLeft);
             return broken;
+        }
+        public bool HitScone(Vector2Int cell)
+        {
+            if (!board.HasScone(cell)) return false;
+            int hits = --board.SconeHitsLeft[cell];
+            if (hits == 0) sconeRespawnRemaining[cell] = board.Data.sconeRespawnSeconds;
+            UpdateScone(cell, hits);
+            return hits == 0;
+        }
+        void UpdateScone(Vector2Int cell, int hitsLeft)
+        {
+            if (!board.Objects.TryGetValue(cell, out var view) || view == null) return;
+            foreach (var renderer in view.GetComponentsInChildren<Renderer>(true)) renderer.enabled = hitsLeft > 0;
+            for (int i = 1; i <= 2; i++)
+            {
+                var crack = view.transform.Find("Impact crack " + i);
+                if (crack == null)
+                {
+                    crack = new GameObject("Impact crack " + i).transform;
+                    crack.SetParent(view.transform, false);
+                    var line = crack.gameObject.AddComponent<LineRenderer>();
+                    line.sharedMaterial = game.assets.effectMaterial;
+                    line.useWorldSpace = false; line.widthMultiplier = .024f;
+                    line.startColor = line.endColor = new Color(.34f, .18f, .10f);
+                    line.positionCount = 3;
+                    line.SetPositions(i == 1
+                        ? new[] { new Vector3(-.10f, .325f, .38f), new Vector3(-.18f, .325f, .12f), new Vector3(-.31f, .325f, .02f) }
+                        : new[] { new Vector3(-.39f, .325f, -.20f), new Vector3(-.19f, .325f, -.10f), new Vector3(-.02f, .325f, .02f) });
+                    line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    line.receiveShadows = false;
+                }
+                crack.gameObject.SetActive(hitsLeft > 0
+                    && GimmickRules.SconeMaxHits - hitsLeft >= Mathf.CeilToInt(GimmickRules.SconeMaxHits * i / 3f));
+            }
         }
         void UpdateCookie(Vector2Int cell, CookieState state)
         {

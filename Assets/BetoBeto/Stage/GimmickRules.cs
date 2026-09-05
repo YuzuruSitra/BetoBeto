@@ -7,10 +7,11 @@ namespace BetoBeto.Stage
     {
         public const string Symbols = ".#PXEGJCHV1234F";
         public const float BladeRadius = .62f;
+        public const int SconeMaxHits = 20;
         public static bool IsShredder(char c) => c == 'X' || c == 'H' || c == 'V';
         public static bool IsScone(char c) => c >= '1' && c <= '4';
-        // Cookies may be broken to open a route. Jelly and scones remain solid to walkers.
-        public static bool BlocksConnectivity(char c) => c == '#' || c == 'J' || IsScone(c);
+        // Cookies and scones can be broken to open a route.
+        public static bool BlocksConnectivity(char c) => c == '#' || c == 'J' || c == 'P';
         public static int QuarterTurn(Transform prop) => ((Mathf.RoundToInt(prop.eulerAngles.y / 90) % 4) + 4) % 4;
         public static Vector2Int Rotate(Vector2Int direction, int turns)
         {

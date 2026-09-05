@@ -30,9 +30,8 @@ namespace BetoBeto.Enemies
         FruitMotionVfx motion;
         ActorFacing visualFacing;
         readonly Dictionary<Vector2Int, int> visits = new Dictionary<Vector2Int, int>();
-        bool moving, preferLeft, directionalScare;
+        bool moving, preferLeft, needsObstacleTurn;
         float spawnDelay = .65f, immunity, stunned, stunDuration, recoil, fleeRemaining;
-        Vector2Int scareSource;
         Vector3 stunOrigin;
         SlideCombo combo;
 
@@ -77,11 +76,13 @@ namespace BetoBeto.Enemies
             for (int step = 0; step < 16 && timeLeft > .00001f && !Removed && game.Session.State == GameState.Playing; step++)
             {
                 if (!moving && !ChooseNext()) return;
-                if (!Sliding && game.Board.BlocksWalking(TargetCell))
+                bool walkingCookie = !Sliding && CanBumpCookie(TargetCell);
+                bool returningInsidePipe = Cell == TargetCell && game.Board.Pipes.Contains(Cell);
+                if (!Sliding && game.Board.BlocksWalking(TargetCell) && !walkingCookie && !returningInsidePipe)
                 {
                     StopAtWall(); return;
                 }
-                bool obstacle = Sliding && game.Board.BlocksSliding(TargetCell);
+                bool obstacle = walkingCookie || (Sliding && game.Board.BlocksSliding(TargetCell));
                 Vector3 target = game.Board.Data.World(TargetCell);
                 if (obstacle) target -= Forward * .62f;
                 float distance = Vector3.Distance(transform.position, target);
@@ -91,10 +92,24 @@ namespace BetoBeto.Enemies
                 transform.position = Vector3.MoveTowards(transform.position, target, travel);
                 timeLeft -= travel / speed;
                 if (game.Gimmicks.CheckMovingBlade(this, from, transform.position)) return;
+                if (!game.Board.Data.Contains(game.Board.Data.Cell(transform.position))) { game.EscapeFruit(this); return; }
                 if (Sliding) game.PropagateSlide(this);
                 if (distance > travel + .001f) break;
                 if (obstacle)
                 {
+                    if (walkingCookie)
+                    {
+                        bool broken = game.Gimmicks.HitCookie(TargetCell, this);
+                        motion.Impact(.65f);
+                        if (!broken)
+                        {
+                            // Recoil before the alternating turn; never hit this cookie again while waiting to turn.
+                            Stun(.2f, .06f);
+                            TargetCell = Cell; moving = false; needsObstacleTurn = true;
+                        }
+                        // Breaking the cookie preserves the heading, current segment and next turn preference.
+                        return;
+                    }
                     if (game.Board.Jellies.Contains(TargetCell))
                     {
                         var jelly = TargetCell;
@@ -112,12 +127,16 @@ namespace BetoBeto.Enemies
                 }
                 Cell = TargetCell; moving = false;
                 visits[Cell] = VisitCount(Cell) + 1;
-                if (!game.Board.Data.Contains(Cell) || game.Board.Exits.Contains(Cell)) { game.EscapeFruit(this); return; }
+                if (!game.Board.Data.Contains(Cell)) { game.EscapeFruit(this); return; }
                 if (Sliding && game.Board.TouchesShredder(Cell, transform.position)) { HitShredder(); if (Removed || stunned > 0) return; }
-                if (Sliding && game.Board.Scones.TryGetValue(Cell, out int turns))
+                if (game.Board.HasScone(Cell) && game.Board.Scones.TryGetValue(Cell, out int turns))
                 {
-                    Redirect(GimmickRules.SconeReflection(Direction, turns));
-                    game.Feedback.Ricochet(this, Cell, true);
+                    if (Sliding && game.Gimmicks.HitScone(Cell)) game.Feedback.CookieImpact(this, Cell, true, 0);
+                    else
+                    {
+                        Redirect(GimmickRules.SconeReflection(Direction, turns));
+                        game.Feedback.Ricochet(this, Cell, true, Sliding ? game.Board.SconeHitsLeft[Cell] : -1);
+                    }
                 }
                 if (game.Board.Freezers.Contains(Cell)) Freeze();
                 if (game.Board.Drool.ContainsKey(Cell)) BeginSlide(Direction, 1);
@@ -126,23 +145,34 @@ namespace BetoBeto.Enemies
         }
         bool ChooseNext()
         {
-            if (!Sliding)
+            if (game.Board.Pipes.Contains(Cell))
             {
-                var next = IsFleeing
-                    ? FruitNavigation.ChooseFlee(Cell, scareSource, Direction, game.Board.BlocksWalking, !directionalScare)
+                // The supply valve only lets newly spawned fruit out towards the board.
+                Direction = Directions.Down;
+                visualFacing.Face(Direction);
+                if (needsObstacleTurn && game.Board.BlocksWalking(Cell + Direction)) return false;
+                if (!Sliding && game.Board.BlocksWalking(Cell + Direction) && !CanBumpCookie(Cell + Direction)) return false;
+                needsObstacleTurn = false;
+            }
+            else if (!Sliding)
+            {
+                var next = needsObstacleTurn
+                    ? FruitNavigation.ChooseTurn(Cell, Direction, preferLeft, game.Board.BlocksWalking)
+                    : CanBumpCookie(Cell + Direction) ? Direction
                     : FruitNavigation.Choose(kind, Cell, Direction, preferLeft, game.Board.BlocksWalking, VisitCount);
                 if (next == Vector2Int.zero) return false;
-                if (next != Direction)
-                {
-                    if (kind == FruitKind.Orange && next.x != 0) preferLeft = !preferLeft;
-                    else if (kind != FruitKind.Orange) preferLeft = !preferLeft;
-                }
+                // Alternate relative to the last actual quarter turn. A dead-end reversal does not consume it.
+                if (next == Directions.Right(Direction)) preferLeft = true;
+                else if (next == Directions.Left(Direction)) preferLeft = false;
+                needsObstacleTurn = false;
                 Direction = next;
                 visualFacing.Face(Direction);
             }
             TargetCell = Cell + Direction;
             moving = true; return true;
         }
+        bool CanBumpCookie(Vector2Int cell) => kind == FruitKind.Orange
+            && game.Board.Cookies.TryGetValue(cell, out var cookie) && !cookie.Broken;
         void Redirect(Vector2Int direction)
         {
             Direction = direction;
@@ -181,6 +211,7 @@ namespace BetoBeto.Enemies
             Vector3 delta = transform.position - source;
             Vector2Int away = fleeDirection ?? ScareRules.Away(new Vector2(delta.x, -delta.z), Direction);
             if (away.sqrMagnitude != 1) return false;
+            if (game.Board.Pipes.Contains(Cell)) away = Directions.Down;
             // Finish or reverse the current segment without teleporting across a tile.
             // A perpendicular turn starts at the nearer end of that same segment.
             Vector2Int anchor = Cell;
@@ -194,9 +225,7 @@ namespace BetoBeto.Enemies
             TargetCell = anchor;
             moving = (transform.position - game.Board.Data.World(anchor)).sqrMagnitude > .0001f;
             if (!moving) Cell = anchor;
-            stunned = 0;
-            scareSource = game.Board.Data.Cell(source);
-            directionalScare = fleeDirection.HasValue;
+            stunned = 0; needsObstacleTurn = false;
             fleeRemaining = Sliding ? 0 : ScareRules.FleeSeconds;
             visualFacing.Face(Direction);
             motion.Scare();
@@ -213,17 +242,20 @@ namespace BetoBeto.Enemies
         }
         public bool JoinSlide(FruitAgent source)
         {
-            if (!source.Sliding || source.combo == null) return false;
+            if (!source.Sliding || source.combo == null || source.combo.Members.Contains(this)) return false;
             return StartSlide(source.Direction, source.combo, true);
         }
         bool StartSlide(Vector2Int direction, SlideCombo group, bool collision, bool snapToCell = true)
         {
-            if (Removed || spawnDelay > 0 || Sliding || immunity > 0 || direction.sqrMagnitude != 1) return false;
+            // Wall recoil must finish before a new slide can begin. Otherwise overlapping followers
+            // repeatedly cancel the stun and slam this fruit into the same wall, restarting hit-stop.
+            if (Removed || spawnDelay > 0 || Sliding || stunned > 0 || immunity > 0 || direction.sqrMagnitude != 1) return false;
             Cell = game.Board.Data.Cell(transform.position);
             if (snapToCell) transform.position = game.Board.Data.World(Cell);
             if (group.Members.Add(this) && collision) group.Count++;
             combo = group;
-            Direction = direction; Sliding = true; moving = false; stunned = 0; fleeRemaining = 0;
+            Direction = game.Board.Pipes.Contains(Cell) ? Directions.Down : direction;
+            Sliding = true; moving = false; stunned = 0; fleeRemaining = 0; needsObstacleTurn = false;
             visualFacing.Face(Direction);
             motion.StartSlide();
             // A collision can snap a walking fruit onto the plate before its normal arrival callback.

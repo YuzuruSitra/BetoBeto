@@ -14,7 +14,7 @@ namespace BetoBeto.UI
     public sealed class GameHud : UiView
     {
         public static readonly string[] FruitNames = { "イチゴ", "ブルーベリー", "オレンジ", "メロン" };
-        static readonly string[] FruitHints = { "くるっと曲がる", "すばやく曲がる", "左右交互に進む", "2回当てると収穫" };
+        static readonly string[] FruitHints = { "右→左と曲がる", "速く交互に曲がる", "クッキーを削る", "2回当てると収穫" };
         GameController game;
         GameObject modal;
         RectTransform feedbackLayer;
@@ -149,7 +149,7 @@ namespace BetoBeto.UI
             else Label(card, "音量は自動で保存されます", new Vector2(50, -694), new Vector2(660, 24), 13, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
             FocusScope(modal.transform, resume.GetComponent<Button>());
         }
-        public const string GimmickHelp = "ゼリー：反転して滑り続ける。\nクッキー：ぶつけて割り、開いた道を通す。時間で復帰。\n移動シュレッダー：往復する刃に、タイミングを合わせる。\nスコーン：白い斜面で90°曲がる。裏側は反転。\nフリーザー：しばらく減速。滑走と連鎖は続く。";
+        public const string GimmickHelp = "ゼリー：反転して滑り続ける。\nクッキー：滑走かオレンジで割る。復帰は初期20秒。\n移動シュレッダー：往復する刃に、タイミングを合わせる。\nスコーン：歩いて乗っても転向。滑走20回で破壊、復帰は初期5秒。\nフリーザー：しばらく減速。滑走と連鎖は続く。\n歩行：壁で右→左→右。盤外で脱出。パイプは逆走不可。";
         void CloseModal(bool restore)
         {
             if (modal != null) { modal.SetActive(false); Destroy(modal); modal = null; }

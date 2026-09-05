@@ -5,7 +5,7 @@
   const storageKey = 'betobeto.stage.v1';
   let stage = M.clone(M.sample), brush = '#', undo = [], redo = [], drawing = false, panning = false, space = false;
   let last = null, hover = null, strokeBefore = null, zoom = 1, baseCell = 40, pan = { x: 0, y: 0 }, dimensions = { w: 1, h: 1 }, toastTimer;
-  try { const saved = localStorage.getItem(storageKey); if (saved) { const candidate = JSON.parse(saved); if (Array.isArray(candidate.rows) && candidate.rows.length === candidate.height && candidate.rows.every(row => typeof row === 'string' && row.length === candidate.width) && candidate.width >= 16 && candidate.width <= 32 && candidate.height >= 9 && candidate.height <= 18 && candidate.recipe) stage = candidate; } } catch (_) {}
+  try { const saved = localStorage.getItem(storageKey); if (saved) { const candidate = JSON.parse(saved); if (Array.isArray(candidate.rows) && candidate.rows.length === candidate.height && candidate.rows.every(row => typeof row === 'string' && row.length === candidate.width) && candidate.width >= 16 && candidate.width <= 32 && candidate.height >= 9 && candidate.height <= 18 && candidate.recipe) stage = M.clone(candidate); } } catch (_) {}
   const fields = ['name', 'dessert', 'width', 'height', 'escapeLimit', 'spawnInterval', 'droolLifetime', ...Object.keys(M.gimmickDefaults)];
   const ingredients = ['strawberry', 'blueberry', 'orange', 'melon'];
   function sync() {
@@ -69,10 +69,12 @@
         ctx.fillStyle = '#b78655';
         for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) { ctx.beginPath(); ctx.arc(px + c * (.3 + i * .2), py + c * (.27 + j * .2), Math.max(1, c * .026), 0, 7); ctx.fill(); }
       } else if (symbol === 'P') {
-        roundRect(px + c * .24, py + c * .08, c * .52, c * .84, c * .15, '#a1d6d0');
-        roundRect(px + c * .18, py + c * .06, c * .64, c * .13, c * .045, '#f0d092');
-        roundRect(px + c * .18, py + c * .8, c * .64, c * .13, c * .045, '#f0d092');
-        ctx.fillStyle = '#487c77'; ctx.font = 'bold ' + c * .49 + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('↓', px + c * .5, py + c * .5);
+        roundRect(px + c * .24, py + c * .08, c * .52, c * .79, c * .15, '#bde5eb');
+        roundRect(px + c * .30, py + c * .19, c * .06, c * .48, c * .025, '#f2fcfd');
+        roundRect(px + c * .18, py + c * .06, c * .64, c * .13, c * .045, '#cddce1');
+        roundRect(px + c * .18, py + c * .72, c * .64, c * .13, c * .045, '#cddce1');
+        roundRect(px + c * .29, py + c * .81, c * .42, c * .11, c * .025, '#f5f5ed');
+        ctx.fillStyle = '#315e65'; ctx.font = 'bold ' + c * .49 + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('↓', px + c * .5, py + c * .47);
       } else if (M.isShredder(symbol)) {
         roundRect(px + margin, py + margin, size, size, c * .13, '#e69cac');
         roundRect(px + c * .2, py + c * .2, c * .6, c * .6, c * .07, '#4c6470');
@@ -100,10 +102,6 @@
         roundRect(px + margin, py + margin, size, size, c * .09, '#83d5e6');
         ctx.save(); ctx.translate(px + c * .5, py + c * .5); ctx.strokeStyle = '#f2fcff'; ctx.lineWidth = c * .065;
         for (let i = 0; i < 3; i++) { ctx.rotate(Math.PI / 3); ctx.beginPath(); ctx.moveTo(-c * .30, 0); ctx.lineTo(c * .30, 0); ctx.stroke(); } ctx.restore();
-      } else if (symbol === 'E') {
-        roundRect(px + c * .06, py + c * .06, c * .88, c * .88, c * .09, '#304d5c');
-        for (let i = 1; i <= 3; i++) roundRect(px + c * (.17 + i * .15), py + c * .18, c * .035, c * .54, c * .01, '#9fbec6');
-        roundRect(px + c * .28, py + c * .83, c * .44, c * .08, c * .015, '#eca8b6');
       } else if (symbol === 'G') {
         roundRect(px + c * .22, py + c * .13, c * .56, c * .7, c * .26, '#fff6ed');
         ctx.fillStyle = '#374f60';
@@ -134,7 +132,6 @@
   function paintAt(cell, symbol) {
     if (!cell || cell.x < 0 || cell.y < 0 || cell.x >= stage.width || cell.y >= stage.height) return;
     if (symbol === 'P' && cell.y !== 0) { toast('パイプは最上段に配置します'); return; }
-    if (symbol === 'E' && cell.x !== 0 && cell.y !== 0 && cell.x !== stage.width - 1 && cell.y !== stage.height - 1) { toast('出口は外周に配置します'); return; }
     M.paint(stage, cell.x, cell.y, symbol);
   }
   function paintLine(a, b, symbol) {
@@ -174,7 +171,7 @@
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); history(!e.shiftKey); }
     else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); history(false); }
     else if (e.code === 'Space') { e.preventDefault(); space = true; canvas.style.cursor = 'grab'; }
-    else if ('123456'.includes(e.key) && e.key.length === 1) selectBrush(['#', '.', 'P', 'X', 'E', 'G'][Number(e.key) - 1]);
+    else if ('12345'.includes(e.key) && e.key.length === 1) selectBrush(['#', '.', 'P', 'X', 'G'][Number(e.key) - 1]);
     else if (e.key.toLowerCase() === 'f') fit();
     else if (e.key.toLowerCase() === 'r') rotateScone();
   });
@@ -192,7 +189,7 @@
     const file = $('file').files[0]; if (!file) return;
     try {
       if (file.size > 1024 * 1024) throw new Error('JSONは1MB以下にしてください。');
-      const next = JSON.parse(await file.text()), errors = M.validate(next);
+      const next = M.clone(JSON.parse(await file.text())), errors = M.validate(next);
       if (errors.length) throw new Error(errors.join(' / '));
       replace(next); toast('JSONを読み込みました');
     } catch (e) { toast('読み込み失敗: ' + e.message); }

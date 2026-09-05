@@ -112,7 +112,7 @@ namespace BetoBeto.UI
                 Color color = data.rows[y][x] switch
                 {
                     '#' => Hex("E9BD7F"), 'C' => Hex("D8A15F"), 'J' => Hex("B783D3"), 'F' => Hex("ABE6F4"),
-                    'P' => Mint, 'X' or 'H' or 'V' => Pink, 'E' => Ink, 'G' => Cream, _ => Hex("6AA4B8")
+                    'P' => Mint, 'X' or 'H' or 'V' => Pink, 'G' => Cream, _ => Hex("6AA4B8")
                 };
                 var tile = Box(backing, "Cell", new Vector2(left + x * cell, -top - y * cell), new Vector2(cell - 2, cell - 2), color);
                 tile.GetComponent<Image>().raycastTarget = false;

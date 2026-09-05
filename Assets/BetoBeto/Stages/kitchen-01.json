@@ -6,14 +6,14 @@
   "height": 9,
   "rows": [
     "###P########P###",
-    "#1.....CXC....2#",
-    "#..............#",
-    "#JCCCX....XCCCJ#",
-    "#1.C...JJ...C.2#",
+    "#1.....C1C....2#",
+    "J.............3#",
+    "#JCCX..H...XCCJ#",
+    "#1.C...J4...C.2#",
     "#....4.JJ.3....#",
     "#.......G......#",
-    "#4.....H......3#",
-    "##E####EE####E##"
+    "#4..H......H..3#",
+    "##.####..####.##"
   ],
   "recipe": {
     "strawberry": 5,
@@ -26,7 +26,8 @@
   "iceLifetime": 5,
   "droolLifetime": 10,
   "cookieHits": 3,
-  "cookieRespawnSeconds": 5,
+  "cookieRespawnSeconds": 20,
+  "sconeRespawnSeconds": 5,
   "movingShredderSpeed": 1,
   "freezerSeconds": 3,
   "frozenSpeedMultiplier": 0.35

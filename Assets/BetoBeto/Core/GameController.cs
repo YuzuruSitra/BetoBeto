@@ -150,7 +150,7 @@ namespace BetoBeto.Core
         {
             var instance = Instantiate(assets.fruits[(int)kind], Board.Data.World(cell), Quaternion.identity, actors);
             var fruit = instance.GetComponent<FruitAgent>();
-            fruit.Initialize(this, cell, (spawnIndex & 1) == 0);
+            fruit.Initialize(this, cell, turnLeft: false);
             fruits.Add(fruit);
             return fruit;
         }
@@ -212,9 +212,10 @@ namespace BetoBeto.Core
         }
         public void PropagateSlide(FruitAgent source)
         {
+            if (source.Removed || !source.Sliding || source.IsStunned) return;
             foreach (var target in fruits)
             {
-                if (target == source || target.Removed || target.Sliding) continue;
+                if (target == source || target.Removed || target.Sliding || target.IsStunned) continue;
                 Vector3 delta = target.transform.position - source.transform.position;
                 if (delta.sqrMagnitude > .64f) continue;
                 Vector3 forward = new Vector3(source.Direction.x, 0, -source.Direction.y);

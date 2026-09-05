@@ -9,11 +9,13 @@ namespace BetoBeto.Stage
         public readonly List<Vector2Int> Pipes = new List<Vector2Int>();
         public readonly HashSet<Vector2Int> Walls = new HashSet<Vector2Int>();
         public readonly HashSet<Vector2Int> Shredders = new HashSet<Vector2Int>();
+        // Kept empty for compatibility with older integrations; escaping only happens outside the board.
         public readonly HashSet<Vector2Int> Exits = new HashSet<Vector2Int>();
         public readonly Dictionary<Vector2Int, float> Drool = new Dictionary<Vector2Int, float>();
         public readonly HashSet<Vector2Int> Jellies = new HashSet<Vector2Int>();
         public readonly HashSet<Vector2Int> Freezers = new HashSet<Vector2Int>();
         public readonly Dictionary<Vector2Int, int> Scones = new Dictionary<Vector2Int, int>();
+        public readonly Dictionary<Vector2Int, int> SconeHitsLeft = new Dictionary<Vector2Int, int>();
         public readonly Dictionary<Vector2Int, CookieState> Cookies = new Dictionary<Vector2Int, CookieState>();
         public readonly List<MovingShredderState> Movers = new List<MovingShredderState>();
         public readonly Dictionary<Vector2Int, StageObject> Objects = new Dictionary<Vector2Int, StageObject>();
@@ -26,6 +28,7 @@ namespace BetoBeto.Stage
             // Use actual scene placement, so scene-level layout edits are respected at runtime.
             foreach (var item in layout.GetComponentsInChildren<StageObject>())
             {
+                if (item.kind == StageObjectKind.Exit) { item.gameObject.SetActive(false); continue; }
                 var cell = Data.Cell(item.transform.position);
                 Objects[cell] = item;
                 switch (item.kind)
@@ -33,20 +36,21 @@ namespace BetoBeto.Stage
                     case StageObjectKind.Wall: Walls.Add(cell); break;
                     case StageObjectKind.Pipe: Pipes.Add(cell); break;
                     case StageObjectKind.Shredder: Shredders.Add(cell); break;
-                    case StageObjectKind.Exit: Exits.Add(cell); break;
                     case StageObjectKind.PlayerStart: PlayerStart = cell; break;
                     case StageObjectKind.Jelly: Jellies.Add(cell); break;
                     case StageObjectKind.Cookie: Cookies[cell] = new CookieState(Data.cookieHits, Data.cookieRespawnSeconds); break;
                     case StageObjectKind.Freezer: Freezers.Add(cell); break;
-                    case StageObjectKind.Scone: Scones[cell] = GimmickRules.QuarterTurn(item.transform); break;
+                    case StageObjectKind.Scone:
+                        Scones[cell] = GimmickRules.QuarterTurn(item.transform); SconeHitsLeft[cell] = GimmickRules.SconeMaxHits; break;
                     case StageObjectKind.MovingShredder:
                         Movers.Add(new MovingShredderState(cell, GimmickRules.Rotate(Vector2Int.right, GimmickRules.QuarterTurn(item.transform)))); break;
                 }
             }
         }
-        public bool Blocked(Vector2Int cell) => Walls.Contains(cell) || Jellies.Contains(cell) || Scones.ContainsKey(cell)
+        public bool HasScone(Vector2Int cell) => Scones.ContainsKey(cell) && SconeHitsLeft.TryGetValue(cell, out int hits) && hits > 0;
+        public bool Blocked(Vector2Int cell) => Walls.Contains(cell) || Pipes.Contains(cell) || Jellies.Contains(cell) || HasScone(cell)
             || (Cookies.TryGetValue(cell, out var cookie) && !cookie.Broken);
-        public bool BlocksSliding(Vector2Int cell) => Blocked(cell) && !Scones.ContainsKey(cell);
+        public bool BlocksSliding(Vector2Int cell) => Blocked(cell) && !HasScone(cell);
         public bool HasShredder(Vector2Int cell)
         {
             if (Shredders.Contains(cell)) return true;
@@ -71,7 +75,7 @@ namespace BetoBeto.Stage
             return false;
         }
         // Fruits recognise the blades while walking; a slide cannot steer around them.
-        public bool BlocksWalking(Vector2Int cell) => Blocked(cell) || Shredders.Contains(cell) || MoverReserves(cell);
-        public bool CanPlace(Vector2Int cell) => Data.Contains(cell) && !Blocked(cell) && !HasShredder(cell) && !Exits.Contains(cell) && !Pipes.Contains(cell);
+        public bool BlocksWalking(Vector2Int cell) => BlocksSliding(cell) || Shredders.Contains(cell) || MoverReserves(cell);
+        public bool CanPlace(Vector2Int cell) => Data.Contains(cell) && !Blocked(cell) && !HasShredder(cell) && !Pipes.Contains(cell);
     }
 }

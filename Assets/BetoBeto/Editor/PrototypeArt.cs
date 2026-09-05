@@ -38,7 +38,7 @@ namespace BetoBeto.Editor
             navy = Mat("Ink", "253544", .4f); white = Mat("Ghost cream", "FFF8F3", .6f);
             blush = Mat("Blush", "F2A9B2", .35f); leaf = Mat("Fresh leaves", "639768", .25f);
             gold = Mat("Brass", "EABB6C", .65f, .5f); tile = Mat("Blue glaze", "679CB7", .63f);
-            glass = Mat("Pipe glass", "BCEFEB", .82f, 0, .23f); ice = Mat("Mint ice", "A3E9ED", .7f, 0, .85f);
+            glass = Mat("Pipe glass", "C7EDF5", .94f, 0, .16f); ice = Mat("Mint ice", "A3E9ED", .7f, 0, .85f);
             pink = Mat("Shredder pink", "E78195", .44f); steel = Mat("Steel", "B2CED6", .7f, .65f);
             drool = Mat("Shiny drool", "63D7C1", .82f); purple = Mat("Apron", "CEAAC4", .4f);
             jelly = Mat("Grape jelly", "BA80DA", .85f, 0, .88f);
@@ -148,11 +148,26 @@ namespace BetoBeto.Editor
         }
         static GameObject Pipe()
         {
-            var go = RootObject("Glass fruit pipe", StageObjectKind.Pipe);
-            Cylinder(go.transform, "Glass chute", new Vector3(0, 1.32f, 0), new Vector3(.71f, .99f, .71f), glass);
-            MeshPart(go.transform, "Top brass rim", ring, new Vector3(0, 2.31f, 0), Vector3.one * .85f, gold);
-            MeshPart(go.transform, "Lower brass rim", ring, new Vector3(0, .33f, 0), Vector3.one * .85f, gold);
-            Box(go.transform, "Pipe mount", new Vector3(0, .05f, 0), new Vector3(.82f, .1f, .82f), leaf);
+            var go = RootObject("Food grade glass fruit pipe", StageObjectKind.Pipe);
+            Cylinder(go.transform, "Glass chute", new Vector3(0, 1.38f, 0), new Vector3(.74f, .96f, .74f), glass);
+            MeshPart(go.transform, "Upper sanitary clamp", ring, new Vector3(0, 2.30f, 0), new Vector3(.94f, 1.6f, .94f), steel);
+            MeshPart(go.transform, "Lower sanitary clamp", ring, new Vector3(0, .50f, 0), new Vector3(.94f, 1.6f, .94f), steel);
+            Box(go.transform, "Hygienic valve housing", new Vector3(0, .04f, 0), new Vector3(.88f, .12f, .88f), white);
+            MeshPart(go.transform, "Upper silicone seal", ring, new Vector3(0, 2.24f, 0), new Vector3(.91f, .8f, .91f), white);
+            MeshPart(go.transform, "Lower silicone seal", ring, new Vector3(0, .44f, 0), new Vector3(.91f, .8f, .91f), white);
+            Box(go.transform, "Upper clamp latch", new Vector3(.42f, 2.30f, 0), new Vector3(.1f, .12f, .16f), steel);
+            Box(go.transform, "Lower clamp latch", new Vector3(.42f, .50f, 0), new Vector3(.1f, .12f, .16f), steel);
+            Box(go.transform, "Glass highlight", new Vector3(-.19f, 1.34f, -.29f), new Vector3(.025f, 1.48f, .018f), white);
+            Box(go.transform, "Glass glint", new Vector3(.20f, 1.56f, -.285f), new Vector3(.018f, .9f, .018f), white);
+            Box(go.transform, "Closed rear guard", new Vector3(0, .28f, .37f), new Vector3(.82f, .46f, .14f), white);
+            for (int side = -1; side <= 1; side += 2)
+                Box(go.transform, side < 0 ? "Left valve guard" : "Right valve guard", new Vector3(side * .36f, .28f, .01f), new Vector3(.12f, .46f, .72f), white);
+            Cylinder(go.transform, "One way flap hinge", new Vector3(0, .52f, -.37f), new Vector3(.09f, .32f, .09f), steel).localRotation = Quaternion.Euler(0, 0, 90);
+            Box(go.transform, "Outward opening glass flap", new Vector3(0, .30f, -.465f), new Vector3(.57f, .42f, .035f), glass).localRotation = Quaternion.Euler(25, 0, 0);
+            Box(go.transform, "Flap safety edge", new Vector3(0, .11f, -.554f), new Vector3(.61f, .035f, .055f), white).localRotation = Quaternion.Euler(25, 0, 0);
+            Box(go.transform, "Feed arrow stem", new Vector3(0, .115f, .045f), new Vector3(.06f, .025f, .23f), leaf);
+            for (int side = -1; side <= 1; side += 2)
+                Box(go.transform, side < 0 ? "Feed arrow left" : "Feed arrow right", new Vector3(side * .06f, .115f, -.10f), new Vector3(.045f, .025f, .17f), leaf).localRotation = Quaternion.Euler(0, side * 45, 0);
             return go;
         }
         static GameObject Jelly()

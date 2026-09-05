@@ -19,7 +19,7 @@
     "#....4.JJ.3....#",
     "#.......G......#",
     "#4.....H......3#",
-    "##E####EE####E##"
+    "##.####..####.##"
   ],
   "recipe": {
     "strawberry": 5,
@@ -32,17 +32,26 @@
   "iceLifetime": 5,
   "droolLifetime": 10,
   "cookieHits": 3,
-  "cookieRespawnSeconds": 5,
+  "cookieRespawnSeconds": 20,
+  "sconeRespawnSeconds": 5,
   "movingShredderSpeed": 1,
   "freezerSeconds": 3,
   "frozenSpeedMultiplier": 0.35
 };
-  const symbols = ".#PXEGJCHV1234F";
-  const gimmickDefaults = { cookieHits: 3, cookieRespawnSeconds: 5, movingShredderSpeed: 1, freezerSeconds: 3, frozenSpeedMultiplier: .35 };
+  const symbols = ".#PXGJCHV1234F";
+  const gimmickDefaults = { cookieHits: 3, cookieRespawnSeconds: 20, sconeRespawnSeconds: 5, movingShredderSpeed: 1, freezerSeconds: 3, frozenSpeedMultiplier: .35 };
   const isScone = c => '1234'.includes(c);
   const isShredder = c => 'XHV'.includes(c);
-  const blocksConnectivity = c => c === '#' || c === 'J' || isScone(c);
-  const clone = value => JSON.parse(JSON.stringify(value));
+  const blocksConnectivity = c => c === '#' || c === 'J' || c === 'P';
+  const clone = value => {
+    const copy = JSON.parse(JSON.stringify(value));
+    if (copy && typeof copy === 'object' && !Array.isArray(copy) && copy.sconeRespawnSeconds === undefined) {
+      if (copy.cookieRespawnSeconds === undefined || copy.cookieRespawnSeconds === 5) copy.cookieRespawnSeconds = gimmickDefaults.cookieRespawnSeconds;
+      copy.sconeRespawnSeconds = gimmickDefaults.sconeRespawnSeconds;
+    }
+    if (copy && Array.isArray(copy.rows)) copy.rows = copy.rows.map(row => typeof row === 'string' ? row.replaceAll('E', '.') : row);
+    return copy;
+  };
   function validate(s) {
     const errors = [];
     if (!s || typeof s !== "object" || Array.isArray(s)) return ["ステージJSONはオブジェクトである必要があります。"];
@@ -56,11 +65,10 @@
     s.rows.forEach((row, y) => {
       if (typeof row !== "string" || row.length !== s.width) { errors.push((y + 1) + "行目の幅が一致しません。"); return; }
       Array.from(row).forEach((c, x) => {
-        if (!symbols.includes(c)) errors.push("不明な記号: " + c);
+        if (!symbols.includes(c) && c !== 'E') errors.push("不明な記号: " + c);
         if (c === "P") { pipes++; pipeCells.push([x, y]); if (y !== 0) errors.push("パイプは最上段に置いてください。"); }
         if (isShredder(c)) shredders++;
         if (c === "G") ghosts++;
-        if (c === "E" && x !== 0 && y !== 0 && x !== s.width - 1 && y !== s.height - 1) errors.push("出口は外周に置いてください。");
       });
     });
     if (pipes < 2 || pipes > 3) errors.push("パイプは2〜3基必要です。");
@@ -72,7 +80,7 @@
     }
     const hits = s.cookieHits === undefined ? gimmickDefaults.cookieHits : s.cookieHits;
     if (!Number.isInteger(hits) || hits < 1 || hits > 10) errors.push('クッキーの耐久は1〜10回にしてください。');
-    for (const [key, min, max, label] of [['cookieRespawnSeconds', 1, 30, 'クッキーの復帰時間'], ['movingShredderSpeed', .25, 3, '移動シュレッダーの速度'], ['freezerSeconds', .5, 10, '凍結時間'], ['frozenSpeedMultiplier', .1, .9, '凍結中の速度倍率']]) {
+    for (const [key, min, max, label] of [['cookieRespawnSeconds', 1, 30, 'クッキーの復帰時間'], ['sconeRespawnSeconds', 1, 30, 'スコーンの復帰時間'], ['movingShredderSpeed', .25, 3, '移動シュレッダーの速度'], ['freezerSeconds', .5, 10, '凍結時間'], ['frozenSpeedMultiplier', .1, .9, '凍結中の速度倍率']]) {
       const value = s[key] === undefined ? gimmickDefaults[key] : s[key];
       if (!Number.isFinite(value) || value < min || value > max) errors.push(label + 'は' + min + '〜' + max + 'にしてください。');
     }
@@ -85,14 +93,15 @@
         for (let i = 0; i < queue.length; i++) {
           const [x, y] = queue[i], c = s.rows[y][x];
           if (isShredder(c)) shredder = true;
-          if (c === "E" || y === s.height - 1 || x === 0 || x === s.width - 1) exit = true;
+          if (c !== 'P' && (y === 0 || y === s.height - 1 || x === 0 || x === s.width - 1)) exit = true;
           for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+            if (c === 'P' && (dx !== 0 || dy !== 1)) continue;
             const nx = x + dx, ny = y + dy, id = nx + "," + ny;
             if (nx >= 0 && ny >= 0 && nx < s.width && ny < s.height && !blocksConnectivity(s.rows[ny][nx]) && !seen.has(id)) { seen.add(id); queue.push([nx, ny]); }
           }
         }
         if (!shredder) errors.push("パイプ(" + px + "," + py + ")からシュレッダーへ到達できません。");
-        if (!exit) errors.push("パイプ(" + px + "," + py + ")から出口へ到達できません。");
+        if (!exit) errors.push("パイプ(" + px + "," + py + ")から盤外へ到達できません。");
       }
     }
     return Array.from(new Set(errors));
@@ -100,7 +109,6 @@
   function paint(s, x, y, symbol) {
     if (x < 0 || y < 0 || x >= s.width || y >= s.height || !symbols.includes(symbol)) return false;
     if (symbol === "P" && y !== 0) return false;
-    if (symbol === "E" && x !== 0 && y !== 0 && x !== s.width - 1 && y !== s.height - 1) return false;
     if (s.rows[y][x] === symbol) return false;
     if (symbol === "G") s.rows = s.rows.map(row => row.replaceAll("G", "."));
     const chars = Array.from(s.rows[y]); chars[x] = symbol; s.rows[y] = chars.join("");
@@ -116,7 +124,7 @@
   function blank() {
     const s = clone(sample); s.name = "新しいキッチン";
     s.rows = Array.from({ length: s.height }, (_, y) => Array.from({ length: s.width }, (_, x) => x === 0 || y === 0 || x === s.width - 1 || y === s.height - 1 ? "#" : ".").join(""));
-    for (const [x, y, c] of [[3, 0, "P"], [12, 0, "P"], [5, 3, "X"], [10, 3, "X"], [4, 6, "X"], [11, 6, "X"], [7, 5, "G"], [7, 8, "E"], [8, 8, "E"]]) paint(s, x, y, c);
+    for (const [x, y, c] of [[3, 0, "P"], [12, 0, "P"], [5, 3, "X"], [10, 3, "X"], [4, 6, "X"], [11, 6, "X"], [7, 5, "G"], [7, 8, "."], [8, 8, "."]]) paint(s, x, y, c);
     return s;
   }
   return { sample, clone, validate, paint, resize, blank, gimmickDefaults, isScone, isShredder, blocksConnectivity };
