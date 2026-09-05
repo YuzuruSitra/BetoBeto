@@ -117,6 +117,10 @@ namespace BetoBeto.Enemies
                         TargetCell = Cell; moving = true;
                         game.Feedback.Ricochet(this, jelly, false);
                     }
+                    else if (game.Board.HasIceWall(TargetCell))
+                    {
+                        StopForIceWall(TargetCell); return;
+                    }
                     else if (game.Board.Cookies.ContainsKey(TargetCell))
                     {
                         if (!game.Gimmicks.HitCookie(TargetCell, this)) { StopAtWall(false); return; }
@@ -192,6 +196,29 @@ namespace BetoBeto.Enemies
             bool fresh = !IsFrozen;
             FrozenRemaining = game.Board.Data.freezerSeconds;
             if (fresh) game.Feedback.FreezeFruit(this);
+        }
+        public void StopForIceWall(Vector2Int cell)
+        {
+            if (Removed || !Sliding || !game.Board.HasIceWall(cell)) return;
+            // A newly raised wall may overlap a fruit that was already on the water.
+            if (Cell == cell)
+            {
+                var safe = cell - Direction;
+                if (!game.Board.Data.Contains(safe) || game.Board.Blocked(safe) || game.Board.HasShredder(safe))
+                {
+                    safe = cell;
+                    foreach (var direction in Directions.All)
+                    {
+                        var candidate = cell + direction;
+                        if (game.Board.Data.Contains(candidate) && !game.Board.Blocked(candidate) && !game.Board.HasShredder(candidate))
+                        { safe = candidate; break; }
+                    }
+                }
+                Cell = safe;
+                if (safe != cell) transform.position = Vector3.Lerp(game.Board.Data.World(safe), game.Board.Data.World(cell), .38f);
+            }
+            game.Gimmicks.HitIceWall(cell, this);
+            StopAtWall(false);
         }
         void StopAtWall(bool feedback = true)
         {

@@ -165,8 +165,10 @@ namespace BetoBeto.Core
             foreach (var fruit in fruits)
                 if (!fruit.Removed && ScareRules.Contains(cell, facing, Board.Data.Cell(fruit.transform.position), chargeSeconds)
                     && fruit.Scare(source, fleeDirection)) count++;
+            int raised = Gimmicks.ScareIceWalls(cell, facing, chargeSeconds);
             Feedback.ScareBurst(Board.Data.World(cell), Board.Data.World(cell + facing), chargeSeconds, count);
-            if (count > 0) Notify($"{count}体をびっくり！  逃げ道によだれを置こう", 1.8f);
+            if (raised > 0) Notify(count > 0 ? $"{count}体をびっくり！ 氷の壁が{raised}個そり立った！" : $"水たまりから氷の壁が{raised}個そり立った！", 1.8f);
+            else if (count > 0) Notify($"{count}体をびっくり！  逃げ道によだれを置こう", 1.8f);
             return true;
         }
         public bool TryPlaceDrool(Vector2Int cell)

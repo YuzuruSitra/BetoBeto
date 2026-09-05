@@ -13,20 +13,27 @@ namespace BetoBeto.Presentation
         Vector3 restScale;
         readonly TrailRenderer[] trails = new TrailRenderer[2];
         float impact, dropTimer, fright, bounce;
-        GameObject frost;
+        GameObject coating;
         public void Initialize(GameController controller, FruitAgent actor, Transform model)
         {
             game = controller; fruit = actor; visual = model;
             if (visual != null) restScale = visual.localScale;
-            frost = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            frost.name = "Frost shell";
-            Destroy(frost.GetComponent<Collider>());
-            frost.transform.SetParent(transform, false);
-            frost.transform.localPosition = new Vector3(0, .5f, 0);
-            frost.transform.localScale = new Vector3(.83f, .95f, .83f) * (fruit.kind == FruitKind.Blueberry ? .78f : fruit.kind == FruitKind.Melon ? 1.14f : 1);
-            frost.GetComponent<Renderer>().sharedMaterial = game.assets.frostMaterial;
-            frost.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
-            frost.SetActive(false);
+            coating = new GameObject("Chocolate coating");
+            coating.transform.SetParent(transform, false);
+            coating.transform.localScale = Vector3.one * (fruit.kind == FruitKind.Blueberry ? .78f : fruit.kind == FruitKind.Melon ? 1.14f : 1);
+            for (int i = 0; i < 6; i++)
+            {
+                var part = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                part.name = i == 0 ? "Chocolate dip" : "Drip";
+                Destroy(part.GetComponent<Collider>());
+                part.transform.SetParent(coating.transform, false);
+                float angle = i * Mathf.PI * 2 / 5;
+                part.transform.localPosition = i == 0 ? new Vector3(0, .24f, 0) : new Vector3(Mathf.Cos(angle) * .34f, .43f, Mathf.Sin(angle) * .34f);
+                part.transform.localScale = i == 0 ? new Vector3(.84f, .38f, .84f) : new Vector3(.095f, .24f, .095f);
+                part.GetComponent<Renderer>().sharedMaterial = game.assets.frostMaterial;
+                part.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+            }
+            coating.SetActive(false);
             for (int i = 0; i < trails.Length; i++)
             {
                 var go = new GameObject("Drool speed trail");
@@ -51,7 +58,7 @@ namespace BetoBeto.Presentation
         void LateUpdate()
         {
             if (fruit.Removed || game.Session.State == GameState.Paused) return;
-            if (frost != null) frost.SetActive(fruit.IsFrozen);
+            if (coating != null) coating.SetActive(fruit.IsFrozen);
             float dt = game.Feedback.SimulationDelta;
             Vector3 side = Vector3.Cross(fruit.Forward, Vector3.up);
             for (int i = 0; i < trails.Length; i++)

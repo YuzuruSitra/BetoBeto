@@ -34,8 +34,7 @@ namespace BetoBeto.Stage
         public Recipe recipe = new Recipe();
         public int escapeLimit = 10;
         public float spawnInterval = 3.6f;
-        // Retained for version 1 JSON compatibility; the scare ability does not use this value.
-        [HideInInspector] public float iceLifetime = 5f;
+        public float iceLifetime = 5f;
         public float droolLifetime = 10f;
         public int cookieHits = 3;
         public float cookieRespawnSeconds = 20f;
@@ -94,8 +93,8 @@ namespace BetoBeto.Stage
             ValidateRange(cookieRespawnSeconds, 1, 30, "クッキーの復帰時間", errors);
             ValidateRange(sconeRespawnSeconds, 1, 30, "スコーンの復帰時間", errors);
             ValidateRange(movingShredderSpeed, .25f, 3, "移動シュレッダーの速度", errors);
-            ValidateRange(freezerSeconds, .5f, 10, "凍結時間", errors);
-            ValidateRange(frozenSpeedMultiplier, .1f, .9f, "凍結中の速度倍率", errors);
+            ValidateRange(freezerSeconds, .5f, 10, "チョコ付着時間", errors);
+            ValidateRange(frozenSpeedMultiplier, .1f, .9f, "チョコ付着中の速度倍率", errors);
             if (recipe == null || recipe.strawberry < 0 || recipe.blueberry < 0 || recipe.orange < 0 || recipe.melon < 0 || recipe.Total < 1 || recipe.Total > 200)
                 errors.Add("必要フルーツ数は各0以上、合計1〜200にしてください。");
             if (errors.Count == 0)
@@ -139,7 +138,7 @@ namespace BetoBeto.Stage
             if (data == null) throw new FormatException("ステージデータが空です。");
             // Legacy exit tiles are ordinary floor; the board boundary is the only escape trigger.
             if (data.rows != null)
-                for (int i = 0; i < data.rows.Length; i++) data.rows[i] = data.rows[i]?.Replace('E', '.');
+                for (int i = 0; i < data.rows.Length; i++) data.rows[i] = data.rows[i]?.Replace('E', '.').Replace('K', 'I');
             var errors = data.Validate();
             if (errors.Count > 0) throw new FormatException(string.Join("\n", errors));
             return data;

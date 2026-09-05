@@ -38,7 +38,7 @@
   "freezerSeconds": 3,
   "frozenSpeedMultiplier": 0.35
 };
-  const symbols = ".#PXGJCHV1234F";
+  const symbols = ".#PXGJCHV1234FI";
   const gimmickDefaults = { cookieHits: 3, cookieRespawnSeconds: 20, sconeRespawnSeconds: 5, movingShredderSpeed: 1, freezerSeconds: 3, frozenSpeedMultiplier: .35 };
   const isScone = c => '1234'.includes(c);
   const isShredder = c => 'XHV'.includes(c);
@@ -49,7 +49,8 @@
       if (copy.cookieRespawnSeconds === undefined || copy.cookieRespawnSeconds === 5) copy.cookieRespawnSeconds = gimmickDefaults.cookieRespawnSeconds;
       copy.sconeRespawnSeconds = gimmickDefaults.sconeRespawnSeconds;
     }
-    if (copy && Array.isArray(copy.rows)) copy.rows = copy.rows.map(row => typeof row === 'string' ? row.replaceAll('E', '.') : row);
+    if (copy && copy.iceLifetime === undefined) copy.iceLifetime = 5;
+    if (copy && Array.isArray(copy.rows)) copy.rows = copy.rows.map(row => typeof row === 'string' ? row.replaceAll('E', '.').replaceAll('K', 'I') : row);
     return copy;
   };
   function validate(s) {
@@ -80,7 +81,7 @@
     }
     const hits = s.cookieHits === undefined ? gimmickDefaults.cookieHits : s.cookieHits;
     if (!Number.isInteger(hits) || hits < 1 || hits > 10) errors.push('クッキーの耐久は1〜10回にしてください。');
-    for (const [key, min, max, label] of [['cookieRespawnSeconds', 1, 30, 'クッキーの復帰時間'], ['sconeRespawnSeconds', 1, 30, 'スコーンの復帰時間'], ['movingShredderSpeed', .25, 3, '移動シュレッダーの速度'], ['freezerSeconds', .5, 10, '凍結時間'], ['frozenSpeedMultiplier', .1, .9, '凍結中の速度倍率']]) {
+    for (const [key, min, max, label] of [['cookieRespawnSeconds', 1, 30, 'クッキーの復帰時間'], ['sconeRespawnSeconds', 1, 30, 'スコーンの復帰時間'], ['movingShredderSpeed', .25, 3, '移動シュレッダーの速度'], ['freezerSeconds', .5, 10, 'チョコ付着時間'], ['frozenSpeedMultiplier', .1, .9, 'チョコ付着中の速度倍率']]) {
       const value = s[key] === undefined ? gimmickDefaults[key] : s[key];
       if (!Number.isFinite(value) || value < min || value > max) errors.push(label + 'は' + min + '〜' + max + 'にしてください。');
     }

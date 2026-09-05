@@ -14,6 +14,7 @@ namespace BetoBeto.Stage
         public readonly Dictionary<Vector2Int, float> Drool = new Dictionary<Vector2Int, float>();
         public readonly HashSet<Vector2Int> Jellies = new HashSet<Vector2Int>();
         public readonly HashSet<Vector2Int> Freezers = new HashSet<Vector2Int>();
+        public readonly Dictionary<Vector2Int, IceWallState> IceWalls = new Dictionary<Vector2Int, IceWallState>();
         public readonly Dictionary<Vector2Int, int> Scones = new Dictionary<Vector2Int, int>();
         public readonly Dictionary<Vector2Int, int> SconeHitsLeft = new Dictionary<Vector2Int, int>();
         public readonly Dictionary<Vector2Int, CookieState> Cookies = new Dictionary<Vector2Int, CookieState>();
@@ -40,6 +41,7 @@ namespace BetoBeto.Stage
                     case StageObjectKind.Jelly: Jellies.Add(cell); break;
                     case StageObjectKind.Cookie: Cookies[cell] = new CookieState(Data.cookieHits, Data.cookieRespawnSeconds); break;
                     case StageObjectKind.Freezer: Freezers.Add(cell); break;
+                    case StageObjectKind.IceWall: IceWalls[cell] = new IceWallState(); break;
                     case StageObjectKind.Scone:
                         Scones[cell] = GimmickRules.QuarterTurn(item.transform); SconeHitsLeft[cell] = GimmickRules.SconeMaxHits; break;
                     case StageObjectKind.MovingShredder:
@@ -48,7 +50,8 @@ namespace BetoBeto.Stage
             }
         }
         public bool HasScone(Vector2Int cell) => Scones.ContainsKey(cell) && SconeHitsLeft.TryGetValue(cell, out int hits) && hits > 0;
-        public bool Blocked(Vector2Int cell) => Walls.Contains(cell) || Pipes.Contains(cell) || Jellies.Contains(cell) || HasScone(cell)
+        public bool HasIceWall(Vector2Int cell) => IceWalls.TryGetValue(cell, out var iceWall) && iceWall.Raised;
+        public bool Blocked(Vector2Int cell) => Walls.Contains(cell) || Pipes.Contains(cell) || Jellies.Contains(cell) || HasScone(cell) || HasIceWall(cell)
             || (Cookies.TryGetValue(cell, out var cookie) && !cookie.Broken);
         public bool BlocksSliding(Vector2Int cell) => Blocked(cell) && !HasScone(cell);
         public bool BlocksSconeSide(Vector2Int cell, Vector2Int incoming) => HasScone(cell)

@@ -338,7 +338,7 @@ namespace BetoBeto.Editor
         {
             '#' => assets.wall, 'P' => assets.pipe, 'X' => assets.shredder, 'G' => assets.playerStart,
             'J' => assets.jelly, 'C' => assets.cookie, 'H' => assets.movingShredder, 'V' => assets.movingShredder,
-            '1' or '2' or '3' or '4' => assets.scone, 'F' => assets.freezer, _ => null
+            '1' or '2' or '3' or '4' => assets.scone, 'F' => assets.freezer, 'I' => assets.iceWall, _ => null
         };
         public static Quaternion PlacementRotation(char symbol) => Quaternion.Euler(0, GimmickRules.IsScone(symbol) ? (symbol - '1') * 90 : symbol == 'V' ? 90 : 0, 0);
         static GameObject Instantiate(GameObject prefab, Transform parent, Vector3 position, string name)

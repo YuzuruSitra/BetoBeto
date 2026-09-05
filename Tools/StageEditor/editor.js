@@ -6,7 +6,7 @@
   let stage = M.clone(M.sample), brush = '#', undo = [], redo = [], drawing = false, panning = false, space = false;
   let last = null, hover = null, strokeBefore = null, zoom = 1, baseCell = 40, pan = { x: 0, y: 0 }, dimensions = { w: 1, h: 1 }, toastTimer;
   try { const saved = localStorage.getItem(storageKey); if (saved) { const candidate = JSON.parse(saved); if (Array.isArray(candidate.rows) && candidate.rows.length === candidate.height && candidate.rows.every(row => typeof row === 'string' && row.length === candidate.width) && candidate.width >= 16 && candidate.width <= 32 && candidate.height >= 9 && candidate.height <= 18 && candidate.recipe) stage = M.clone(candidate); } } catch (_) {}
-  const fields = ['name', 'dessert', 'width', 'height', 'escapeLimit', 'spawnInterval', 'droolLifetime', ...Object.keys(M.gimmickDefaults)];
+  const fields = ['name', 'dessert', 'width', 'height', 'escapeLimit', 'spawnInterval', 'droolLifetime', 'iceLifetime', ...Object.keys(M.gimmickDefaults)];
   const ingredients = ['strawberry', 'blueberry', 'orange', 'melon'];
   function sync() {
     for (const key of fields) $(key).value = stage[key] ?? M.gimmickDefaults[key];
@@ -26,7 +26,7 @@
     $('errors').replaceChildren(...errors.map(error => { const li = document.createElement('li'); li.textContent = error; return li; }));
     const content = stage.rows.join('');
     const count = symbol => Array.from(content).filter(c => c === symbol).length;
-    $('placement-counts').textContent = '壁 ' + count('#') + '　パイプ ' + count('P') + '　刃 ' + (count('X') + count('H') + count('V')) + '（移動 ' + (count('H') + count('V')) + '）　お菓子 ' + Array.from(content).filter(c => 'JC1234F'.includes(c)).length;
+    $('placement-counts').textContent = '壁 ' + count('#') + '　パイプ ' + count('P') + '　刃 ' + (count('X') + count('H') + count('V')) + '（移動 ' + (count('H') + count('V')) + '）　ギミック ' + Array.from(content).filter(c => 'JC1234FI'.includes(c)).length;
     try { localStorage.setItem(storageKey, JSON.stringify(stage)); $('save-state').textContent = 'この端末に自動保存'; } catch (_) { $('save-state').textContent = '自動保存不可 · JSONで保存してください'; }
     draw();
   }
@@ -99,9 +99,13 @@
         ctx.fillStyle = '#e8b670'; ctx.beginPath(); ctx.moveTo(-c * .41, -c * .41); ctx.lineTo(c * .41, -c * .41); ctx.lineTo(-c * .41, c * .41); ctx.closePath(); ctx.fill();
         ctx.strokeStyle = '#fff0c8'; ctx.lineWidth = c * .075; ctx.beginPath(); ctx.moveTo(c * .39, -c * .39); ctx.lineTo(-c * .39, c * .39); ctx.stroke(); ctx.restore();
       } else if (symbol === 'F') {
-        roundRect(px + margin, py + margin, size, size, c * .09, '#83d5e6');
-        ctx.save(); ctx.translate(px + c * .5, py + c * .5); ctx.strokeStyle = '#f2fcff'; ctx.lineWidth = c * .065;
-        for (let i = 0; i < 3; i++) { ctx.rotate(Math.PI / 3); ctx.beginPath(); ctx.moveTo(-c * .30, 0); ctx.lineTo(c * .30, 0); ctx.stroke(); } ctx.restore();
+        ctx.fillStyle = '#fff1d5'; ctx.beginPath(); ctx.arc(px + c * .5, py + c * .5, c * .43, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#693b27'; ctx.beginPath(); ctx.arc(px + c * .5, py + c * .5, c * .36, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#a06844'; ctx.beginPath(); ctx.arc(px + c * .5, py + c * .47, c * .15, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#d7a875'; ctx.lineWidth = c * .04; ctx.beginPath(); ctx.arc(px + c * .5, py + c * .5, c * .26, .3, 1.3); ctx.stroke();
+      } else if (symbol === 'I') {
+        ctx.fillStyle = '#74cfe5'; ctx.beginPath(); ctx.ellipse(px + c * .5, py + c * .53, c * .39, c * .30, -.15, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#cef7ff'; ctx.lineWidth = c * .035; ctx.beginPath(); ctx.ellipse(px + c * .48, py + c * .51, c * .22, c * .16, -.15, .2, Math.PI * 1.5); ctx.stroke();
       } else if (symbol === 'G') {
         roundRect(px + c * .22, py + c * .13, c * .56, c * .7, c * .26, '#fff6ed');
         ctx.fillStyle = '#374f60';

@@ -21,9 +21,10 @@ MonoBehaviour:
   movingShredder: {fileID: 6734535724386778771, guid: 57de25a3f243abf4b9ddb4b14cce330b, type: 3}
   scone: {fileID: 6896649677481040043, guid: 493c5978a1863db4782b93030dcca861, type: 3}
   freezer: {fileID: 221621058381168258, guid: 67e39205b88352d4babf9d15375308d2, type: 3}
+  iceWall: {fileID: 2337798189569438236, guid: aedefb91bbd7e67479d726b487027650, type: 3}
   jellyMaterial: {fileID: 2100000, guid: b59e1df6bafe53940a6a65bb660e25a3, type: 2}
   cookieMaterial: {fileID: 2100000, guid: 362f14c2fe918f949a2bfd95eeb503a1, type: 2}
-  frostMaterial: {fileID: 2100000, guid: 8b907a34ba3645f4a8418ee3dd1791f3, type: 2}
+  frostMaterial: {fileID: 2100000, guid: 17368bcc08a3ce145984d93457490e52, type: 2}
   exit: {fileID: 914409903353964397, guid: 852bd4130ada0184280751566c075af3, type: 3}
   playerStart: {fileID: 6472417708552024958, guid: e50de578e437b2b49bc558bcf31253c6, type: 3}
   ghost: {fileID: 6986263598238758455, guid: 1c3a4a7155d1d8042abf0f1a2a1e2b34, type: 3}

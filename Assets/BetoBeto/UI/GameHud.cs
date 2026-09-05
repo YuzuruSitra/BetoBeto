@@ -140,16 +140,16 @@ namespace BetoBeto.UI
             modal = Overlay("Options", .85f);
             var card = CenterCard(modal.transform, "Options card", new Vector2(760, 790));
             Label(card, pausedByModal ? "ひとやすみ" : "あそびかた・音量設定", new Vector2(35, -29), new Vector2(690, 51), 30, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-            Label(card, "よだれで滑らせて連鎖！ 普段のフルーツは刃を避ける。\n驚かす単押し：自分＋前方1マスの敵を、向いている方向へ。\n長押し：1.5秒で半径6マス。おばけから離れる向きに変える。\n刃の1マス前は、驚かすだけでも突入できる。\n\n" + GimmickHelp, new Vector2(46, -104), new Vector2(675, 268), 16, Ink);
-            Label(card, "左スティック：移動 / 右スティック：向き / 下ボタン：よだれ\n左ボタン：驚かす（離すと発動） / 音量：上下・左右で調整", new Vector2(46, -382), new Vector2(675, 48), 15, Muted);
-            SliderRow(card, "BGM", -450, game.Audio.MusicVolume, game.Audio.SetMusic);
-            SliderRow(card, "効果音", -520, game.Audio.EffectsVolume, game.Audio.SetEffects);
+            Label(card, "よだれで滑らせて連鎖！ 普段のフルーツは刃を避ける。\n驚かす単押し：自分＋前方1マスの敵を、向いている方向へ。\n長押し：1.5秒で半径6マス。おばけから離れる向きに変える。\n刃の1マス前は、驚かすだけでも突入できる。\n\n" + GimmickHelp, new Vector2(46, -104), new Vector2(675, 292), 16, Ink);
+            Label(card, "左スティック：移動 / 右スティック：向き / 下ボタン：よだれ\n左ボタン：驚かす（離すと発動） / 音量：上下・左右で調整", new Vector2(46, -406), new Vector2(675, 48), 15, Muted);
+            SliderRow(card, "BGM", -474, game.Audio.MusicVolume, game.Audio.SetMusic);
+            SliderRow(card, "効果音", -544, game.Audio.EffectsVolume, game.Audio.SetEffects);
             var resume = Button(card, pausedByModal ? "キッチンに戻る" : "閉じる", new Vector2(50, -613), new Vector2(660, 55), Pink, Color.white, () => CloseModal(true), 21);
             if (pausedByModal) Button(card, "ステージ選択へ", new Vector2(50, -685), new Vector2(660, 38), Hex("E9EEE9"), Ink, GameFlow.StageSelect, 16);
             else Label(card, "音量は自動で保存されます", new Vector2(50, -694), new Vector2(660, 24), 13, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
             FocusScope(modal.transform, resume.GetComponent<Button>());
         }
-        public const string GimmickHelp = "ゼリー：反転して滑り続ける。\nクッキー：滑走かオレンジで割る。復帰は初期20秒。\n移動シュレッダー：往復する刃に、タイミングを合わせる。\nスコーン：斜面で転向、側面は壁。滑走20回で破壊、初期5秒で復帰。\nフリーザー：しばらく減速。滑走と連鎖は続く。\n歩行：壁で右→左→右。盤外で脱出。パイプは逆走不可。";
+        public const string GimmickHelp = "ゼリー：反転して滑り続ける。\nクッキー：滑走かオレンジで割る。復帰は初期20秒。\n移動シュレッダー：往復する刃に、タイミングを合わせる。\nスコーン：斜面で転向、側面は壁。滑走20回で破壊、初期5秒で復帰。\nチョコフォンデュ：しばらく減速。滑走と連鎖は続く。\n氷：水を驚かすと壁に。初期5秒、衝突が途切れて0.5秒で水に。\n歩行：壁で右→左→右。盤外で脱出。パイプは逆走不可。";
         void CloseModal(bool restore)
         {
             if (modal != null) { modal.SetActive(false); Destroy(modal); modal = null; }

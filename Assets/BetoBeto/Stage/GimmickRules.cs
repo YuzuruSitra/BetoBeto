@@ -5,7 +5,7 @@ namespace BetoBeto.Stage
 {
     public static class GimmickRules
     {
-        public const string Symbols = ".#PXEGJCHV1234F";
+        public const string Symbols = ".#PXEGJCHV1234FI";
         public const float BladeRadius = .62f;
         public const int SconeMaxHits = 20;
         public static bool IsShredder(char c) => c == 'X' || c == 'H' || c == 'V';
@@ -43,6 +43,40 @@ namespace BetoBeto.Stage
             fraction = (-b - Mathf.Sqrt(discriminant)) / a;
             return fraction >= 0 && fraction <= 1;
         }
+    }
+
+    public sealed class IceWallState
+    {
+        public const float BreakDelay = .5f;
+        public bool Raised { get; private set; }
+        public bool Damaged { get; private set; }
+        public float Remaining { get; private set; }
+        public float BreakRemaining { get; private set; }
+        public bool Raise(float lifetime)
+        {
+            if (Raised) return false;
+            Raised = true; Damaged = false; Remaining = lifetime; BreakRemaining = 0;
+            return true;
+        }
+        public void Hit()
+        {
+            if (!Raised) return;
+            Damaged = true; BreakRemaining = BreakDelay;
+        }
+        public bool Tick(float dt)
+        {
+            if (!Raised || dt <= 0) return false;
+            Remaining = Mathf.Max(0, Remaining - dt);
+            // Each impact restarts the quiet period, including when the natural lifetime has elapsed.
+            if (Damaged)
+            {
+                BreakRemaining = Mathf.Max(0, BreakRemaining - dt);
+                if (BreakRemaining > 0) return false;
+            }
+            else if (Remaining > 0) return false;
+            Reset(); return true;
+        }
+        public void Reset() { Raised = Damaged = false; Remaining = BreakRemaining = 0; }
     }
 
     public sealed class CookieState

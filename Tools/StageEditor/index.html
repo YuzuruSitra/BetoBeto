@@ -26,7 +26,8 @@
         <button class="tool" data-brush="H"><span class="swatch shredder">↔</span><span>移動シュレッダー 横<small>左右に往復する</small></span></button>
         <button class="tool" data-brush="V"><span class="swatch shredder">↕</span><span>移動シュレッダー 縦<small>上下に往復する</small></span></button>
         <button class="tool" data-brush="1" id="scone-brush"><span class="swatch scone" id="scone-swatch"></span><span>スコーン<small id="scone-direction">斜面：右下 / Rで回転</small></span></button>
-        <button class="tool" data-brush="F"><span class="swatch freezer">❄</span><span>フリーザー<small>踏むと凍って減速する</small></span></button>
+        <button class="tool" data-brush="F"><span class="swatch fondue">◉</span><span>チョコフォンデュ<small>踏むとチョコが付いて減速する</small></span></button>
+        <button class="tool" data-brush="I"><span class="swatch ice-wall">◇</span><span>氷ブロック<small>水たまりを驚かすと氷の壁に</small></span></button>
       </div>
       <button id="rotate-scone" class="subtle">スコーンを90°回転 (R)</button>
       <div class="tip"><span>ひと滑りから、大連鎖。</span>スコーンは斜面で転向、側面は壁。<br>復帰の初期設定：クッキー20秒、<br>スコーン5秒。盤外へ出ると脱出。</div>
@@ -54,12 +55,13 @@
       <div class="rule"><label for="spawnInterval">出現間隔</label><input id="spawnInterval" type="number" min="0.5" max="30" step="0.1"><span>秒</span></div>
       <div class="rule"><label for="droolLifetime">よだれの寿命</label><input id="droolLifetime" type="number" min="1" max="60" step="0.5"><span>秒</span></div>
       <hr><h3>ギミック</h3>
+      <div class="rule"><label for="iceLifetime">氷の壁の寿命</label><input id="iceLifetime" type="number" min="1" max="30" step="0.5"><span>秒</span></div>
       <div class="rule"><label for="cookieHits">クッキーの耐久</label><input id="cookieHits" type="number" min="1" max="10"><span>回</span></div>
       <div class="rule"><label for="cookieRespawnSeconds">クッキーの復帰</label><input id="cookieRespawnSeconds" type="number" min="1" max="30" step="0.5"><span>秒</span></div>
       <div class="rule"><label for="sconeRespawnSeconds">スコーンの復帰</label><input id="sconeRespawnSeconds" type="number" min="1" max="30" step="0.5"><span>秒</span></div>
       <div class="rule"><label for="movingShredderSpeed">刃の移動速度</label><input id="movingShredderSpeed" type="number" min="0.25" max="3" step="0.25"><span>マス/秒</span></div>
-      <div class="rule"><label for="freezerSeconds">凍結時間</label><input id="freezerSeconds" type="number" min="0.5" max="10" step="0.5"><span>秒</span></div>
-      <div class="rule"><label for="frozenSpeedMultiplier">凍結中の速度</label><input id="frozenSpeedMultiplier" type="number" min="0.1" max="0.9" step="0.05"><span>倍</span></div>
+      <div class="rule"><label for="freezerSeconds">チョコ付着時間</label><input id="freezerSeconds" type="number" min="0.5" max="10" step="0.5"><span>秒</span></div>
+      <div class="rule"><label for="frozenSpeedMultiplier">チョコ中の速度</label><input id="frozenSpeedMultiplier" type="number" min="0.1" max="0.9" step="0.05"><span>倍</span></div>
       <div class="unity-note"><b>UNITYへの読み込み</b><p>JSONを書き出したら、Unityの<br><code>BetoBeto → Stage JSON Importer</code><br>でファイルを選択してください。</p><p>編集したステージに反映する場合は、更新先のシーンを選び「既存シーンを更新して保存」。新規追加は「新しいシーンを生成して保存」を使います。</p></div>
     </aside>
   </main>

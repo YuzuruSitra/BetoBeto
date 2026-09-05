@@ -20,7 +20,10 @@ namespace BetoBeto.Editor
         static Mesh ring;
         static Mesh triangle;
         static Material cream, dough, biscuitEdge, cocoa, navy, white, blush, leaf, gold, tile, glass, ice, pink, steel, drool, purple;
-        static Material jelly, frost, freezer;
+        static Material jelly, chocolate;
+
+        [MenuItem("BetoBeto/Create Missing Art Assets")]
+        public static void CreateMissingArtAssets() => EnsureAssets();
 
         public static GameAssets EnsureAssets()
         {
@@ -42,8 +45,7 @@ namespace BetoBeto.Editor
             pink = Mat("Shredder pink", "E78195", .44f); steel = Mat("Steel", "B2CED6", .7f, .65f);
             drool = Mat("Shiny drool", "63D7C1", .82f); purple = Mat("Apron", "CEAAC4", .4f);
             jelly = Mat("Grape jelly", "BA80DA", .85f, 0, .88f);
-            frost = Mat("Frozen shell", "BDEFFC", .85f, 0, .28f);
-            freezer = Mat("Freezer ceramic", "63C8DD", .72f);
+            chocolate = Mat("Chocolate coating", "693B27", .86f);
             var assets = AssetDatabase.LoadAssetAtPath<GameAssets>(AssetPath);
             if (assets == null) { assets = ScriptableObject.CreateInstance<GameAssets>(); AssetDatabase.CreateAsset(assets, AssetPath); }
             assets.tile = Prefab("Stage/BlueTile", Tile);
@@ -54,8 +56,11 @@ namespace BetoBeto.Editor
             assets.cookie = Prefab("Stage/BreakableCookie", BreakableCookie);
             assets.movingShredder = Prefab("Stage/MovingShredder", MovingShredder);
             assets.scone = Prefab("Stage/Scone", Scone);
-            assets.freezer = Prefab("Stage/Freezer", Freezer);
-            assets.jellyMaterial = jelly; assets.cookieMaterial = dough; assets.frostMaterial = frost;
+            MigrateStagePrefab("Freezer", "ChocolateFondue", ChocolateFondue);
+            assets.freezer = Prefab("Stage/ChocolateFondue", ChocolateFondue);
+            MigrateStagePrefab("Popcorn", "IceWall", IceWall);
+            assets.iceWall = Prefab("Stage/IceWall", IceWall);
+            assets.jellyMaterial = jelly; assets.cookieMaterial = dough; assets.frostMaterial = chocolate;
             assets.exit = Prefab("Stage/Exit", Exit);
             assets.playerStart = Prefab("Stage/PlayerStart", () => { var go = new GameObject("Player start"); go.AddComponent<StageObject>().kind = StageObjectKind.PlayerStart; return go; });
             assets.ice = Prefab("Abilities/IceBlock", Ice);
@@ -223,16 +228,72 @@ namespace BetoBeto.Editor
             Sphere(go.transform, "Raisin", new Vector3(.06f, .305f, .28f), new Vector3(.08f, .03f, .07f), cocoa);
             return go;
         }
-        static GameObject Freezer()
+        static GameObject ChocolateFondue()
         {
-            var go = RootObject("Frost plate", StageObjectKind.Freezer);
-            Box(go.transform, "Cold plate", new Vector3(0, .025f, 0), new Vector3(.91f, .06f, .91f), steel);
-            Box(go.transform, "Frozen surface", new Vector3(0, .065f, 0), new Vector3(.76f, .05f, .76f), freezer);
-            for (int i = 0; i < 3; i++)
-                Box(go.transform, "Snowflake", new Vector3(0, .102f, 0), new Vector3(.61f, .025f, .055f), white).localRotation = Quaternion.Euler(0, i * 60, 0);
+            var go = RootObject("Chocolate fondue", StageObjectKind.Freezer);
+            Cylinder(go.transform, "Ceramic dish", new Vector3(0, .07f, 0), new Vector3(.91f, .075f, .91f), cream);
+            Cylinder(go.transform, "Chocolate pool", new Vector3(0, .145f, 0), new Vector3(.80f, .025f, .80f), chocolate);
+            Cylinder(go.transform, "Fountain stem", new Vector3(0, .25f, 0), new Vector3(.15f, .12f, .15f), chocolate);
+            Sphere(go.transform, "Flowing crown", new Vector3(0, .36f, 0), new Vector3(.33f, .14f, .33f), chocolate);
+            for (int i = 0; i < 6; i++)
+            {
+                float a = i * Mathf.PI / 3;
+                Sphere(go.transform, "Chocolate stream", new Vector3(Mathf.Cos(a) * .12f, .25f, Mathf.Sin(a) * .12f), new Vector3(.07f, .23f, .07f), chocolate);
+            }
             foreach (int sign in new[] { -1, 1 })
-                for (int i = -1; i <= 1; i++) Box(go.transform, "Vent", new Vector3(sign * .40f, .067f, i * .22f), new Vector3(.035f, .022f, .10f), navy);
+                Box(go.transform, "Dish handle", new Vector3(sign * .42f, .115f, 0), new Vector3(.15f, .08f, .25f), gold);
+            Sphere(go.transform, "Cream swirl", new Vector3(.23f, .174f, .05f), new Vector3(.12f, .012f, .032f), dough).localRotation = Quaternion.Euler(0, -25, 0);
             return go;
+        }
+        static GameObject IceWall()
+        {
+            var go = RootObject("Rising ice wall", StageObjectKind.IceWall);
+            var waterMaterial = Mat("Ice wall water", "74CFE5", .94f, 0, .72f);
+            var water = new GameObject("Water").transform; water.SetParent(go.transform, false);
+            Sphere(water, "Puddle", new Vector3(0, .025f, 0), new Vector3(.84f, .045f, .73f), waterMaterial);
+            Sphere(water, "Puddle edge", new Vector3(.25f, .024f, -.18f), new Vector3(.33f, .04f, .32f), waterMaterial);
+            MeshPart(water, "Ripple", ring, new Vector3(0, .052f, 0), new Vector3(.45f, .2f, .4f), ice);
+            var wall = new GameObject("Wall").transform; wall.SetParent(go.transform, false);
+            Box(wall, "Rising ice", new Vector3(0, .53f, 0), new Vector3(.87f, 1.06f, .87f), ice);
+            for (int i = 0; i < 3; i++)
+            {
+                Box(wall, "Frozen crest", new Vector3((i - 1) * .26f, 1.02f, .05f), new Vector3(.20f, .18f + i * .04f, .55f), ice);
+                Sphere(wall, "Air bubble", new Vector3((i - 1) * .23f, .30f + i * .2f, -.425f), new Vector3(.08f, .12f, .025f), white);
+            }
+            Box(wall, "Glint", new Vector3(-.24f, .70f, -.441f), new Vector3(.055f, .42f, .015f), white).localRotation = Quaternion.Euler(0, 0, -22);
+            var cracks = new GameObject("Cracks").transform; cracks.SetParent(wall, false);
+            for (int i = 0; i < 3; i++)
+            {
+                Box(cracks, "Front fracture", new Vector3(i % 2 == 0 ? -.035f : .035f, .25f + i * .26f, -.449f), new Vector3(.027f, .30f, .015f), white).localRotation = Quaternion.Euler(0, 0, i % 2 == 0 ? 27 : -27);
+                Box(cracks, "Top fracture", new Vector3((i - 1) * .23f, 1.067f, i % 2 == 0 ? -.12f : -.04f), new Vector3(.29f, .015f, .024f), white).localRotation = Quaternion.Euler(0, i % 2 == 0 ? 25 : -25, 0);
+            }
+            cracks.gameObject.SetActive(false);
+            wall.gameObject.SetActive(false);
+            return go;
+        }
+        static void MigrateStagePrefab(string oldName, string newName, Func<GameObject> create)
+        {
+            string oldPath = Root + "/Prefabs/Stage/" + oldName + ".prefab";
+            string newPath = Root + "/Prefabs/Stage/" + newName + ".prefab";
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(oldPath) == null || AssetDatabase.LoadAssetAtPath<GameObject>(newPath) != null) return;
+            string error = AssetDatabase.MoveAsset(oldPath, newPath);
+            if (!string.IsNullOrEmpty(error)) throw new InvalidOperationException(error);
+            var root = PrefabUtility.LoadPrefabContents(newPath);
+            GameObject replacement = null;
+            try
+            {
+                replacement = create();
+                while (root.transform.childCount > 0) UnityEngine.Object.DestroyImmediate(root.transform.GetChild(0).gameObject);
+                while (replacement.transform.childCount > 0) replacement.transform.GetChild(0).SetParent(root.transform, false);
+                root.name = replacement.name;
+                root.GetComponent<StageObject>().kind = replacement.GetComponent<StageObject>().kind;
+                PrefabUtility.SaveAsPrefabAsset(root, newPath);
+            }
+            finally
+            {
+                if (replacement != null) UnityEngine.Object.DestroyImmediate(replacement);
+                PrefabUtility.UnloadPrefabContents(root);
+            }
         }
         static GameObject MovingShredder()
         {

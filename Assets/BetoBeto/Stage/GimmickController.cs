@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BetoBeto.Core;
 using BetoBeto.Enemies;
+using BetoBeto.Player;
 using UnityEngine;
 
 namespace BetoBeto.Stage
@@ -22,6 +23,7 @@ namespace BetoBeto.Stage
             }
             foreach (var cookie in board.Cookies) UpdateCookie(cookie.Key, cookie.Value);
             foreach (var scone in board.SconeHitsLeft) UpdateScone(scone.Key, scone.Value);
+            foreach (var pair in board.IceWalls) UpdateIceWall(pair.Key, pair.Value);
         }
         public void Reset()
         {
@@ -29,6 +31,7 @@ namespace BetoBeto.Stage
             foreach (var pair in homes) if (pair.Key != null) pair.Key.transform.position = pair.Value;
             foreach (var pair in board.Cookies) UpdateCookie(pair.Key, new CookieState(pair.Value.MaxHits, pair.Value.RespawnSeconds));
             foreach (var pair in board.SconeHitsLeft) UpdateScone(pair.Key, GimmickRules.SconeMaxHits);
+            foreach (var pair in board.IceWalls) { pair.Value.Reset(); UpdateIceWall(pair.Key, pair.Value); }
         }
         bool Occupied(Vector2Int cell, bool walkingOnly = false)
         {
@@ -40,6 +43,12 @@ namespace BetoBeto.Stage
         public void Tick(float dt)
         {
             if (dt <= 0) return;
+            foreach (var pair in board.IceWalls)
+            {
+                if (!pair.Value.Tick(dt)) continue;
+                UpdateIceWall(pair.Key, pair.Value);
+                game.Feedback.IceWallMelt(pair.Key);
+            }
             foreach (var pair in board.Cookies)
             {
                 if (pair.Value.Tick(dt, Occupied(pair.Key) || board.MoverReserves(pair.Key)))
@@ -95,6 +104,44 @@ namespace BetoBeto.Stage
             fruit.transform.position = Vector3.Lerp(from, to, first);
             fruit.HitShredder();
             return fruit.Removed || fruit.IsStunned;
+        }
+        public int ScareIceWalls(Vector2Int source, Vector2Int facing, float chargeSeconds)
+        {
+            int count = 0;
+            foreach (var pair in board.IceWalls)
+            {
+                var cell = pair.Key;
+                if (!ScareRules.Contains(source, facing, cell, chargeSeconds) || !pair.Value.Raise(board.Data.iceLifetime)) continue;
+                game.ClearDrool(cell);
+                UpdateIceWall(cell, pair.Value);
+                game.Feedback.IceWallRise(cell);
+                count++;
+                // Stop fruit already crossing the water when the wall rises beneath it.
+                foreach (var fruit in game.Fruits)
+                    if (!fruit.Removed && fruit.Sliding && board.Data.Cell(fruit.transform.position) == cell)
+                        fruit.StopForIceWall(cell);
+            }
+            return count;
+        }
+        public void HitIceWall(Vector2Int cell, FruitAgent fruit)
+        {
+            if (!board.IceWalls.TryGetValue(cell, out var state) || !state.Raised) return;
+            state.Hit();
+            UpdateIceWall(cell, state);
+            game.Feedback.IceWallImpact(fruit, cell);
+        }
+        void UpdateIceWall(Vector2Int cell, IceWallState state)
+        {
+            if (!board.Objects.TryGetValue(cell, out var view) || view == null) return;
+            var water = view.transform.Find("Water");
+            var wall = view.transform.Find("Wall");
+            if (water != null) water.gameObject.SetActive(!state.Raised);
+            if (wall != null)
+            {
+                wall.gameObject.SetActive(state.Raised);
+                var cracks = wall.Find("Cracks");
+                if (cracks != null) cracks.gameObject.SetActive(state.Damaged);
+            }
         }
         public bool HitCookie(Vector2Int cell, FruitAgent fruit)
         {

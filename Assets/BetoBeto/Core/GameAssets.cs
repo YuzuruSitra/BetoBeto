@@ -14,6 +14,7 @@ namespace BetoBeto.Core
         public GameObject movingShredder;
         public GameObject scone;
         public GameObject freezer;
+        public GameObject iceWall;
         public Material jellyMaterial;
         public Material cookieMaterial;
         public Material frostMaterial;

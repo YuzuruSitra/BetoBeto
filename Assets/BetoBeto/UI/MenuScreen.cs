@@ -158,10 +158,10 @@ namespace BetoBeto.UI
             var card = CenterCard(options.transform, "How to play", new Vector2(760, 790));
             Label(card, "あそびかた・音量設定", new Vector2(40, -35), new Vector2(680, 53), 29, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
             Label(card, "左スティック：移動 / 右スティック：向き / 下ボタン：よだれ\n左ボタン：驚かす。単押しは自分＋前方1マスを向いている方へ。\n長押しは1.5秒で半径6マス。周囲の敵はおばけから離れる。\nよだれで滑らせて連鎖！ 刃の1マス前は驚かすだけで突入。\nMENU：一時停止 / 右ボタン：戻る", new Vector2(43, -117), new Vector2(680, 131), 16, Ink);
-            Label(card, GameHud.GimmickHelp, new Vector2(43, -267), new Vector2(680, 132), 16, Ink);
-            Label(card, "必要な材料が全部そろえばクリア。逃げられすぎると失敗。", new Vector2(43, -412), new Vector2(680, 40), 16, Muted);
-            SliderRow(card, "BGM", -479, audioBus.MusicVolume, audioBus.SetMusic);
-            SliderRow(card, "効果音", -549, audioBus.EffectsVolume, audioBus.SetEffects);
+            Label(card, GameHud.GimmickHelp, new Vector2(43, -267), new Vector2(680, 156), 16, Ink);
+            Label(card, "必要な材料が全部そろえばクリア。逃げられすぎると失敗。", new Vector2(43, -436), new Vector2(680, 40), 16, Muted);
+            SliderRow(card, "BGM", -503, audioBus.MusicVolume, audioBus.SetMusic);
+            SliderRow(card, "効果音", -573, audioBus.EffectsVolume, audioBus.SetEffects);
             var close = Button(card, "閉じる", new Vector2(50, -654), new Vector2(660, 59), Pink, Color.white, CloseOptions, 22);
             FocusScope(options.transform, close.GetComponent<Button>());
         }

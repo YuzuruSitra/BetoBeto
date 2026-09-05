@@ -133,6 +133,29 @@ namespace BetoBeto.Presentation
             game.Hud.FloatMessage(point + Vector3.up * 1.15f, broken ? "パリーン！" : "あと " + hitsLeft + " 回", new Color(1, .88f, .64f), broken ? 30 : 23);
             game.Audio.Play(broken ? "cookieBreak" : "wall");
         }
+        public void IceWallRise(Vector2Int cell)
+        {
+            Vector3 point = game.Board.Data.World(cell);
+            Ring(point, new Color(.6f, .94f, 1), .12f, 1.15f, .25f);
+            Splash(point, Vector3.up, 12, game.assets.sparkleMaterial, 2.1f);
+            game.Audio.Play("iceWall");
+        }
+        public void IceWallImpact(FruitAgent fruit, Vector2Int cell)
+        {
+            Vector3 point = game.Board.Data.World(cell);
+            Ring(point, new Color(.7f, .95f, 1), .15f, .85f, .18f);
+            Splash(point, fruit.Forward, 7, game.assets.sparkleMaterial, 1.5f);
+            Wobble(cell, fruit.Forward);
+            // Repeated impacts must not keep restarting global hit-stop.
+            game.Audio.Play("iceWall");
+        }
+        public void IceWallMelt(Vector2Int cell)
+        {
+            Vector3 point = game.Board.Data.World(cell);
+            Ring(point, new Color(.6f, .94f, 1), .3f, 1.1f, .3f);
+            Splash(point, Vector3.zero, 9, game.assets.sparkleMaterial, 1.1f);
+            game.Audio.Play("drool");
+        }
         public void GimmickRestored(Vector3 point)
         {
             Ring(point, new Color(1, .86f, .6f), .1f, .65f, .3f);
@@ -141,10 +164,10 @@ namespace BetoBeto.Presentation
         public void FreezeFruit(FruitAgent fruit)
         {
             Vector3 point = fruit.transform.position;
-            Ring(point, new Color(.6f, .92f, 1), .18f, .85f, .4f);
+            Ring(point, new Color(.66f, .37f, .18f), .18f, .85f, .4f);
             Splash(point, Vector3.zero, 8, game.assets.frostMaterial, 1.3f);
-            game.Hud.FloatMessage(point + Vector3.up * 1.2f, "カチン！", new Color(.72f, .96f, 1), 24);
-            game.Audio.Play("freeze");
+            game.Hud.FloatMessage(point + Vector3.up * 1.2f, "とろ〜り！", new Color(1, .79f, .5f), 24);
+            game.Audio.Play("chocolate");
         }
         public void MelonImpact(FruitAgent fruit)
         {
