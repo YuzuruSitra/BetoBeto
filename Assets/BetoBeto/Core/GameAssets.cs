@@ -9,6 +9,14 @@ namespace BetoBeto.Core
         public GameObject wall;
         public GameObject pipe;
         public GameObject shredder;
+        public GameObject jelly;
+        public GameObject cookie;
+        public GameObject movingShredder;
+        public GameObject scone;
+        public GameObject freezer;
+        public Material jellyMaterial;
+        public Material cookieMaterial;
+        public Material frostMaterial;
         public GameObject exit;
         public GameObject playerStart;
         public GameObject ghost;

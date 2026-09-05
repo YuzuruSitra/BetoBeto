@@ -1,0 +1,135 @@
+{
+  "passed": true,
+  "models": [
+    {
+      "file": "Blueberry.fbx",
+      "meshObjects": 1,
+      "vertices": 1040,
+      "triangles": 2076,
+      "dimensionsMeters": [
+        0.028999999165534973,
+        0.028999999165534973,
+        0.026999998837709427
+      ],
+      "bottomHeight": 3.654005483605394e-12,
+      "uvLayers": 1
+    },
+    {
+      "file": "Custard_Filling.fbx",
+      "meshObjects": 1,
+      "vertices": 768,
+      "triangles": 1532,
+      "dimensionsMeters": [
+        0.21199999749660492,
+        0.21199999749660492,
+        0.008000015281140804
+      ],
+      "bottomHeight": -7.776161936590142e-09,
+      "uvLayers": 1
+    },
+    {
+      "file": "Heart_Spoon.fbx",
+      "meshObjects": 1,
+      "vertices": 2916,
+      "triangles": 5832,
+      "dimensionsMeters": [
+        0.1599999964237213,
+        0.077816441655159,
+        0.013426735997200012
+      ],
+      "bottomHeight": -2.5018038751767335e-09,
+      "uvLayers": 1
+    },
+    {
+      "file": "Mandarin_Segment.fbx",
+      "meshObjects": 1,
+      "vertices": 1520,
+      "triangles": 3036,
+      "dimensionsMeters": [
+        0.03502971678972244,
+        0.05700000002980232,
+        0.027234263718128204
+      ],
+      "bottomHeight": 1.7108155170308947e-10,
+      "uvLayers": 1
+    },
+    {
+      "file": "Melon_Cube.fbx",
+      "meshObjects": 1,
+      "vertices": 150,
+      "triangles": 296,
+      "dimensionsMeters": [
+        0.03700000047683716,
+        0.03700000047683716,
+        0.032999999821186066
+      ],
+      "bottomHeight": -9.84284875826802e-10,
+      "uvLayers": 1
+    },
+    {
+      "file": "Mint_Sprig.fbx",
+      "meshObjects": 1,
+      "vertices": 3430,
+      "triangles": 6852,
+      "dimensionsMeters": [
+        0.06000000238418579,
+        0.06359416246414185,
+        0.009797207079827785
+      ],
+      "bottomHeight": 9.618962570900891e-11,
+      "uvLayers": 1
+    },
+    {
+      "file": "Pink_Plate.fbx",
+      "meshObjects": 1,
+      "vertices": 2054,
+      "triangles": 4104,
+      "dimensionsMeters": [
+        0.30000001192092896,
+        0.30000001192092896,
+        0.024000002071261406
+      ],
+      "bottomHeight": -6.125227436371006e-09,
+      "uvLayers": 1
+    },
+    {
+      "file": "Strawberry_Half.fbx",
+      "meshObjects": 1,
+      "vertices": 626,
+      "triangles": 1248,
+      "dimensionsMeters": [
+        0.03627984970808029,
+        0.061000000685453415,
+        0.014886360615491867
+      ],
+      "bottomHeight": 1.491700513112093e-10,
+      "uvLayers": 1
+    },
+    {
+      "file": "Strawberry_Whole.fbx",
+      "meshObjects": 1,
+      "vertices": 962,
+      "triangles": 1920,
+      "dimensionsMeters": [
+        0.0429999977350235,
+        0.0430000014603138,
+        0.05999999865889549
+      ],
+      "bottomHeight": -4.332918190907975e-10,
+      "uvLayers": 1
+    },
+    {
+      "file": "Tart_Shell.fbx",
+      "meshObjects": 1,
+      "vertices": 2744,
+      "triangles": 5484,
+      "dimensionsMeters": [
+        0.24000000953674316,
+        0.24000000953674316,
+        0.052000001072883606
+      ],
+      "bottomHeight": -1.6591341633898082e-09,
+      "uvLayers": 1
+    }
+  ]
+}

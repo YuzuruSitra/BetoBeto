@@ -191,12 +191,12 @@ namespace BetoBeto.Tests
                 Assert.That(game.Session.TotalHarvested, Is.Zero, scene);
             }
         }
-        [UnityTest] public IEnumerator GhostMovesThroughCookieWallWithGamepad()
+        [UnityTest] public IEnumerator GhostMovesThroughCookieWithGamepad()
         {
             var ghost = Object.FindFirstObjectByType<GhostController>();
-            var cell = new Vector2Int(7, 3);
-            ghost.transform.position = game.Board.Data.World(new Vector2Int(7, 4));
-            Assert.That(game.Board.Walls.Contains(cell), Is.True);
+            var cell = new Vector2Int(8, 2);
+            ghost.transform.position = game.Board.Data.World(new Vector2Int(8, 3));
+            Assert.That(game.Board.Cookies.ContainsKey(cell) && game.Board.Blocked(cell), Is.True);
             float deadline = Time.realtimeSinceStartup + 1;
             float destination = game.Board.Data.World(cell).z + .05f;
             while (ghost.transform.position.z < destination && Time.realtimeSinceStartup < deadline)

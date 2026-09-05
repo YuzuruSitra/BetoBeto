@@ -19,6 +19,7 @@ namespace BetoBeto.Core
         public Camera gameCamera;
         public GameSession Session { get; private set; }
         public StageBoard Board { get; private set; }
+        public GimmickController Gimmicks { get; private set; }
         public Camera GameCamera => gameCamera;
         public GameAudio Audio { get; private set; }
         public GameHud Hud { get; private set; }
@@ -82,11 +83,19 @@ namespace BetoBeto.Core
                         spawnIndex++;
                         spawnTimer = Board.Data.spawnInterval;
                     }
-                    for (int i = fruits.Count - 1; i >= 0; i--)
+                    // Small shared steps keep moving traps and fruit in sync, even after a slow browser frame.
+                    for (float remaining = dt; remaining > .00001f;)
                     {
-                        if (Session.State != GameState.Playing) break;
-                        fruits[i].Tick(dt);
-                        if (Feedback.HitStopped) break;
+                        float step = Mathf.Min(remaining, .025f);
+                        remaining -= step;
+                        Gimmicks.Tick(step);
+                        if (Session.State != GameState.Playing || Feedback.HitStopped) break;
+                        for (int i = fruits.Count - 1; i >= 0; i--)
+                        {
+                            if (Session.State != GameState.Playing || Feedback.HitStopped) break;
+                            fruits[i].Tick(step);
+                        }
+                        if (Session.State != GameState.Playing || Feedback.HitStopped) break;
                     }
                     fruits.RemoveAll(f => f == null || f.Removed);
                 }
@@ -110,7 +119,9 @@ namespace BetoBeto.Core
             ClearChildren(actors); ClearChildren(effects);
             Feedback.ResetFeedback(); Hud.ClearFeedback();
             fruits.Clear(); droolVisuals.Clear();
+            Gimmicks?.Reset();
             Board = new StageBoard(layout);
+            Gimmicks = new GimmickController(this);
             Session = new GameSession(Board.Data) { State = GameState.Playing };
             shownState = GameState.Playing;
             DroolCooldown = 0;
@@ -120,7 +131,7 @@ namespace BetoBeto.Core
             var ghost = Instantiate(assets.ghost, Board.Data.World(Board.PlayerStart), Quaternion.identity, actors);
             Player = ghost.GetComponent<GhostController>();
             Player.Initialize(this);
-            Notify("よだれで滑らせて、ピンクのシュレッダーへ！", 6);
+            Notify("よだれから連鎖！ お菓子で跳ね返して、ピンクの刃へ！", 6);
         }
         IEnumerator GoToResult()
         {
@@ -193,6 +204,12 @@ namespace BetoBeto.Core
                 visuals.Remove(cell);
             }
         }
+        public void ClearDrool(Vector2Int cell)
+        {
+            Board.Drool.Remove(cell);
+            if (droolVisuals.TryGetValue(cell, out var go)) Destroy(go);
+            droolVisuals.Remove(cell);
+        }
         public void PropagateSlide(FruitAgent source)
         {
             foreach (var target in fruits)
@@ -217,7 +234,7 @@ namespace BetoBeto.Core
         }
         public void HarvestFruit(FruitAgent fruit)
         {
-            if (fruit.Removed || !fruit.Sliding || !Board.Shredders.Contains(fruit.Cell)) return;
+            if (fruit.Removed || !fruit.Sliding || !Board.TouchesShredder(fruit.Cell, fruit.transform.position)) return;
             Feedback.Harvest(fruit);
             Session.Harvest(fruit.kind, fruit.Chain);
             Notify($"+{100 * fruit.Chain}   {GameHud.FruitNames[(int)fruit.kind]}を収穫！", 1.7f);

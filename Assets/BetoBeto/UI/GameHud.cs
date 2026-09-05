@@ -66,7 +66,7 @@ namespace BetoBeto.UI
             countText = Label(sidebar, "できあがり  0%", new Vector2(25, -476), new Vector2(250, 30), 18, Ink, FontStyle.Bold);
             var progress = Box(sidebar, "Recipe progress", new Vector2(24, -517), new Vector2(266, 12), Hex("E9E2D6"));
             recipeFill = Fill(progress, Mint);
-            Label(sidebar, "よだれで滑らせ、ピンクの刃へ！", new Vector2(25, -551), new Vector2(285, 26), 13, Muted);
+            Label(sidebar, "お菓子をつないで、ピンクの刃へ！", new Vector2(25, -551), new Vector2(285, 26), 13, Muted);
 
             var stats = Stretch(root, "Round status", new Vector2(.02f, .84f), new Vector2(.765f, .88f), Vector2.zero, Vector2.zero, new Color(0, 0, 0, 0));
             escapeText = Label(stats, "", new Vector2(12, 0), new Vector2(390, 28), 18, Cream, FontStyle.Bold);
@@ -138,17 +138,18 @@ namespace BetoBeto.UI
             if (pausedByModal) game.Session.State = GameState.Paused;
             game.Player?.CancelScare();
             modal = Overlay("Options", .85f);
-            var card = CenterCard(modal.transform, "Options card", new Vector2(760, 716));
+            var card = CenterCard(modal.transform, "Options card", new Vector2(760, 790));
             Label(card, pausedByModal ? "ひとやすみ" : "あそびかた・音量設定", new Vector2(35, -29), new Vector2(690, 51), 30, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-            Label(card, "01  フルーツは普段、シュレッダーを避けて歩く。\n02  単押し：自分＋前方1マスの敵を、向いている方向へ。\n03  長押し：周囲の敵を、おばけから離れる方向へ。\n04  1.5秒で最大半径6マス。ボタンを離すと発動！\n05  逃げ道によだれを置くと、まっすぐ滑って連鎖する。\n06  刃の1マス前なら、驚かすだけでも飛び込ませられる！", new Vector2(46, -112), new Vector2(675, 182), 17, Ink);
-            Label(card, "左スティックで移動 / 右スティックで向き / 下ボタンでよだれ\n左ボタンで驚かす：ためて離すと発動 / 音量は上下・左右で調整", new Vector2(46, -307), new Vector2(675, 63), 16, Muted);
-            SliderRow(card, "BGM", -399, game.Audio.MusicVolume, game.Audio.SetMusic);
-            SliderRow(card, "効果音", -469, game.Audio.EffectsVolume, game.Audio.SetEffects);
-            var resume = Button(card, pausedByModal ? "キッチンに戻る" : "閉じる", new Vector2(50, -563), new Vector2(660, 55), Pink, Color.white, () => CloseModal(true), 21);
-            if (pausedByModal) Button(card, "ステージ選択へ", new Vector2(50, -635), new Vector2(660, 38), Hex("E9EEE9"), Ink, GameFlow.StageSelect, 16);
-            else Label(card, "音量は自動で保存されます", new Vector2(50, -644), new Vector2(660, 24), 13, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
+            Label(card, "よだれで滑らせて連鎖！ 普段のフルーツは刃を避ける。\n驚かす単押し：自分＋前方1マスの敵を、向いている方向へ。\n長押し：1.5秒で半径6マス。おばけから離れる向きに変える。\n刃の1マス前は、驚かすだけでも突入できる。\n\n" + GimmickHelp, new Vector2(46, -104), new Vector2(675, 268), 16, Ink);
+            Label(card, "左スティック：移動 / 右スティック：向き / 下ボタン：よだれ\n左ボタン：驚かす（離すと発動） / 音量：上下・左右で調整", new Vector2(46, -382), new Vector2(675, 48), 15, Muted);
+            SliderRow(card, "BGM", -450, game.Audio.MusicVolume, game.Audio.SetMusic);
+            SliderRow(card, "効果音", -520, game.Audio.EffectsVolume, game.Audio.SetEffects);
+            var resume = Button(card, pausedByModal ? "キッチンに戻る" : "閉じる", new Vector2(50, -613), new Vector2(660, 55), Pink, Color.white, () => CloseModal(true), 21);
+            if (pausedByModal) Button(card, "ステージ選択へ", new Vector2(50, -685), new Vector2(660, 38), Hex("E9EEE9"), Ink, GameFlow.StageSelect, 16);
+            else Label(card, "音量は自動で保存されます", new Vector2(50, -694), new Vector2(660, 24), 13, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
             FocusScope(modal.transform, resume.GetComponent<Button>());
         }
+        public const string GimmickHelp = "ゼリー：反転して滑り続ける。\nクッキー：ぶつけて割り、開いた道を通す。時間で復帰。\n移動シュレッダー：往復する刃に、タイミングを合わせる。\nスコーン：白い斜面で90°曲がる。裏側は反転。\nフリーザー：しばらく減速。滑走と連鎖は続く。";
         void CloseModal(bool restore)
         {
             if (modal != null) { modal.SetActive(false); Destroy(modal); modal = null; }

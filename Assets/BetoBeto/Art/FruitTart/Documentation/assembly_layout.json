@@ -1,0 +1,460 @@
+{
+  "parts": [
+    {
+      "model": "Pink_Plate",
+      "name": "Plate",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Tart_Shell",
+      "name": "Shell",
+      "position": [
+        0,
+        0,
+        0.012
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Custard_Filling",
+      "name": "Custard",
+      "position": [
+        0,
+        0,
+        0.05
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Strawberry_Whole",
+      "name": "Strawberry_1",
+      "position": [
+        -0.0597980992330964,
+        -0.04187107985362637,
+        0.056
+      ],
+      "rotation": [
+        0,
+        0,
+        215
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Strawberry_Whole",
+      "name": "Strawberry_2",
+      "position": [
+        0.018893790292483982,
+        -0.07051258531910198,
+        0.056
+      ],
+      "rotation": [
+        0,
+        0,
+        285
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Strawberry_Whole",
+      "name": "Strawberry_3",
+      "position": [
+        0.030851133107071056,
+        0.06616046845367544,
+        0.056
+      ],
+      "rotation": [
+        0,
+        0,
+        65
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Strawberry_Half",
+      "name": "BerryHalf_1",
+      "position": [
+        -0.033,
+        0.025,
+        0.082
+      ],
+      "rotation": [
+        63,
+        0,
+        -22
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Strawberry_Half",
+      "name": "BerryHalf_2",
+      "position": [
+        0,
+        0.038,
+        0.082
+      ],
+      "rotation": [
+        63,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Strawberry_Half",
+      "name": "BerryHalf_3",
+      "position": [
+        0.033,
+        0.026,
+        0.082
+      ],
+      "rotation": [
+        63,
+        0,
+        22
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Mandarin_Segment",
+      "name": "Mandarin_1",
+      "position": [
+        -0.0767069917530644,
+        0.006710992191569681,
+        0.057
+      ],
+      "rotation": [
+        12,
+        0,
+        255
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Mandarin_Segment",
+      "name": "Mandarin_2",
+      "position": [
+        0.06307470741025235,
+        -0.04416538559903058,
+        0.057
+      ],
+      "rotation": [
+        12,
+        0,
+        405
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Mandarin_Segment",
+      "name": "Mandarin_3",
+      "position": [
+        4.7148901767173094e-18,
+        0.077,
+        0.057
+      ],
+      "rotation": [
+        12,
+        0,
+        170
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Melon_Cube",
+      "name": "Melon_1",
+      "position": [
+        -0.041,
+        -0.058,
+        0.059
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Melon_Cube",
+      "name": "Melon_2",
+      "position": [
+        0.006,
+        -0.07,
+        0.059
+      ],
+      "rotation": [
+        0,
+        0,
+        27
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Melon_Cube",
+      "name": "Melon_3",
+      "position": [
+        0.068,
+        0.005,
+        0.059
+      ],
+      "rotation": [
+        0,
+        0,
+        54
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Melon_Cube",
+      "name": "Melon_4",
+      "position": [
+        -0.065,
+        0.038,
+        0.059
+      ],
+      "rotation": [
+        0,
+        0,
+        81
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Blueberry",
+      "name": "Blueberry_1",
+      "position": [
+        -0.03,
+        -0.012,
+        0.059
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Blueberry",
+      "name": "Blueberry_2",
+      "position": [
+        0.014,
+        -0.026,
+        0.06
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Blueberry",
+      "name": "Blueberry_3",
+      "position": [
+        0.047,
+        -0.022,
+        0.06
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Blueberry",
+      "name": "Blueberry_4",
+      "position": [
+        -0.046,
+        0.025,
+        0.063
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Blueberry",
+      "name": "Blueberry_5",
+      "position": [
+        0.021,
+        0.076,
+        0.057
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "model": "Mint_Sprig",
+      "name": "TopMint",
+      "position": [
+        -0.012,
+        0.078,
+        0.084
+      ],
+      "rotation": [
+        12,
+        0,
+        -22
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ]
+    },
+    {
+      "model": "Mint_Sprig",
+      "name": "PlateMint",
+      "position": [
+        -0.109,
+        -0.072,
+        0.021
+      ],
+      "rotation": [
+        0,
+        0,
+        20
+      ],
+      "scale": [
+        0.65,
+        0.65,
+        0.65
+      ]
+    },
+    {
+      "model": "Heart_Spoon",
+      "name": "Spoon",
+      "position": [
+        0.121,
+        -0.06,
+        0.025
+      ],
+      "rotation": [
+        0,
+        0,
+        78
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ]
+    }
+  ]
+}

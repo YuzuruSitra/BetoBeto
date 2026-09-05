@@ -106,6 +106,40 @@ namespace BetoBeto.Presentation
             Wobble(fruit.TargetCell, fruit.Forward);
             game.Audio.Play("wall");
         }
+        public void Ricochet(FruitAgent fruit, Vector2Int cell, bool scone)
+        {
+            Vector3 point = game.Board.Data.World(cell);
+            Color color = scone ? new Color(1, .78f, .38f) : new Color(.83f, .57f, 1);
+            Ring(point, color, .18f, 1.25f, .28f);
+            Splash(point, fruit.Forward, 10, scone ? game.assets.cookieMaterial : game.assets.jellyMaterial, 2.5f);
+            Wobble(cell, fruit.Forward);
+            Kick(.09f, .025f);
+            game.Hud.FloatMessage(point + Vector3.up * 1.15f, scone ? "カーン！" : "ぷるん！", color, 26);
+            game.Audio.Play(scone ? "scone" : "jelly");
+        }
+        public void CookieImpact(FruitAgent fruit, Vector2Int cell, bool broken, int hitsLeft)
+        {
+            Vector3 point = game.Board.Data.World(cell);
+            Ring(point, new Color(1, .8f, .48f), .2f, broken ? 1.6f : .85f, .32f);
+            Splash(point, fruit.Forward, broken ? 24 : 7, game.assets.cookieMaterial, broken ? 3.6f : 1.8f);
+            Wobble(cell, fruit.Forward);
+            Kick(broken ? .18f : .08f, broken ? .055f : .025f);
+            game.Hud.FloatMessage(point + Vector3.up * 1.15f, broken ? "パリーン！" : "あと " + hitsLeft + " 回", new Color(1, .88f, .64f), broken ? 30 : 23);
+            game.Audio.Play(broken ? "cookieBreak" : "wall");
+        }
+        public void CookieRestored(Vector3 point)
+        {
+            Ring(point, new Color(1, .86f, .6f), .1f, .65f, .3f);
+            Splash(point, Vector3.zero, 5, game.assets.cookieMaterial, .7f);
+        }
+        public void FreezeFruit(FruitAgent fruit)
+        {
+            Vector3 point = fruit.transform.position;
+            Ring(point, new Color(.6f, .92f, 1), .18f, .85f, .4f);
+            Splash(point, Vector3.zero, 8, game.assets.frostMaterial, 1.3f);
+            game.Hud.FloatMessage(point + Vector3.up * 1.2f, "カチン！", new Color(.72f, .96f, 1), 24);
+            game.Audio.Play("freeze");
+        }
         public void MelonImpact(FruitAgent fruit)
         {
             game.Burst(fruit.transform.position, fruit.kind, 18);

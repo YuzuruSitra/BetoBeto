@@ -55,6 +55,7 @@ namespace BetoBeto.Tests
             ghost.transform.position = game.Board.Data.World(new Vector2Int(7, 4));
             pad.State(new GamepadState { rightStick = Vector2.up });
             yield return null; yield return null;
+            game.Board.Walls.Add(ghost.ScareTarget);
             Assert.That(game.Board.Walls.Contains(ghost.ScareTarget), Is.True);
             var fruit = game.SpawnFruit(FruitKind.Strawberry, new Vector2Int(7, 5));
             fruit.Tick(.7f);

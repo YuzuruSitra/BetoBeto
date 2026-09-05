@@ -37,6 +37,11 @@ namespace BetoBeto.Stage
         // Retained for version 1 JSON compatibility; the scare ability does not use this value.
         [HideInInspector] public float iceLifetime = 5f;
         public float droolLifetime = 10f;
+        public int cookieHits = 3;
+        public float cookieRespawnSeconds = 5f;
+        public float movingShredderSpeed = 1f;
+        public float freezerSeconds = 3f;
+        public float frozenSpeedMultiplier = .35f;
 
         public bool Contains(Vector2Int cell) => cell.x >= 0 && cell.y >= 0 && cell.x < width && cell.y < height;
         public char At(Vector2Int cell) => Contains(cell) ? rows[cell.y][cell.x] : 'E';
@@ -67,9 +72,9 @@ namespace BetoBeto.Stage
                 for (int x = 0; x < width; x++)
                 {
                     char c = rows[y][x];
-                    if (".#PXEG".IndexOf(c) < 0) errors.Add($"不明な記号: {c}");
+                    if (GimmickRules.Symbols.IndexOf(c) < 0) errors.Add($"不明な記号: {c}");
                     if (c == 'P') { pipes++; if (y != 0) errors.Add("パイプは最上段に置いてください。"); }
-                    if (c == 'X') shredders++;
+                    if (GimmickRules.IsShredder(c)) shredders++;
                     if (c == 'G') ghosts++;
                     if (c == 'E' && x != 0 && y != 0 && x != width - 1 && y != height - 1) errors.Add("出口は外周に置いてください。");
                 }
@@ -81,6 +86,11 @@ namespace BetoBeto.Stage
             if (float.IsNaN(spawnInterval) || float.IsInfinity(spawnInterval) || spawnInterval < .5f || spawnInterval > 30f) errors.Add("出現間隔は0.5〜30秒にしてください。");
             if (float.IsNaN(iceLifetime) || float.IsInfinity(iceLifetime) || iceLifetime < 1 || iceLifetime > 30) errors.Add("氷の寿命は1〜30秒にしてください。");
             if (float.IsNaN(droolLifetime) || float.IsInfinity(droolLifetime) || droolLifetime < 1 || droolLifetime > 60) errors.Add("よだれの寿命は1〜60秒にしてください。");
+            if (cookieHits < 1 || cookieHits > 10) errors.Add("クッキーの耐久は1〜10回にしてください。");
+            ValidateRange(cookieRespawnSeconds, 1, 30, "クッキーの復帰時間", errors);
+            ValidateRange(movingShredderSpeed, .25f, 3, "移動シュレッダーの速度", errors);
+            ValidateRange(freezerSeconds, .5f, 10, "凍結時間", errors);
+            ValidateRange(frozenSpeedMultiplier, .1f, .9f, "凍結中の速度倍率", errors);
             if (recipe == null || recipe.strawberry < 0 || recipe.blueberry < 0 || recipe.orange < 0 || recipe.melon < 0 || recipe.Total < 1 || recipe.Total > 200)
                 errors.Add("必要フルーツ数は各0以上、合計1〜200にしてください。");
             if (errors.Count == 0)
@@ -94,12 +104,12 @@ namespace BetoBeto.Stage
                     while (pending.Count > 0)
                     {
                         var c = pending.Dequeue();
-                        if (At(c) == 'X') reachesShredder = true;
+                        if (GimmickRules.IsShredder(At(c))) reachesShredder = true;
                         if (At(c) == 'E' || (c.y == height - 1 || c.x == 0 || c.x == width - 1)) reachesExit = true;
                         foreach (var direction in Directions.All)
                         {
                             var next = c + direction;
-                            if (Contains(next) && At(next) != '#' && visited.Add(next)) pending.Enqueue(next);
+                            if (Contains(next) && !GimmickRules.BlocksConnectivity(At(next)) && visited.Add(next)) pending.Enqueue(next);
                         }
                     }
                     if (!reachesShredder) errors.Add($"パイプ({pipe.x},{pipe.y})からシュレッダーへ到達できません。");
@@ -107,6 +117,12 @@ namespace BetoBeto.Stage
                 }
             }
             return errors;
+        }
+
+        static void ValidateRange(float value, float min, float max, string label, List<string> errors)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value) || value < min || value > max)
+                errors.Add($"{label}は{min}〜{max}にしてください。");
         }
 
         public static StageData Parse(string json)

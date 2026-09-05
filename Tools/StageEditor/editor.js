@@ -6,10 +6,10 @@
   let stage = M.clone(M.sample), brush = '#', undo = [], redo = [], drawing = false, panning = false, space = false;
   let last = null, hover = null, strokeBefore = null, zoom = 1, baseCell = 40, pan = { x: 0, y: 0 }, dimensions = { w: 1, h: 1 }, toastTimer;
   try { const saved = localStorage.getItem(storageKey); if (saved) { const candidate = JSON.parse(saved); if (Array.isArray(candidate.rows) && candidate.rows.length === candidate.height && candidate.rows.every(row => typeof row === 'string' && row.length === candidate.width) && candidate.width >= 16 && candidate.width <= 32 && candidate.height >= 9 && candidate.height <= 18 && candidate.recipe) stage = candidate; } } catch (_) {}
-  const fields = ['name', 'dessert', 'width', 'height', 'escapeLimit', 'spawnInterval', 'droolLifetime'];
+  const fields = ['name', 'dessert', 'width', 'height', 'escapeLimit', 'spawnInterval', 'droolLifetime', ...Object.keys(M.gimmickDefaults)];
   const ingredients = ['strawberry', 'blueberry', 'orange', 'melon'];
   function sync() {
-    for (const key of fields) $(key).value = stage[key];
+    for (const key of fields) $(key).value = stage[key] ?? M.gimmickDefaults[key];
     for (const key of ingredients) $(key).value = stage.recipe[key];
     update();
   }
@@ -26,7 +26,7 @@
     $('errors').replaceChildren(...errors.map(error => { const li = document.createElement('li'); li.textContent = error; return li; }));
     const content = stage.rows.join('');
     const count = symbol => Array.from(content).filter(c => c === symbol).length;
-    $('placement-counts').textContent = '壁 ' + count('#') + '　パイプ ' + count('P') + '　罠 ' + count('X') + '　出口 ' + count('E');
+    $('placement-counts').textContent = '壁 ' + count('#') + '　パイプ ' + count('P') + '　刃 ' + (count('X') + count('H') + count('V')) + '（移動 ' + (count('H') + count('V')) + '）　お菓子 ' + Array.from(content).filter(c => 'JC1234F'.includes(c)).length;
     try { localStorage.setItem(storageKey, JSON.stringify(stage)); $('save-state').textContent = 'この端末に自動保存'; } catch (_) { $('save-state').textContent = '自動保存不可 · JSONで保存してください'; }
     draw();
   }
@@ -73,12 +73,33 @@
         roundRect(px + c * .18, py + c * .06, c * .64, c * .13, c * .045, '#f0d092');
         roundRect(px + c * .18, py + c * .8, c * .64, c * .13, c * .045, '#f0d092');
         ctx.fillStyle = '#487c77'; ctx.font = 'bold ' + c * .49 + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('↓', px + c * .5, py + c * .5);
-      } else if (symbol === 'X') {
+      } else if (M.isShredder(symbol)) {
         roundRect(px + margin, py + margin, size, size, c * .13, '#e69cac');
         roundRect(px + c * .2, py + c * .2, c * .6, c * .6, c * .07, '#4c6470');
         ctx.save(); ctx.translate(px + c * .5, py + c * .5); ctx.fillStyle = '#cbdde0';
         for (let i = 0; i < 8; i++) { ctx.rotate(Math.PI / 4); ctx.fillRect(-c * .06, -c * .28, c * .14, c * .3); }
         ctx.fillStyle = '#f8e0ac'; ctx.beginPath(); ctx.arc(0, 0, c * .105, 0, 7); ctx.fill(); ctx.restore();
+        if (symbol !== 'X') {
+          ctx.fillStyle = '#fff2ca'; ctx.font = 'bold ' + c * .6 + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(symbol === 'H' ? '↔' : '↕', px + c * .5, py + c * .52);
+        }
+      } else if (symbol === 'J') {
+        roundRect(px + margin, py + margin, size, size, c * .25, '#b783d3');
+        roundRect(px + c * .25, py + c * .22, c * .25, c * .08, c * .04, '#f9edff');
+        ctx.strokeStyle = '#dcb4ed'; ctx.lineWidth = Math.max(1, c * .03); ctx.strokeRect(px + c * .17, py + c * .17, c * .66, c * .66);
+      } else if (symbol === 'C') {
+        ctx.fillStyle = '#e4b066'; ctx.beginPath(); ctx.arc(px + c * .5, py + c * .5, c * .41, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#79533a';
+        for (let i = 0; i < 5; i++) { const a = i * 2.4; ctx.beginPath(); ctx.arc(px + c * (.5 + Math.cos(a) * .22), py + c * (.5 + Math.sin(a) * .22), c * .045, 0, 7); ctx.fill(); }
+        ctx.strokeStyle = '#906039'; ctx.lineWidth = c * .035; ctx.beginPath(); ctx.moveTo(px + c * .48, py + c * .1); ctx.lineTo(px + c * .40, py + c * .37); ctx.lineTo(px + c * .58, py + c * .56); ctx.lineTo(px + c * .5, py + c * .85); ctx.stroke();
+      } else if (M.isScone(symbol)) {
+        ctx.save(); ctx.translate(px + c * .5, py + c * .5); ctx.rotate((Number(symbol) - 1) * Math.PI / 2);
+        ctx.fillStyle = '#e8b670'; ctx.beginPath(); ctx.moveTo(-c * .41, -c * .41); ctx.lineTo(c * .41, -c * .41); ctx.lineTo(-c * .41, c * .41); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#fff0c8'; ctx.lineWidth = c * .075; ctx.beginPath(); ctx.moveTo(c * .39, -c * .39); ctx.lineTo(-c * .39, c * .39); ctx.stroke(); ctx.restore();
+      } else if (symbol === 'F') {
+        roundRect(px + margin, py + margin, size, size, c * .09, '#83d5e6');
+        ctx.save(); ctx.translate(px + c * .5, py + c * .5); ctx.strokeStyle = '#f2fcff'; ctx.lineWidth = c * .065;
+        for (let i = 0; i < 3; i++) { ctx.rotate(Math.PI / 3); ctx.beginPath(); ctx.moveTo(-c * .30, 0); ctx.lineTo(c * .30, 0); ctx.stroke(); } ctx.restore();
       } else if (symbol === 'E') {
         roundRect(px + c * .06, py + c * .06, c * .88, c * .88, c * .09, '#304d5c');
         for (let i = 1; i <= 3; i++) roundRect(px + c * (.17 + i * .15), py + c * .18, c * .035, c * .54, c * .01, '#9fbec6');
@@ -99,7 +120,16 @@
     }
     $('zoom').textContent = Math.round(zoom * 100) + '%';
   }
-  function selectBrush(symbol) { brush = symbol; document.querySelectorAll('.tool').forEach(button => button.classList.toggle('active', button.dataset.brush === brush)); }
+  function selectBrush(symbol) {
+    brush = symbol;
+    if (M.isScone(symbol)) {
+      $('scone-brush').dataset.brush = symbol;
+      $('scone-direction').textContent = '斜面：' + ['右下', '左下', '左上', '右上'][Number(symbol) - 1] + ' / Rで回転';
+      $('scone-swatch').style.transform = 'rotate(' + ((Number(symbol) - 1) * 90) + 'deg)';
+    }
+    document.querySelectorAll('.tool').forEach(button => button.classList.toggle('active', button.dataset.brush === brush));
+  }
+  function rotateScone() { const next = String(Number($('scone-brush').dataset.brush) % 4 + 1); selectBrush(next); toast('スコーンの向きを変更しました'); }
   function toast(message) { clearTimeout(toastTimer); $('toast').textContent = message; $('toast').classList.add('visible'); toastTimer = setTimeout(() => $('toast').classList.remove('visible'), 2600); }
   function paintAt(cell, symbol) {
     if (!cell || cell.x < 0 || cell.y < 0 || cell.x >= stage.width || cell.y >= stage.height) return;
@@ -138,6 +168,7 @@
   document.querySelectorAll('.tool').forEach(button => button.addEventListener('click', () => selectBrush(button.dataset.brush)));
   $('undo').onclick = () => history(true); $('redo').onclick = () => history(false); $('fit').onclick = fit;
   $('zoom-in').onclick = () => zoomAt(1.15); $('zoom-out').onclick = () => zoomAt(1 / 1.15);
+  $('rotate-scone').onclick = rotateScone;
   document.addEventListener('keydown', e => {
     if (e.target.matches('input,textarea,select')) return;
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); history(!e.shiftKey); }
@@ -145,6 +176,7 @@
     else if (e.code === 'Space') { e.preventDefault(); space = true; canvas.style.cursor = 'grab'; }
     else if ('123456'.includes(e.key) && e.key.length === 1) selectBrush(['#', '.', 'P', 'X', 'E', 'G'][Number(e.key) - 1]);
     else if (e.key.toLowerCase() === 'f') fit();
+    else if (e.key.toLowerCase() === 'r') rotateScone();
   });
   document.addEventListener('keyup', e => { if (e.code === 'Space') { space = false; if (!panning) canvas.style.cursor = 'crosshair'; } });
   for (const key of fields.filter(k => k !== 'width' && k !== 'height')) $(key).addEventListener('change', () => {

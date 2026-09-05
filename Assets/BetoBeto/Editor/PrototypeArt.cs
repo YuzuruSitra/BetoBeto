@@ -18,7 +18,9 @@ namespace BetoBeto.Editor
         public const string AssetPath = Root + "/Art/GameAssets.asset";
         static Mesh roundedBox;
         static Mesh ring;
+        static Mesh triangle;
         static Material cream, dough, biscuitEdge, cocoa, navy, white, blush, leaf, gold, tile, glass, ice, pink, steel, drool, purple;
+        static Material jelly, frost, freezer;
 
         public static GameAssets EnsureAssets()
         {
@@ -30,6 +32,7 @@ namespace BetoBeto.Editor
             AssetDatabase.Refresh();
             roundedBox = GetMesh("RoundedBox", CreateRoundedBox);
             ring = GetMesh("Ring", CreateRing);
+            triangle = GetMesh("SconeTriangle", CreateTriangle);
             cream = Mat("Vanilla", "FFF1D5", .3f); dough = Mat("Golden biscuit", "E9B876", .22f);
             biscuitEdge = Mat("Baked edges", "B9793F", .19f); cocoa = Mat("Chocolate", "73492E", .25f);
             navy = Mat("Ink", "253544", .4f); white = Mat("Ghost cream", "FFF8F3", .6f);
@@ -38,12 +41,21 @@ namespace BetoBeto.Editor
             glass = Mat("Pipe glass", "BCEFEB", .82f, 0, .23f); ice = Mat("Mint ice", "A3E9ED", .7f, 0, .85f);
             pink = Mat("Shredder pink", "E78195", .44f); steel = Mat("Steel", "B2CED6", .7f, .65f);
             drool = Mat("Shiny drool", "63D7C1", .82f); purple = Mat("Apron", "CEAAC4", .4f);
+            jelly = Mat("Grape jelly", "BA80DA", .85f, 0, .88f);
+            frost = Mat("Frozen shell", "BDEFFC", .85f, 0, .28f);
+            freezer = Mat("Freezer ceramic", "63C8DD", .72f);
             var assets = AssetDatabase.LoadAssetAtPath<GameAssets>(AssetPath);
             if (assets == null) { assets = ScriptableObject.CreateInstance<GameAssets>(); AssetDatabase.CreateAsset(assets, AssetPath); }
             assets.tile = Prefab("Stage/BlueTile", Tile);
             assets.wall = Prefab("Stage/CookieWall", Cookie);
             assets.pipe = Prefab("Stage/FruitPipe", Pipe);
             assets.shredder = Prefab("Stage/Shredder", Shredder);
+            assets.jelly = Prefab("Stage/Jelly", Jelly);
+            assets.cookie = Prefab("Stage/BreakableCookie", BreakableCookie);
+            assets.movingShredder = Prefab("Stage/MovingShredder", MovingShredder);
+            assets.scone = Prefab("Stage/Scone", Scone);
+            assets.freezer = Prefab("Stage/Freezer", Freezer);
+            assets.jellyMaterial = jelly; assets.cookieMaterial = dough; assets.frostMaterial = frost;
             assets.exit = Prefab("Stage/Exit", Exit);
             assets.playerStart = Prefab("Stage/PlayerStart", () => { var go = new GameObject("Player start"); go.AddComponent<StageObject>().kind = StageObjectKind.PlayerStart; return go; });
             assets.ice = Prefab("Abilities/IceBlock", Ice);
@@ -141,6 +153,81 @@ namespace BetoBeto.Editor
             MeshPart(go.transform, "Top brass rim", ring, new Vector3(0, 2.31f, 0), Vector3.one * .85f, gold);
             MeshPart(go.transform, "Lower brass rim", ring, new Vector3(0, .33f, 0), Vector3.one * .85f, gold);
             Box(go.transform, "Pipe mount", new Vector3(0, .05f, 0), new Vector3(.82f, .1f, .82f), leaf);
+            return go;
+        }
+        static GameObject Jelly()
+        {
+            var go = RootObject("Bouncy grape jelly", StageObjectKind.Jelly);
+            Cylinder(go.transform, "Dessert plate", new Vector3(0, .03f, 0), new Vector3(.92f, .025f, .92f), cream);
+            Box(go.transform, "Jelly body", new Vector3(0, .29f, 0), new Vector3(.8f, .48f, .8f), jelly);
+            for (int i = 0; i < 8; i++)
+            {
+                float a = i * Mathf.PI / 4;
+                Sphere(go.transform, "Jelly flute", new Vector3(Mathf.Cos(a) * .28f, .28f, Mathf.Sin(a) * .28f), new Vector3(.28f, .48f, .28f), jelly);
+            }
+            Sphere(go.transform, "Gloss", new Vector3(-.15f, .538f, -.12f), new Vector3(.27f, .025f, .10f), white);
+            Sphere(go.transform, "Gloss dot", new Vector3(.14f, .53f, .08f), new Vector3(.09f, .025f, .09f), white);
+            return go;
+        }
+        static GameObject BreakableCookie()
+        {
+            var go = RootObject("Crumbly chocolate cookie", StageObjectKind.Cookie);
+            var solid = new GameObject("Solid").transform; solid.SetParent(go.transform, false);
+            Cylinder(solid, "Baked edge", new Vector3(0, .16f, 0), new Vector3(.88f, .16f, .88f), biscuitEdge);
+            Cylinder(solid, "Golden cookie", new Vector3(0, .30f, 0), new Vector3(.86f, .10f, .86f), dough);
+            for (int i = 0; i < 7; i++)
+            {
+                float a = i * 2.4f, r = i == 0 ? 0 : .29f;
+                Box(solid, "Chocolate chip", new Vector3(Mathf.Cos(a) * r, .405f, Mathf.Sin(a) * r), new Vector3(.09f, .04f, .08f), cocoa).localRotation = Quaternion.Euler(0, i * 37, 0);
+            }
+            for (int crackIndex = 1; crackIndex <= 2; crackIndex++)
+            {
+                var crack = new GameObject("Crack " + crackIndex).transform; crack.SetParent(solid, false);
+                for (int i = 0; i < 4; i++)
+                    Box(crack, "Fissure", new Vector3(i % 2 == 0 ? -.04f : .04f, .414f, -.30f + i * .2f), new Vector3(.033f, .014f, .235f), cocoa).localRotation = Quaternion.Euler(0, i % 2 == 0 ? 24 : -24, 0);
+                crack.localRotation = Quaternion.Euler(0, (crackIndex - 1) * 92, 0);
+                crack.gameObject.SetActive(false);
+            }
+            var regrowing = new GameObject("Regrowing").transform; regrowing.SetParent(go.transform, false);
+            MeshPart(regrowing, "Regrowth outline", ring, new Vector3(0, .04f, 0), Vector3.one, cream);
+            for (int i = 0; i < 7; i++)
+            {
+                float a = i * 2.4f;
+                Box(regrowing, "Crumb", new Vector3(Mathf.Cos(a) * .27f, .035f, Mathf.Sin(a) * .27f), new Vector3(.10f, .05f, .09f), dough);
+            }
+            regrowing.gameObject.SetActive(false);
+            return go;
+        }
+        static GameObject Scone()
+        {
+            var go = RootObject("Scone deflector", StageObjectKind.Scone);
+            MeshPart(go.transform, "Baked triangle", triangle, Vector3.zero, Vector3.one, biscuitEdge);
+            MeshPart(go.transform, "Golden top", triangle, new Vector3(0, .20f, 0), new Vector3(.96f, .35f, .96f), dough);
+            Box(go.transform, "Sloped icing edge", new Vector3(.005f, .315f, -.005f), new Vector3(1.18f, .045f, .07f), cream).localRotation = Quaternion.Euler(0, -45, 0);
+            Sphere(go.transform, "Raisin", new Vector3(-.24f, .305f, .22f), new Vector3(.10f, .03f, .08f), cocoa);
+            Sphere(go.transform, "Raisin", new Vector3(.06f, .305f, .28f), new Vector3(.08f, .03f, .07f), cocoa);
+            return go;
+        }
+        static GameObject Freezer()
+        {
+            var go = RootObject("Frost plate", StageObjectKind.Freezer);
+            Box(go.transform, "Cold plate", new Vector3(0, .025f, 0), new Vector3(.91f, .06f, .91f), steel);
+            Box(go.transform, "Frozen surface", new Vector3(0, .065f, 0), new Vector3(.76f, .05f, .76f), freezer);
+            for (int i = 0; i < 3; i++)
+                Box(go.transform, "Snowflake", new Vector3(0, .102f, 0), new Vector3(.61f, .025f, .055f), white).localRotation = Quaternion.Euler(0, i * 60, 0);
+            foreach (int sign in new[] { -1, 1 })
+                for (int i = -1; i <= 1; i++) Box(go.transform, "Vent", new Vector3(sign * .40f, .067f, i * .22f), new Vector3(.035f, .022f, .10f), navy);
+            return go;
+        }
+        static GameObject MovingShredder()
+        {
+            var go = Shredder(); go.name = "Rolling berry shredder";
+            go.GetComponent<StageObject>().kind = StageObjectKind.MovingShredder;
+            foreach (int x in new[] { -1, 1 }) foreach (int z in new[] { -1, 1 })
+                Cylinder(go.transform, "Wheel", new Vector3(x * .3f, .1f, z * .43f), new Vector3(.19f, .035f, .19f), navy).localRotation = Quaternion.Euler(90, 0, 0);
+            foreach (int sign in new[] { -1, 1 })
+                foreach (int side in new[] { -1, 1 })
+                    Box(go.transform, "Travel chevron", new Vector3(sign * .37f, .31f, side * .06f), new Vector3(.045f, .035f, .18f), gold).localRotation = Quaternion.Euler(0, sign * side * 45, 0);
             return go;
         }
         static GameObject Shredder()
@@ -336,6 +423,16 @@ namespace BetoBeto.Editor
                 triangles.AddRange(new[] { i, i + 1, j, i + 1, j + 1, j });
             }
             var mesh = new Mesh(); mesh.SetVertices(vertices); mesh.SetTriangles(triangles, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
+        }
+        static Mesh CreateTriangle()
+        {
+            Vector3[] corners = { new Vector3(-.46f, 0, .46f), new Vector3(.46f, 0, .46f), new Vector3(-.46f, 0, -.46f),
+                new Vector3(-.46f, .28f, .46f), new Vector3(.46f, .28f, .46f), new Vector3(-.46f, .28f, -.46f) };
+            int[] faces = { 3, 4, 5, 0, 2, 1, 0, 1, 4, 0, 4, 3, 1, 2, 5, 1, 5, 4, 2, 0, 3, 2, 3, 5 };
+            var vertices = new Vector3[faces.Length]; var indices = new int[faces.Length];
+            for (int i = 0; i < faces.Length; i++) { vertices[i] = corners[faces[i]]; indices[i] = i; }
+            var mesh = new Mesh { vertices = vertices, triangles = indices };
+            mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
         }
     }
 }

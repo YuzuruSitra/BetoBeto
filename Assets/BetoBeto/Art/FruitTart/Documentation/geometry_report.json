@@ -1,0 +1,179 @@
+[
+  {
+    "name": "Heart_Spoon",
+    "sourcePart": 0,
+    "sourceVertices": 486,
+    "vertices": 2916,
+    "triangles": 5832,
+    "nonManifoldBefore": 0,
+    "nonManifoldAfter": 0,
+    "dimensionsMeters": [
+      0.1599999964237213,
+      0.077816441655159,
+      0.013426730409264565
+    ],
+    "repairs": [
+      "merged coincident vertices; removed degenerate faces; recalculated outward normals"
+    ]
+  },
+  {
+    "name": "Tart_Shell",
+    "sourcePart": 2,
+    "sourceVertices": 459,
+    "vertices": 2744,
+    "triangles": 5484,
+    "nonManifoldBefore": 0,
+    "nonManifoldAfter": 0,
+    "dimensionsMeters": [
+      0.24000000953674316,
+      0.24000000953674316,
+      0.052000001072883606
+    ],
+    "repairs": [
+      "merged coincident vertices; removed degenerate faces; recalculated outward normals",
+      "normalized circular outline; leveled contact base",
+      "leveled irregular rim; normalized shell proportions"
+    ]
+  },
+  {
+    "name": "Pink_Plate",
+    "sourcePart": 3,
+    "sourceVertices": 344,
+    "vertices": 2054,
+    "triangles": 4104,
+    "nonManifoldBefore": 0,
+    "nonManifoldAfter": 0,
+    "dimensionsMeters": [
+      0.30000001192092896,
+      0.30000001192092896,
+      0.024000000208616257
+    ],
+    "repairs": [
+      "merged coincident vertices; removed degenerate faces; recalculated outward normals",
+      "normalized circular outline; leveled contact base"
+    ]
+  },
+  {
+    "name": "Blueberry",
+    "sourcePart": 4,
+    "sourceVertices": 175,
+    "vertices": 1040,
+    "triangles": 2076,
+    "nonManifoldBefore": 0,
+    "nonManifoldAfter": 0,
+    "dimensionsMeters": [
+      0.028999999165534973,
+      0.028999999165534973,
+      0.026999998837709427
+    ],
+    "repairs": [
+      "merged coincident vertices; removed degenerate faces; recalculated outward normals",
+      "gently regularized berry silhouette"
+    ]
+  },
+  {
+    "name": "Strawberry_Whole",
+    "sourcePart": 5,
+    "sourceVertices": 162,
+    "vertices": 962,
+    "triangles": 1920,
+    "nonManifoldBefore": 0,
+    "nonManifoldAfter": 0,
+    "dimensionsMeters": [
+      0.0429999977350235,
+      0.0430000014603138,
+      0.05999999865889549
+    ],
+    "repairs": [
+      "merged coincident vertices; removed degenerate faces; recalculated outward normals",
+      "two gentle smoothing passes preserving fruit shape and UVs"
+    ]
+  },
+  {
+    "name": "Melon_Cube",
+    "sourcePart": 6,
+    "sourceVertices": 56,
+    "vertices": 150,
+    "triangles": 296,
+    "nonManifoldBefore": 0,
+    "nonManifoldAfter": 0,
+    "dimensionsMeters": [
+      0.03700000047683716,
+      0.03700000047683716,
+      0.032999999821186066
+    ],
+    "repairs": [
+      "merged coincident vertices; removed degenerate faces; recalculated outward normals",
+      "regularized cube proportions; softened sharp edges"
+    ]
+  },
+  {
+    "name": "Mandarin_Segment",
+    "sourcePart": 7,
+    "sourceVertices": 255,
+    "vertices": 1520,
+    "triangles": 3036,
+    "nonManifoldBefore": 0,
+    "nonManifoldAfter": 0,
+    "dimensionsMeters": [
+      0.03502971678972244,
+      0.05700000002980232,
+      0.027234263718128204
+    ],
+    "repairs": [
+      "merged coincident vertices; removed degenerate faces; recalculated outward normals",
+      "two gentle smoothing passes preserving fruit shape and UVs"
+    ]
+  },
+  {
+    "name": "Mint_Sprig",
+    "sourcePart": 8,
+    "sourceVertices": 577,
+    "vertices": 3430,
+    "triangles": 6852,
+    "nonManifoldBefore": 5,
+    "nonManifoldAfter": 0,
+    "dimensionsMeters": [
+      0.06000000238418579,
+      0.06359416246414185,
+      0.009797206148505211
+    ],
+    "repairs": [
+      "merged coincident vertices; removed degenerate faces; recalculated outward normals",
+      "repaired non-manifold leaf junction; closed underside boundary patch"
+    ]
+  },
+  {
+    "name": "Strawberry_Half",
+    "sourcePart": 9,
+    "sourceVertices": 106,
+    "vertices": 626,
+    "triangles": 1248,
+    "nonManifoldBefore": 0,
+    "nonManifoldAfter": 0,
+    "dimensionsMeters": [
+      0.03627984970808029,
+      0.061000000685453415,
+      0.014886362478137016
+    ],
+    "repairs": [
+      "merged coincident vertices; removed degenerate faces; recalculated outward normals",
+      "two gentle smoothing passes preserving fruit shape and UVs"
+    ]
+  },
+  {
+    "name": "Custard_Filling",
+    "sourcePart": -1,
+    "vertices": 768,
+    "triangles": 1532,
+    "dimensionsMeters": [
+      0.212,
+      0.212,
+      0.008
+    ],
+    "nonManifoldAfter": 0,
+    "repairs": [
+      "new separate filling mesh"
+    ]
+  }
+]

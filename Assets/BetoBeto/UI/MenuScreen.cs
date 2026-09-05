@@ -111,10 +111,22 @@ namespace BetoBeto.UI
             {
                 Color color = data.rows[y][x] switch
                 {
-                    '#' => Hex("E9BD7F"), 'P' => Mint, 'X' => Pink, 'E' => Ink, 'G' => Cream, _ => Hex("6AA4B8")
+                    '#' => Hex("E9BD7F"), 'C' => Hex("D8A15F"), 'J' => Hex("B783D3"), 'F' => Hex("ABE6F4"),
+                    'P' => Mint, 'X' or 'H' or 'V' => Pink, 'E' => Ink, 'G' => Cream, _ => Hex("6AA4B8")
                 };
                 var tile = Box(backing, "Cell", new Vector2(left + x * cell, -top - y * cell), new Vector2(cell - 2, cell - 2), color);
                 tile.GetComponent<Image>().raycastTarget = false;
+                char symbol = data.rows[y][x];
+                if (GimmickRules.IsScone(symbol))
+                {
+                    var glyph = new GameObject("Scone slope", typeof(RectTransform)).AddComponent<SconeMapGraphic>();
+                    glyph.rectTransform.SetParent(tile, false);
+                    glyph.rectTransform.anchorMin = Vector2.zero; glyph.rectTransform.anchorMax = Vector2.one;
+                    glyph.rectTransform.offsetMin = glyph.rectTransform.offsetMax = Vector2.zero;
+                    glyph.turns = symbol - '1'; glyph.color = Hex("FFE0A2"); glyph.raycastTarget = false;
+                }
+                else if (symbol == 'H' || symbol == 'V')
+                    Label(tile, symbol == 'H' ? "↔" : "↕", Vector2.zero, new Vector2(cell - 2, cell - 2), Mathf.RoundToInt(cell * .7f), Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
             }
         }
         void BuildResult()
@@ -143,13 +155,14 @@ namespace BetoBeto.UI
             if (options != null) return;
             previousSelection = events.currentSelectedGameObject != null ? events.currentSelectedGameObject.GetComponent<Selectable>() : primary;
             options = Overlay("Menu options", .86f);
-            var card = CenterCard(options.transform, "How to play", new Vector2(760, 690));
+            var card = CenterCard(options.transform, "How to play", new Vector2(760, 790));
             Label(card, "あそびかた・音量設定", new Vector2(40, -35), new Vector2(680, 53), 29, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-            Label(card, "左スティック / 十字キー：移動。右スティック：向きを変える。\n下ボタン：足元によだれ。左ボタン：驚かす（離すと発動）。\n単押し：自分＋前方1マスの敵を、プレイヤーが向く方向へ。\n長押し：1.5秒で半径6マス。周囲の敵はおばけから離れる。\nよだれで滑らせて連鎖！ 刃の1マス前は驚かすだけで突入。\nMENU：一時停止 / 右ボタン：戻る / 音量：上下・左右で調整", new Vector2(43, -130), new Vector2(680, 180), 17, Ink);
-            Label(card, "必要な材料が全部そろえばクリア。\n一定数のフルーツに逃げられるとゲームオーバー。", new Vector2(43, -325), new Vector2(680, 65), 17, Muted);
-            SliderRow(card, "BGM", -417, audioBus.MusicVolume, audioBus.SetMusic);
-            SliderRow(card, "効果音", -487, audioBus.EffectsVolume, audioBus.SetEffects);
-            var close = Button(card, "閉じる", new Vector2(50, -580), new Vector2(660, 59), Pink, Color.white, CloseOptions, 22);
+            Label(card, "左スティック：移動 / 右スティック：向き / 下ボタン：よだれ\n左ボタン：驚かす。単押しは自分＋前方1マスを向いている方へ。\n長押しは1.5秒で半径6マス。周囲の敵はおばけから離れる。\nよだれで滑らせて連鎖！ 刃の1マス前は驚かすだけで突入。\nMENU：一時停止 / 右ボタン：戻る", new Vector2(43, -117), new Vector2(680, 131), 16, Ink);
+            Label(card, GameHud.GimmickHelp, new Vector2(43, -267), new Vector2(680, 132), 16, Ink);
+            Label(card, "必要な材料が全部そろえばクリア。逃げられすぎると失敗。", new Vector2(43, -412), new Vector2(680, 40), 16, Muted);
+            SliderRow(card, "BGM", -479, audioBus.MusicVolume, audioBus.SetMusic);
+            SliderRow(card, "効果音", -549, audioBus.EffectsVolume, audioBus.SetEffects);
+            var close = Button(card, "閉じる", new Vector2(50, -654), new Vector2(660, 59), Pink, Color.white, CloseOptions, 22);
             FocusScope(options.transform, close.GetComponent<Button>());
         }
         void CloseOptions()

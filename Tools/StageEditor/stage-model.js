@@ -13,12 +13,12 @@
   "rows": [
     "###P########P###",
     "#..............#",
-    "#..#...##...#..#",
-    "#....X.##.X....#",
-    "#.##........##.#",
-    "#.....#G.#.....#",
-    "#...X.#..#.X...#",
-    "#..............#",
+    "#J......C..2...#",
+    "#....X....X....#",
+    "#..........F...#",
+    "#......G.......#",
+    "#1..X......X.J.#",
+    "#......H.......#",
     "##E####EE####E##"
   ],
   "recipe": {
@@ -30,9 +30,18 @@
   "escapeLimit": 10,
   "spawnInterval": 3.6,
   "iceLifetime": 5,
-  "droolLifetime": 10
+  "droolLifetime": 10,
+  "cookieHits": 3,
+  "cookieRespawnSeconds": 5,
+  "movingShredderSpeed": 1,
+  "freezerSeconds": 3,
+  "frozenSpeedMultiplier": 0.35
 };
-  const symbols = ".#PXEG";
+  const symbols = ".#PXEGJCHV1234F";
+  const gimmickDefaults = { cookieHits: 3, cookieRespawnSeconds: 5, movingShredderSpeed: 1, freezerSeconds: 3, frozenSpeedMultiplier: .35 };
+  const isScone = c => '1234'.includes(c);
+  const isShredder = c => 'XHV'.includes(c);
+  const blocksConnectivity = c => c === '#' || c === 'J' || isScone(c);
   const clone = value => JSON.parse(JSON.stringify(value));
   function validate(s) {
     const errors = [];
@@ -49,7 +58,7 @@
       Array.from(row).forEach((c, x) => {
         if (!symbols.includes(c)) errors.push("不明な記号: " + c);
         if (c === "P") { pipes++; pipeCells.push([x, y]); if (y !== 0) errors.push("パイプは最上段に置いてください。"); }
-        if (c === "X") shredders++;
+        if (isShredder(c)) shredders++;
         if (c === "G") ghosts++;
         if (c === "E" && x !== 0 && y !== 0 && x !== s.width - 1 && y !== s.height - 1) errors.push("出口は外周に置いてください。");
       });
@@ -61,6 +70,12 @@
     for (const [key, min, max, label] of [["spawnInterval", .5, 30, "出現間隔"], ["iceLifetime", 1, 30, "氷の寿命"], ["droolLifetime", 1, 60, "よだれの寿命"]]) {
       if (!Number.isFinite(s[key]) || s[key] < min || s[key] > max) errors.push(label + "は" + min + "〜" + max + "秒にしてください。");
     }
+    const hits = s.cookieHits === undefined ? gimmickDefaults.cookieHits : s.cookieHits;
+    if (!Number.isInteger(hits) || hits < 1 || hits > 10) errors.push('クッキーの耐久は1〜10回にしてください。');
+    for (const [key, min, max, label] of [['cookieRespawnSeconds', 1, 30, 'クッキーの復帰時間'], ['movingShredderSpeed', .25, 3, '移動シュレッダーの速度'], ['freezerSeconds', .5, 10, '凍結時間'], ['frozenSpeedMultiplier', .1, .9, '凍結中の速度倍率']]) {
+      const value = s[key] === undefined ? gimmickDefaults[key] : s[key];
+      if (!Number.isFinite(value) || value < min || value > max) errors.push(label + 'は' + min + '〜' + max + 'にしてください。');
+    }
     const recipe = s.recipe, keys = ["strawberry", "blueberry", "orange", "melon"];
     if (!recipe || keys.some(k => !Number.isInteger(recipe[k]) || recipe[k] < 0) || keys.reduce((total, k) => total + recipe[k], 0) < 1 || keys.reduce((total, k) => total + recipe[k], 0) > 200) errors.push("必要フルーツ数は各0以上、合計1〜200にしてください。");
     if (errors.length === 0) {
@@ -69,11 +84,11 @@
         let shredder = false, exit = false;
         for (let i = 0; i < queue.length; i++) {
           const [x, y] = queue[i], c = s.rows[y][x];
-          if (c === "X") shredder = true;
+          if (isShredder(c)) shredder = true;
           if (c === "E" || y === s.height - 1 || x === 0 || x === s.width - 1) exit = true;
           for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
             const nx = x + dx, ny = y + dy, id = nx + "," + ny;
-            if (nx >= 0 && ny >= 0 && nx < s.width && ny < s.height && s.rows[ny][nx] !== "#" && !seen.has(id)) { seen.add(id); queue.push([nx, ny]); }
+            if (nx >= 0 && ny >= 0 && nx < s.width && ny < s.height && !blocksConnectivity(s.rows[ny][nx]) && !seen.has(id)) { seen.add(id); queue.push([nx, ny]); }
           }
         }
         if (!shredder) errors.push("パイプ(" + px + "," + py + ")からシュレッダーへ到達できません。");
@@ -104,5 +119,5 @@
     for (const [x, y, c] of [[3, 0, "P"], [12, 0, "P"], [5, 3, "X"], [10, 3, "X"], [4, 6, "X"], [11, 6, "X"], [7, 5, "G"], [7, 8, "E"], [8, 8, "E"]]) paint(s, x, y, c);
     return s;
   }
-  return { sample, clone, validate, paint, resize, blank };
+  return { sample, clone, validate, paint, resize, blank, gimmickDefaults, isScone, isShredder, blocksConnectivity };
 });

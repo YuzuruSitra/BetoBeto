@@ -13,7 +13,7 @@ namespace BetoBeto.Audio
         }
         AudioSource music;
         AudioSource effects;
-        AudioClip scare, scareFull, scareReady, splash, crunch, warning, clear, wall, slide;
+        AudioClip scare, scareFull, scareReady, splash, crunch, warning, clear, wall, slide, jelly, scone, cookieBreak, freeze;
         readonly AudioClip[] chainNotes = new AudioClip[8];
         public float MusicVolume { get; private set; }
         public float EffectsVolume { get; private set; }
@@ -35,6 +35,10 @@ namespace BetoBeto.Audio
             crunch = JuiceSound("Shredder crunch", .3f, 175, .3f, .7f);
             wall = JuiceSound("Cookie wall thump", .25f, 135, .35f, .43f);
             slide = JuiceSound("Slippery whoosh", .21f, 430, 1.8f, .27f);
+            jelly = JuiceSound("Jelly boing", .34f, 160, 3.2f, .04f);
+            scone = Tone("Scone ricochet", 920, .2f, .48f);
+            cookieBreak = JuiceSound("Cookie crumble", .35f, 240, .23f, 1);
+            freeze = Tone("Freezer chime", 1400, .4f, .45f);
             int[] notes = { 0, 4, 7, 12, 16, 19, 24, 28 };
             for (int i = 0; i < chainNotes.Length; i++) chainNotes[i] = Tone("Chain " + (i + 1), 392 * Mathf.Pow(2, notes[i] / 12f), .19f, 1.07f);
             warning = Tone("Escape", 200, .35f, .65f);
@@ -52,7 +56,8 @@ namespace BetoBeto.Audio
         public void SetEffects(float volume) { EffectsVolume = Mathf.Clamp01(volume); effects.volume = EffectsVolume; PlayerPrefs.SetFloat("BetoBeto.Sfx", EffectsVolume); }
         public void Play(string cue)
         {
-            var clip = cue switch { "scareReady" => scareReady, "drool" => splash, "slide" => slide, "wall" => wall, "escape" => warning, "win" => clear, _ => crunch };
+            var clip = cue switch { "jelly" => jelly, "scone" => scone, "cookieBreak" => cookieBreak, "freeze" => freeze,
+                "scareReady" => scareReady, "drool" => splash, "slide" => slide, "wall" => wall, "escape" => warning, "win" => clear, _ => crunch };
             effects.PlayOneShot(clip);
         }
         public void PlayChain(int chain)
@@ -125,7 +130,7 @@ namespace BetoBeto.Audio
             if (Instance == this) Instance = null;
             PlayerPrefs.Save();
             if (music != null && music.clip != null) Destroy(music.clip);
-            foreach (var clip in new[] { scare, scareFull, scareReady, splash, crunch, warning, clear, wall, slide }) if (clip != null) Destroy(clip);
+            foreach (var clip in new[] { scare, scareFull, scareReady, splash, crunch, warning, clear, wall, slide, jelly, scone, cookieBreak, freeze }) if (clip != null) Destroy(clip);
             foreach (var clip in chainNotes) if (clip != null) Destroy(clip);
         }
     }

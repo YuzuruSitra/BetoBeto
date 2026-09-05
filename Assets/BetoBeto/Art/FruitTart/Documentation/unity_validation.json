@@ -1,0 +1,226 @@
+{
+  "passed": true,
+  "unityVersion": "6000.6.0f1",
+  "modelCount": 10,
+  "partPrefabs": 10,
+  "physicsPrefabs": 7,
+  "assembledParts": 24,
+  "models": [
+    {
+      "model": "Blueberry",
+      "size": {
+        "x": 0.028999999165534973,
+        "y": 0.026999998837709427,
+        "z": 0.028999999165534973
+      },
+      "pivotMinimum": {
+        "x": -0.014499999582767487,
+        "y": 0.0,
+        "z": -0.014499999582767487
+      },
+      "rotation": {
+        "x": 2.5044780613825424e-06,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "triangles": 2076,
+      "shader": "Universal Render Pipeline/Lit",
+      "separateMovement": true
+    },
+    {
+      "model": "Custard_Filling",
+      "size": {
+        "x": 0.21199999749660492,
+        "y": 0.00800000037997961,
+        "z": 0.21199999749660492
+      },
+      "pivotMinimum": {
+        "x": -0.10599999874830246,
+        "y": 0.0,
+        "z": -0.10599999874830246
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "triangles": 1532,
+      "shader": "Universal Render Pipeline/Lit",
+      "separateMovement": true
+    },
+    {
+      "model": "Heart_Spoon",
+      "size": {
+        "x": 0.1599999964237213,
+        "y": 0.013426730409264565,
+        "z": 0.077816441655159
+      },
+      "pivotMinimum": {
+        "x": -0.07999999821186066,
+        "y": 0.0,
+        "z": -0.0389082208275795
+      },
+      "rotation": {
+        "x": 2.5044780613825424e-06,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "triangles": 5832,
+      "shader": "Universal Render Pipeline/Lit",
+      "separateMovement": true
+    },
+    {
+      "model": "Mandarin_Segment",
+      "size": {
+        "x": 0.03502971678972244,
+        "y": 0.027234263718128204,
+        "z": 0.05700000002980232
+      },
+      "pivotMinimum": {
+        "x": -0.01751485839486122,
+        "y": 0.0,
+        "z": -0.02850000001490116
+      },
+      "rotation": {
+        "x": 2.5044780613825424e-06,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "triangles": 3036,
+      "shader": "Universal Render Pipeline/Lit",
+      "separateMovement": true
+    },
+    {
+      "model": "Melon_Cube",
+      "size": {
+        "x": 0.03700000047683716,
+        "y": 0.032999999821186066,
+        "z": 0.03700000047683716
+      },
+      "pivotMinimum": {
+        "x": -0.01850000023841858,
+        "y": 0.0,
+        "z": -0.01850000023841858
+      },
+      "rotation": {
+        "x": 2.5044780613825424e-06,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "triangles": 296,
+      "shader": "Universal Render Pipeline/Lit",
+      "separateMovement": true
+    },
+    {
+      "model": "Mint_Sprig",
+      "size": {
+        "x": 0.06000000238418579,
+        "y": 0.009797206148505211,
+        "z": 0.06359416246414185
+      },
+      "pivotMinimum": {
+        "x": -0.030000001192092896,
+        "y": 0.0,
+        "z": -0.03179708123207092
+      },
+      "rotation": {
+        "x": 2.5044780613825424e-06,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "triangles": 6852,
+      "shader": "Universal Render Pipeline/Lit",
+      "separateMovement": true
+    },
+    {
+      "model": "Pink_Plate",
+      "size": {
+        "x": 0.30000001192092896,
+        "y": 0.024000000208616257,
+        "z": 0.30000001192092896
+      },
+      "pivotMinimum": {
+        "x": -0.15000000596046448,
+        "y": 0.0,
+        "z": -0.15000000596046448
+      },
+      "rotation": {
+        "x": 2.5044780613825424e-06,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "triangles": 4104,
+      "shader": "Universal Render Pipeline/Lit",
+      "separateMovement": true
+    },
+    {
+      "model": "Strawberry_Half",
+      "size": {
+        "x": 0.03627984970808029,
+        "y": 0.014886362478137016,
+        "z": 0.061000000685453415
+      },
+      "pivotMinimum": {
+        "x": -0.018139924854040146,
+        "y": 0.0,
+        "z": -0.030500000342726707
+      },
+      "rotation": {
+        "x": 2.5044780613825424e-06,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "triangles": 1248,
+      "shader": "Universal Render Pipeline/Lit",
+      "separateMovement": true
+    },
+    {
+      "model": "Strawberry_Whole",
+      "size": {
+        "x": 0.0429999977350235,
+        "y": 0.05999999865889549,
+        "z": 0.0430000014603138
+      },
+      "pivotMinimum": {
+        "x": -0.02149999886751175,
+        "y": 0.0,
+        "z": -0.0215000007301569
+      },
+      "rotation": {
+        "x": 2.5044780613825424e-06,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "triangles": 1920,
+      "shader": "Universal Render Pipeline/Lit",
+      "separateMovement": true
+    },
+    {
+      "model": "Tart_Shell",
+      "size": {
+        "x": 0.24000000953674316,
+        "y": 0.052000001072883606,
+        "z": 0.24000000953674316
+      },
+      "pivotMinimum": {
+        "x": -0.12000000476837158,
+        "y": 0.0,
+        "z": -0.12000000476837158
+      },
+      "rotation": {
+        "x": 2.5044780613825424e-06,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "triangles": 5484,
+      "shader": "Universal Render Pipeline/Lit",
+      "separateMovement": true
+    }
+  ],
+  "errors": [],
+  "blenderToUnityCoordinates": "(x, z, y)",
+  "axisMappingVerifiedAgainstImportedVertices": true,
+  "renderPreviewInspected": true,
+  "previewOnlySRPBatcherDisabled": true,
+  "projectSettingsModified": false
+}

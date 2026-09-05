@@ -100,7 +100,8 @@ namespace BetoBeto.Tests
         {
             var assets = AssetDatabase.LoadAssetAtPath<GameAssets>("Assets/BetoBeto/Art/GameAssets.asset");
             Assert.That(assets, Is.Not.Null);
-            foreach (var go in new[] { assets.ghost, assets.tile, assets.wall, assets.pipe, assets.shredder, assets.ice, assets.drool, assets.exit })
+            foreach (var go in new[] { assets.ghost, assets.tile, assets.wall, assets.pipe, assets.shredder, assets.ice, assets.drool, assets.exit,
+                assets.jelly, assets.cookie, assets.movingShredder, assets.scone, assets.freezer })
                 Assert.That(PrefabUtility.IsPartOfPrefabAsset(go), Is.True, go == null ? "Missing prefab" : go.name);
             Assert.That(assets.fruits.Length, Is.EqualTo(4));
             foreach (var fruit in assets.fruits) Assert.That(PrefabUtility.IsPartOfPrefabAsset(fruit), Is.True);

@@ -98,8 +98,12 @@ namespace BetoBeto.Editor
                 var cell = new Vector2Int(x, y);
                 Instantiate(assets.tile, layout.tiles, data.World(cell), $"Tile {x:00},{y:00}");
                 char symbol = data.At(cell);
-                var prefab = symbol switch { '#' => assets.wall, 'P' => assets.pipe, 'X' => assets.shredder, 'E' => assets.exit, 'G' => assets.playerStart, _ => null };
-                if (prefab != null) Instantiate(prefab, layout.placements, data.World(cell), $"{prefab.name} [{x},{y}]");
+                var prefab = PlacementPrefab(assets, symbol);
+                if (prefab != null)
+                {
+                    var prop = Instantiate(prefab, layout.placements, data.World(cell), $"{prefab.name} [{x},{y}]");
+                    prop.transform.rotation = PlacementRotation(symbol);
+                }
             }
             var environment = new GameObject("Kitchen presentation").transform;
             var counterMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
@@ -196,10 +200,18 @@ namespace BetoBeto.Editor
             RenderSettings.ambientMode = AmbientMode.Flat; RenderSettings.ambientLight = new Color(.67f, .76f, .82f); RenderSettings.skybox = null;
             EditorSceneManager.SaveScene(scene, path);
         }
-        static void Instantiate(GameObject prefab, Transform parent, Vector3 position, string name)
+        public static GameObject PlacementPrefab(GameAssets assets, char symbol) => symbol switch
+        {
+            '#' => assets.wall, 'P' => assets.pipe, 'X' => assets.shredder, 'E' => assets.exit, 'G' => assets.playerStart,
+            'J' => assets.jelly, 'C' => assets.cookie, 'H' => assets.movingShredder, 'V' => assets.movingShredder,
+            '1' or '2' or '3' or '4' => assets.scone, 'F' => assets.freezer, _ => null
+        };
+        public static Quaternion PlacementRotation(char symbol) => Quaternion.Euler(0, GimmickRules.IsScone(symbol) ? (symbol - '1') * 90 : symbol == 'V' ? 90 : 0, 0);
+        static GameObject Instantiate(GameObject prefab, Transform parent, Vector3 position, string name)
         {
             var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
             go.name = name; go.transform.position = position;
+            return go;
         }
     }
 }

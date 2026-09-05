@@ -12,11 +12,21 @@ namespace BetoBeto.Presentation
         Transform visual;
         Vector3 restScale;
         readonly TrailRenderer[] trails = new TrailRenderer[2];
-        float impact, dropTimer, fright;
+        float impact, dropTimer, fright, bounce;
+        GameObject frost;
         public void Initialize(GameController controller, FruitAgent actor, Transform model)
         {
             game = controller; fruit = actor; visual = model;
             if (visual != null) restScale = visual.localScale;
+            frost = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            frost.name = "Frost shell";
+            Destroy(frost.GetComponent<Collider>());
+            frost.transform.SetParent(transform, false);
+            frost.transform.localPosition = new Vector3(0, .5f, 0);
+            frost.transform.localScale = new Vector3(.83f, .95f, .83f) * (fruit.kind == FruitKind.Blueberry ? .78f : fruit.kind == FruitKind.Melon ? 1.14f : 1);
+            frost.GetComponent<Renderer>().sharedMaterial = game.assets.frostMaterial;
+            frost.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+            frost.SetActive(false);
             for (int i = 0; i < trails.Length; i++)
             {
                 var go = new GameObject("Drool speed trail");
@@ -37,9 +47,11 @@ namespace BetoBeto.Presentation
         public void StartSlide() { impact = .55f; }
         public void Impact(float power) { impact = power; }
         public void Scare() { fright = 1; }
+        public void Ricochet() { bounce = .3f; impact = .9f; }
         void LateUpdate()
         {
             if (fruit.Removed || game.Session.State == GameState.Paused) return;
+            if (frost != null) frost.SetActive(fruit.IsFrozen);
             float dt = game.Feedback.SimulationDelta;
             Vector3 side = Vector3.Cross(fruit.Forward, Vector3.up);
             for (int i = 0; i < trails.Length; i++)
@@ -52,6 +64,7 @@ namespace BetoBeto.Presentation
             if (dt <= 0) return;
             impact = Mathf.MoveTowards(impact, 0, dt * 3.6f);
             fright = Mathf.MoveTowards(fright, 0, dt * 3);
+            bounce = Mathf.Max(0, bounce - dt);
             if (visual != null)
             {
                 float stretch = fruit.Sliding ? .17f : 0;
@@ -60,6 +73,7 @@ namespace BetoBeto.Presentation
                 visual.localScale = Vector3.Lerp(visual.localScale, Vector3.Scale(restScale, scale), dt * 23);
                 var lean = fruit.Sliding ? Quaternion.Euler(-17, 0, 0) : Quaternion.identity;
                 visual.localRotation = Quaternion.Slerp(visual.localRotation, lean, dt * 15);
+                if (bounce > 0) visual.localPosition += Vector3.up * (Mathf.Sin(bounce / .3f * Mathf.PI) * .32f);
             }
             if (!fruit.Sliding) { dropTimer = 0; return; }
             dropTimer -= dt;

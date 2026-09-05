@@ -24,6 +24,8 @@ namespace BetoBeto.Tests
             // Advance enemies explicitly so range and movement assertions do not depend on frame rate.
             game.enabled = false;
             game.Board.Walls.Clear(); game.Board.Shredders.Clear(); game.Board.Exits.Clear();
+            game.Board.Jellies.Clear(); game.Board.Cookies.Clear(); game.Board.Scones.Clear();
+            game.Board.Freezers.Clear(); game.Board.Movers.Clear();
             game.Player.transform.position = game.Board.Data.World(new Vector2Int(7, 4));
         }
         [TearDown] public void Cleanup() { pad.Dispose(); }
