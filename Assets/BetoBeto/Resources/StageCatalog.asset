@@ -23,3 +23,8 @@ MonoBehaviour:
     description: "2\u3064\u306E\u659C\u9762\u3092\u3064\u306A\u3050\u5927\u9023\u9396\u3002\u51CD\u7D50\u3068\u3001\u7E26\u6A2A\u306B\u52D5\u304F\u5203\u306E\u30BF\u30A4\u30DF\u30F3\u30B0\u3092\u8AAD\u3082\u3046\u3002"
     sceneName: Kitchen02
     layoutJson: {fileID: 4900000, guid: b9983547fe791c5419b2e2aa27f63d6f, type: 3}
+  - id: Kitchen05
+    title: "\u5927\u91CF\u767A\u751F\u30C9\u30BF\u30D0\u30BF\u30AD\u30C3\u30C1\u30F3"
+    description: "\u9A5A\u304B\u305B\u3066\u3001\u3088\u3060\u308C\u3078\u8A98\u5C0E\u3057\u3088\u3046\u3002"
+    sceneName: Kitchen05
+    layoutJson: {fileID: 4900000, guid: 0ebbac4ef4145104fb8ac7e35c6d2a57, type: 3}
