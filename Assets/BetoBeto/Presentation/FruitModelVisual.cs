@@ -9,10 +9,12 @@ namespace BetoBeto.Presentation
     [DisallowMultipleComponent]
     public sealed class FruitModelVisual : MonoBehaviour
     {
+        [Range(0, 35)] public float viewTiltDegrees = 15;
         static readonly int Motion = Animator.StringToHash("Motion");
         FruitAgent fruit;
         FruitExpressionSwitcher expression;
         Animator animator;
+        ActorViewTilt viewTilt;
         bool? sliding;
         int slideMotion, currentMotion = -1;
         Quaternion restRotation;
@@ -25,6 +27,7 @@ namespace BetoBeto.Presentation
             expression = GetComponentInChildren<FruitExpressionSwitcher>(true);
             animator = GetComponentInChildren<Animator>(true);
             if (animator != null) animator.applyRootMotion = false;
+            if (animator != null) viewTilt = ActorViewTilt.Create(animator.transform, viewTiltDegrees);
             Refresh();
         }
 
@@ -54,6 +57,8 @@ namespace BetoBeto.Presentation
             }
             // A slide takes priority over panic running; repeated scares extend FruitAgent's timer.
             int motion = next ? slideMotion : fruit.IsFleeing && !fruit.Removed ? 3 : 0;
+            // Keep supine slide spins on the vertical Y axis, without the top-down view tilt.
+            if (viewTilt != null) viewTilt.degrees = motion == 1 ? 0 : viewTiltDegrees;
             if (currentMotion != motion)
             {
                 currentMotion = motion;

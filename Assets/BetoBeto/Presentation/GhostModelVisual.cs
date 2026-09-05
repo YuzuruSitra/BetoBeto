@@ -9,6 +9,7 @@ namespace BetoBeto.Presentation
     public sealed class GhostModelVisual : MonoBehaviour
     {
         [Min(.05f)] public float spookSeconds = .5f;
+        [Range(0, 35)] public float viewTiltDegrees = 15;
         static readonly int Speed = Animator.StringToHash("Speed");
         static readonly int Drool = Animator.StringToHash("Drool");
         static readonly int Drooling = Animator.StringToHash("Drooling");
@@ -21,6 +22,7 @@ namespace BetoBeto.Presentation
         bool wasDrooling;
         GhostDroolVfx droolVfx;
         Quaternion restRotation;
+        ActorViewTilt viewTilt;
         public bool IsDrooling => ghost != null && ghost.IsDrooling;
 
         void Awake()
@@ -29,6 +31,7 @@ namespace BetoBeto.Presentation
             droolVfx = GetComponent<GhostDroolVfx>();
             restRotation = transform.localRotation;
             if (animator != null) animator.applyRootMotion = false;
+            if (animator != null) viewTilt = ActorViewTilt.Create(animator.transform, viewTiltDegrees);
         }
 
         public void Initialize(GameController controller, GhostController player)
@@ -74,6 +77,8 @@ namespace BetoBeto.Presentation
                     transform.rotation = Quaternion.LookRotation(-direction.normalized, Vector3.up);
             }
             else transform.localRotation = restRotation;
+            // Update the mouth's tilted world position before spawning drool this frame.
+            if (viewTilt != null) viewTilt.Apply();
             var state = animator.GetCurrentAnimatorStateInfo(0);
             bool mouthOpen = state.IsName("Yodare") || (state.IsName("YODAREStart") && state.normalizedTime >= .65f);
             if (droolVfx != null) droolVfx.Tick(game.Feedback.SimulationDelta, ghost.IsDrooling && mouthOpen);
