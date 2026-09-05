@@ -12,6 +12,7 @@ namespace BetoBeto.Core
 {
     public sealed class GameController : MonoBehaviour
     {
+        public const float DroolReuseSeconds = .3f;
         public static GameController Instance { get; private set; }
         public GameAssets assets;
         public StageLayout layout;
@@ -22,8 +23,8 @@ namespace BetoBeto.Core
         public GameAudio Audio { get; private set; }
         public GameHud Hud { get; private set; }
         public GameFeedback Feedback { get; private set; }
+        public GhostController Player { get; private set; }
         public Transform FeedbackRoot => effects;
-        public float IceCooldown { get; private set; }
         public float DroolCooldown { get; private set; }
         public float Countdown { get; private set; }
         public int ActiveFruitCount => fruits.Count;
@@ -31,14 +32,10 @@ namespace BetoBeto.Core
         public float NoticeUntil { get; private set; }
         public IReadOnlyList<FruitAgent> Fruits => fruits;
         readonly List<FruitAgent> fruits = new List<FruitAgent>();
-        readonly Dictionary<Vector2Int, GameObject> iceVisuals = new Dictionary<Vector2Int, GameObject>();
         readonly Dictionary<Vector2Int, GameObject> droolVisuals = new Dictionary<Vector2Int, GameObject>();
         readonly List<Vector2Int> expired = new List<Vector2Int>();
         Transform actors;
         Transform effects;
-        Transform pointer;
-        Renderer pointerRenderer;
-        Material pointerMaterial;
         float spawnTimer;
         int spawnIndex;
         int lastWidth, lastHeight;
@@ -60,22 +57,8 @@ namespace BetoBeto.Core
             Feedback.Initialize(this);
             Hud = gameObject.AddComponent<GameHud>();
             Hud.Initialize(this);
-            BuildPointer();
             FitCamera();
             StartGame();
-        }
-        void BuildPointer()
-        {
-            var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            go.name = "Placement highlight";
-            Destroy(go.GetComponent<Collider>());
-            pointer = go.transform;
-            pointer.localScale = new Vector3(.92f, .025f, .92f);
-            pointerMaterial = new Material(assets.placementMaterial != null ? assets.placementMaterial : assets.sparkleMaterial);
-            pointerMaterial.color = new Color(.4f, 1, .9f);
-            pointerRenderer = go.GetComponent<Renderer>();
-            pointerRenderer.sharedMaterial = pointerMaterial;
-            go.SetActive(false);
         }
         void Update()
         {
@@ -86,11 +69,9 @@ namespace BetoBeto.Core
             if (Session.State == GameState.Playing && GamepadControls.Ready)
             {
                 float dt = Feedback.SimulationDelta;
-                IceCooldown = Mathf.Max(0, IceCooldown - dt);
                 DroolCooldown = Mathf.Max(0, DroolCooldown - dt);
                 Session.Elapsed += dt;
-                TickPlacement(Board.Ice, iceVisuals, dt, true);
-                TickPlacement(Board.Drool, droolVisuals, dt, false);
+                TickDrool(dt);
                 Countdown = Mathf.Max(0, Countdown - dt);
                 if (Countdown <= 0)
                 {
@@ -115,7 +96,7 @@ namespace BetoBeto.Core
                 shownState = Session.State;
                 if (shownState == GameState.Won || shownState == GameState.Lost)
                 {
-                    pointer.gameObject.SetActive(false);
+                    Player.CancelScare();
                     Audio.Play(shownState == GameState.Won ? "win" : "escape");
                     if (shownState == GameState.Won) for (int i = 0; i < 4; i++) Burst(Board.Data.World(Board.PlayerStart), (FruitKind)i, 12);
                     StartCoroutine(GoToResult());
@@ -128,16 +109,17 @@ namespace BetoBeto.Core
             StopAllCoroutines();
             ClearChildren(actors); ClearChildren(effects);
             Feedback.ResetFeedback(); Hud.ClearFeedback();
-            fruits.Clear(); iceVisuals.Clear(); droolVisuals.Clear();
+            fruits.Clear(); droolVisuals.Clear();
             Board = new StageBoard(layout);
             Session = new GameSession(Board.Data) { State = GameState.Playing };
             shownState = GameState.Playing;
-            IceCooldown = DroolCooldown = 0;
+            DroolCooldown = 0;
             spawnTimer = 0; spawnIndex = 0; Countdown = 2.8f;
             hadController = GamepadControls.Ready;
             GamepadControls.SuppressActionsUntilRelease();
             var ghost = Instantiate(assets.ghost, Board.Data.World(Board.PlayerStart), Quaternion.identity, actors);
-            ghost.GetComponent<GhostController>().Initialize(this);
+            Player = ghost.GetComponent<GhostController>();
+            Player.Initialize(this);
             Notify("よだれで滑らせて、ピンクのシュレッダーへ！", 6);
         }
         IEnumerator GoToResult()
@@ -161,16 +143,20 @@ namespace BetoBeto.Core
             fruits.Add(fruit);
             return fruit;
         }
-        public bool TryPlaceIce(Vector2Int cell)
+        public bool TryScare(Vector2Int cell, Vector2Int facing, float chargeSeconds)
+            => TryScare(Board.Data.World(cell), facing, chargeSeconds);
+        public bool TryScare(Vector3 source, Vector2Int facing, float chargeSeconds)
         {
-            if (Session.State != GameState.Playing || IceCooldown > 0) return false;
-            if (!Board.CanPlace(cell) || Board.Drool.ContainsKey(cell)) { Notify("ここには氷を置けません", 1.2f); return false; }
+            if (Session.State != GameState.Playing || facing.sqrMagnitude != 1) return false;
+            int count = 0;
+            Vector2Int cell = Board.Data.Cell(source);
+            Vector2Int? fleeDirection = ScareRules.IsCharged(chargeSeconds) ? (Vector2Int?)null : facing;
             foreach (var fruit in fruits)
-                if (!fruit.Removed && (fruit.Cell == cell || fruit.TargetCell == cell)) { Notify("フルーツのいるマスには置けません", 1.2f); return false; }
-            Board.Ice.Add(cell, Board.Data.iceLifetime);
-            iceVisuals.Add(cell, Instantiate(assets.ice, Board.Data.World(cell), Quaternion.identity, effects));
-            IceCooldown = .7f;
-            Audio.Play("ice"); return true;
+                if (!fruit.Removed && ScareRules.Contains(cell, facing, Board.Data.Cell(fruit.transform.position), chargeSeconds)
+                    && fruit.Scare(source, fleeDirection)) count++;
+            Feedback.ScareBurst(Board.Data.World(cell), Board.Data.World(cell + facing), chargeSeconds, count);
+            if (count > 0) Notify($"{count}体をびっくり！  逃げ道によだれを置こう", 1.8f);
+            return true;
         }
         public bool TryPlaceDrool(Vector2Int cell)
         {
@@ -178,12 +164,14 @@ namespace BetoBeto.Core
             if (!Board.CanPlace(cell)) { Notify("床の上でよだれを置こう", 1.2f); return false; }
             if (!Board.Drool.ContainsKey(cell)) droolVisuals.Add(cell, Instantiate(assets.drool, Board.Data.World(cell, .025f), Quaternion.identity, effects));
             Board.Drool[cell] = Board.Data.droolLifetime;
-            DroolCooldown = 1.25f; Audio.Play("drool");
+            DroolCooldown = DroolReuseSeconds; Audio.Play("drool");
             foreach (var fruit in fruits) if (!fruit.Removed && fruit.Cell == cell) fruit.BeginSlide(fruit.Direction, 1);
             return true;
         }
-        void TickPlacement(Dictionary<Vector2Int, float> timers, Dictionary<Vector2Int, GameObject> visuals, float dt, bool ice)
+        void TickDrool(float dt)
         {
+            var timers = Board.Drool;
+            var visuals = droolVisuals;
             expired.Clear();
             // Snapshot keys because timer values are written back while iterating.
             var keys = new List<Vector2Int>(timers.Keys);
@@ -195,7 +183,7 @@ namespace BetoBeto.Core
                 if (visuals.TryGetValue(cell, out var go) && go != null)
                 {
                     float shrink = remaining < 1.4f ? .82f + .18f * Mathf.Abs(Mathf.Sin(remaining * 11)) : 1;
-                    go.transform.localScale = ice ? new Vector3(1, Mathf.Lerp(.55f, 1, remaining / Board.Data.iceLifetime), 1) * shrink : Vector3.one * shrink;
+                    go.transform.localScale = Vector3.one * shrink;
                 }
             }
             foreach (var cell in expired)
@@ -204,14 +192,6 @@ namespace BetoBeto.Core
                 if (visuals.TryGetValue(cell, out var go)) Destroy(go);
                 visuals.Remove(cell);
             }
-        }
-        public void ShowPlacement(Vector2Int cell, bool visible)
-        {
-            pointer.gameObject.SetActive(visible && Session.State == GameState.Playing && Board.Data.Contains(cell));
-            pointer.position = Board.Data.World(cell, .018f);
-            bool available = Board.CanPlace(cell) && !Board.Drool.ContainsKey(cell) && IceCooldown <= 0;
-            foreach (var fruit in fruits) if (!fruit.Removed && (fruit.Cell == cell || fruit.TargetCell == cell)) available = false;
-            pointerMaterial.color = available ? new Color(.48f, .91f, .9f) : new Color(1, .35f, .42f);
         }
         public void PropagateSlide(FruitAgent source)
         {
@@ -280,6 +260,6 @@ namespace BetoBeto.Core
         {
             for (int i = root.childCount - 1; i >= 0; i--) { root.GetChild(i).gameObject.SetActive(false); Destroy(root.GetChild(i).gameObject); }
         }
-        void OnDestroy() { if (Instance == this) Instance = null; if (pointerMaterial != null) Destroy(pointerMaterial); }
+        void OnDestroy() { if (Instance == this) Instance = null; }
     }
 }

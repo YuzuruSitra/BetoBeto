@@ -55,7 +55,7 @@ namespace BetoBeto.UI
             Label(root, "WELCOME TO THE COOKIE KITCHEN", new Vector2(90, -170), new Vector2(640, 30), 14, Mint, FontStyle.Bold);
             Label(root, "BETO\nBETO", new Vector2(80, -224), new Vector2(600, 210), 90, Cream, FontStyle.Bold);
             Label(root, "にげるフルーツ、\nまとめてツルン。", new Vector2(90, -457), new Vector2(640, 97), 33, Cream, FontStyle.Bold);
-            Label(root, "氷で道を変えて、よだれでひと滑り。\n小さなおばけの、とびきり甘い大作戦。", new Vector2(92, -576), new Vector2(580, 69), 18, Hex("B7D0D3"));
+            Label(root, "わっ！と驚かせて、よだれでひと滑り。\n小さなおばけの、とびきり甘い大作戦。", new Vector2(92, -576), new Vector2(580, 69), 18, Hex("B7D0D3"));
             primary = Button(root, "ステージを選ぶ    →", new Vector2(90, -688), new Vector2(480, 67), Pink, Color.white, GameFlow.StageSelect, 23).GetComponent<Button>();
             Label(root, "ゲームパッド専用  /  下ボタンで決定・右ボタンで戻る", new Vector2(92, -776), new Vector2(590, 25), 14, Hex("A7C0C7"));
         }
@@ -130,7 +130,7 @@ namespace BetoBeto.UI
             }
             Label(card, result.won ? "タルト、できあがり！" : "フルーツが逃げちゃった…", new Vector2(25, -90), new Vector2(750, 75), result.won ? 42 : 36, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
             Label(card, result.stageName, new Vector2(40, -172), new Vector2(720, 30), 16, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
-            string message = result.won ? result.dessert + "の完成！\nおいしい大作戦、成功です。" : $"集まった材料  {result.recipeCount} / {result.recipeTotal}\n氷で道を曲げて、よだれを置いてみよう。";
+            string message = result.won ? result.dessert + "の完成！\nおいしい大作戦、成功です。" : $"集まった材料  {result.recipeCount} / {result.recipeTotal}\n驚かせて、逃げる先によだれを置いてみよう。";
             Label(card, message, new Vector2(50, -231), new Vector2(700, 80), 23, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
             Label(card, $"SCORE  {result.score:N0}", new Vector2(30, -341), new Vector2(740, 51), 36, Pink, FontStyle.Bold, TextAnchor.MiddleCenter);
             Label(card, $"収穫 {result.harvested}個   /   脱出 {result.escaped}個   /   最大 {result.bestChain} CHAIN   /   {FormatTime(result.elapsed)}", new Vector2(35, -414), new Vector2(730, 35), 16, Ink, FontStyle.Normal, TextAnchor.MiddleCenter);
@@ -145,7 +145,7 @@ namespace BetoBeto.UI
             options = Overlay("Menu options", .86f);
             var card = CenterCard(options.transform, "How to play", new Vector2(760, 690));
             Label(card, "あそびかた・音量設定", new Vector2(40, -35), new Vector2(680, 53), 29, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-            Label(card, "左スティック / 十字キー：移動。右スティック：向きを変える。\n下ボタン：足元によだれ。左ボタン：向いている前方に氷。\nメニューボタン：一時停止。右ボタン：戻る。\nよだれで滑らせ、ほかのフルーツを巻き込んでピンクの刃へ！\nメロンは2回当てよう。音量は上下で選び、左右で調整。", new Vector2(43, -130), new Vector2(680, 180), 17, Ink);
+            Label(card, "左スティック / 十字キー：移動。右スティック：向きを変える。\n下ボタン：足元によだれ。左ボタン：驚かす（離すと発動）。\n単押し：自分＋前方1マスの敵を、プレイヤーが向く方向へ。\n長押し：1.5秒で半径6マス。周囲の敵はおばけから離れる。\nよだれで滑らせて連鎖！ 刃の1マス前は驚かすだけで突入。\nMENU：一時停止 / 右ボタン：戻る / 音量：上下・左右で調整", new Vector2(43, -130), new Vector2(680, 180), 17, Ink);
             Label(card, "必要な材料が全部そろえばクリア。\n一定数のフルーツに逃げられるとゲームオーバー。", new Vector2(43, -325), new Vector2(680, 65), 17, Muted);
             SliderRow(card, "BGM", -417, audioBus.MusicVolume, audioBus.SetMusic);
             SliderRow(card, "効果音", -487, audioBus.EffectsVolume, audioBus.SetEffects);

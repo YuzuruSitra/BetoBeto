@@ -13,7 +13,7 @@ namespace BetoBeto.Audio
         }
         AudioSource music;
         AudioSource effects;
-        AudioClip pop, splash, crunch, warning, clear, wall, slide;
+        AudioClip scare, scareFull, scareReady, splash, crunch, warning, clear, wall, slide;
         readonly AudioClip[] chainNotes = new AudioClip[8];
         public float MusicVolume { get; private set; }
         public float EffectsVolume { get; private set; }
@@ -28,7 +28,9 @@ namespace BetoBeto.Audio
             EffectsVolume = PlayerPrefs.GetFloat("BetoBeto.Sfx", .65f);
             music.volume = MusicVolume;
             effects.volume = EffectsVolume;
-            pop = Tone("Ice pop", 520, .16f, 1.6f);
+            scare = JuiceSound("Ghost boo", .3f, 480, .35f, .08f);
+            scareFull = JuiceSound("Ghost big boo", .5f, 340, .22f, .25f);
+            scareReady = Tone("Scare charged", 880, .2f, 1.5f);
             splash = Tone("Drool", 210, .24f, .4f);
             crunch = JuiceSound("Shredder crunch", .3f, 175, .3f, .7f);
             wall = JuiceSound("Cookie wall thump", .25f, 135, .35f, .43f);
@@ -50,13 +52,18 @@ namespace BetoBeto.Audio
         public void SetEffects(float volume) { EffectsVolume = Mathf.Clamp01(volume); effects.volume = EffectsVolume; PlayerPrefs.SetFloat("BetoBeto.Sfx", EffectsVolume); }
         public void Play(string cue)
         {
-            var clip = cue switch { "ice" => pop, "drool" => splash, "slide" => slide, "wall" => wall, "escape" => warning, "win" => clear, _ => crunch };
+            var clip = cue switch { "scareReady" => scareReady, "drool" => splash, "slide" => slide, "wall" => wall, "escape" => warning, "win" => clear, _ => crunch };
             effects.PlayOneShot(clip);
         }
         public void PlayChain(int chain)
         {
             effects.PlayOneShot(chainNotes[Mathf.Clamp(chain - 2, 0, chainNotes.Length - 1)], .9f);
             effects.PlayOneShot(slide, .32f);
+        }
+        public void PlayScare(float charge)
+        {
+            effects.PlayOneShot(scare, 1 - charge * .45f);
+            if (charge > .2f) effects.PlayOneShot(scareFull, charge * .85f);
         }
         static AudioClip JuiceSound(string name, float duration, float hz, float sweep, float noiseAmount)
         {
@@ -118,7 +125,7 @@ namespace BetoBeto.Audio
             if (Instance == this) Instance = null;
             PlayerPrefs.Save();
             if (music != null && music.clip != null) Destroy(music.clip);
-            foreach (var clip in new[] { pop, splash, crunch, warning, clear, wall, slide }) if (clip != null) Destroy(clip);
+            foreach (var clip in new[] { scare, scareFull, scareReady, splash, crunch, warning, clear, wall, slide }) if (clip != null) Destroy(clip);
             foreach (var clip in chainNotes) if (clip != null) Destroy(clip);
         }
     }

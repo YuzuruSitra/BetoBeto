@@ -16,7 +16,9 @@ namespace BetoBeto.Player
         public static bool PausePressed => Ready && Device.startButton.wasPressedThisFrame;
         public static bool CancelPressed => Ready && Device.buttonEast.wasPressedThisFrame;
         public static bool DroolPressed => ActionsReady && Device.buttonSouth.wasPressedThisFrame;
-        public static bool IcePressed => ActionsReady && Device.buttonWest.wasPressedThisFrame;
+        public static bool ScarePressed => ActionsReady && Device.buttonWest.wasPressedThisFrame;
+        public static bool ScareHeld => ActionsReady && Device.buttonWest.isPressed;
+        public static bool ScareReleased => ActionsReady && Device.buttonWest.wasReleasedThisFrame;
         static bool ActionsReady
         {
             get

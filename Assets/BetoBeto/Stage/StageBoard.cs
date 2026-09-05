@@ -10,7 +10,6 @@ namespace BetoBeto.Stage
         public readonly HashSet<Vector2Int> Walls = new HashSet<Vector2Int>();
         public readonly HashSet<Vector2Int> Shredders = new HashSet<Vector2Int>();
         public readonly HashSet<Vector2Int> Exits = new HashSet<Vector2Int>();
-        public readonly Dictionary<Vector2Int, float> Ice = new Dictionary<Vector2Int, float>();
         public readonly Dictionary<Vector2Int, float> Drool = new Dictionary<Vector2Int, float>();
         public Vector2Int PlayerStart { get; private set; }
 
@@ -32,7 +31,7 @@ namespace BetoBeto.Stage
                 }
             }
         }
-        public bool Blocked(Vector2Int cell) => Walls.Contains(cell) || Ice.ContainsKey(cell);
+        public bool Blocked(Vector2Int cell) => Walls.Contains(cell);
         // Fruits recognise the blades while walking; a slide cannot steer around them.
         public bool BlocksWalking(Vector2Int cell) => Blocked(cell) || Shredders.Contains(cell);
         public bool CanPlace(Vector2Int cell) => Data.Contains(cell) && !Blocked(cell) && !Shredders.Contains(cell) && !Exits.Contains(cell) && !Pipes.Contains(cell);

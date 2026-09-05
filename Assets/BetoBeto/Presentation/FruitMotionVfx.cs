@@ -12,7 +12,7 @@ namespace BetoBeto.Presentation
         Transform visual;
         Vector3 restScale;
         readonly TrailRenderer[] trails = new TrailRenderer[2];
-        float impact, dropTimer;
+        float impact, dropTimer, fright;
         public void Initialize(GameController controller, FruitAgent actor, Transform model)
         {
             game = controller; fruit = actor; visual = model;
@@ -36,6 +36,7 @@ namespace BetoBeto.Presentation
         }
         public void StartSlide() { impact = .55f; }
         public void Impact(float power) { impact = power; }
+        public void Scare() { fright = 1; }
         void LateUpdate()
         {
             if (fruit.Removed || game.Session.State == GameState.Paused) return;
@@ -50,11 +51,12 @@ namespace BetoBeto.Presentation
             }
             if (dt <= 0) return;
             impact = Mathf.MoveTowards(impact, 0, dt * 3.6f);
+            fright = Mathf.MoveTowards(fright, 0, dt * 3);
             if (visual != null)
             {
                 float stretch = fruit.Sliding ? .17f : 0;
                 float pulse = impact * .3f;
-                var scale = new Vector3(1 + stretch + pulse, 1 - stretch - pulse, 1 + stretch + pulse);
+                var scale = new Vector3(1 + stretch + pulse - fright * .16f, 1 - stretch - pulse + fright * .45f, 1 + stretch + pulse - fright * .16f);
                 visual.localScale = Vector3.Lerp(visual.localScale, Vector3.Scale(restScale, scale), dt * 23);
                 var lean = fruit.Sliding ? Quaternion.Euler(-17, 0, 0) : Quaternion.identity;
                 visual.localRotation = Quaternion.Slerp(visual.localRotation, lean, dt * 15);

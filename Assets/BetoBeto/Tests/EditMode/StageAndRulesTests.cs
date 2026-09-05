@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using BetoBeto.Core;
 using BetoBeto.Enemies;
+using BetoBeto.Player;
 using BetoBeto.Stage;
 using NUnit.Framework;
 using UnityEditor;
@@ -103,6 +104,18 @@ namespace BetoBeto.Tests
                 Assert.That(PrefabUtility.IsPartOfPrefabAsset(go), Is.True, go == null ? "Missing prefab" : go.name);
             Assert.That(assets.fruits.Length, Is.EqualTo(4));
             foreach (var fruit in assets.fruits) Assert.That(PrefabUtility.IsPartOfPrefabAsset(fruit), Is.True);
+        }
+        [TestCase(.249f, false, 1)]
+        [TestCase(.25f, true, 1)]
+        [TestCase(.8f, true, 3)]
+        [TestCase(1.499f, true, 5)]
+        [TestCase(1.5f, true, 6)]
+        [TestCase(10f, true, 6)]
+        public void ScareChargeHasExplicitTapThresholdAndMaximum(float seconds, bool radial, int radius)
+        {
+            Assert.That(ScareRules.IsCharged(seconds), Is.EqualTo(radial));
+            Assert.That(ScareRules.Radius(seconds), Is.EqualTo(radius));
+            Assert.That(ScareRules.Contains(Vector2Int.zero, Vector2Int.right, Vector2Int.left, seconds), Is.EqualTo(radial));
         }
     }
 }

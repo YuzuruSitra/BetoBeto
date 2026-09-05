@@ -34,7 +34,8 @@ namespace BetoBeto.Stage
         public Recipe recipe = new Recipe();
         public int escapeLimit = 10;
         public float spawnInterval = 3.6f;
-        public float iceLifetime = 5f;
+        // Retained for version 1 JSON compatibility; the scare ability does not use this value.
+        [HideInInspector] public float iceLifetime = 5f;
         public float droolLifetime = 10f;
 
         public bool Contains(Vector2Int cell) => cell.x >= 0 && cell.y >= 0 && cell.x < width && cell.y < height;

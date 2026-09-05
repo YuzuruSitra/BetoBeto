@@ -156,7 +156,7 @@ namespace BetoBeto.Editor
                     File.WriteAllText(sourcePath, json); AssetDatabase.ImportAsset(sourcePath); source = AssetDatabase.LoadAssetAtPath<TextAsset>(sourcePath);
                 }
                 entries.Add(new StageEntry { id = sceneName, title = data.name, sceneName = sceneName, layoutJson = source,
-                    description = data.width == 16 ? "2本のパイプと4つの罠。まずは氷とよだれで道づくり。" : "3本のパイプから大にぎわい。長い通路で連鎖をねらおう。" });
+                    description = data.width == 16 ? "2本のパイプと4つの罠。驚かせて、よだれへ誘導しよう。" : "3本のパイプから大にぎわい。長い通路で連鎖をねらおう。" });
                 catalog.stages = entries.ToArray(); EditorUtility.SetDirty(catalog);
             }
             var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
@@ -192,7 +192,6 @@ namespace BetoBeto.Editor
                 Vector3[] fruits = { new Vector3(-1.8f, 0, -.7f), new Vector3(.4f, 0, -1.4f), new Vector3(2f, 0, .6f), new Vector3(-.8f, 0, 1.75f) };
                 for (int i = 0; i < 4; i++) Instantiate(assets.fruits[i], diorama, fruits[i], "Fruit friend");
                 Instantiate(assets.drool, diorama, new Vector3(-.8f, -.02f, -.9f), "Drool puddle");
-                Instantiate(assets.ice, diorama, new Vector3(1.7f, 0, 1.8f), "Ice block");
             }
             RenderSettings.ambientMode = AmbientMode.Flat; RenderSettings.ambientLight = new Color(.67f, .76f, .82f); RenderSettings.skybox = null;
             EditorSceneManager.SaveScene(scene, path);

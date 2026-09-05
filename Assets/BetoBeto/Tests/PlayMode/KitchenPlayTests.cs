@@ -28,28 +28,27 @@ namespace BetoBeto.Tests
             Assert.That(game.Session.State, Is.EqualTo(GameState.Playing));
             game.StartGame();
         }
-        [Test] public void IceCannotOverlapWallPipeShredderOrFruit()
+        [Test] public void DroolCannotOverlapWallPipeShredderButCanShareFruitCell()
         {
-            Assert.That(game.TryPlaceIce(new Vector2Int(0, 0)), Is.False);
-            Assert.That(game.TryPlaceIce(game.Board.Pipes[0]), Is.False);
-            Assert.That(game.TryPlaceIce(new Vector2Int(5, 3)), Is.False);
+            Assert.That(game.TryPlaceDrool(new Vector2Int(0, 0)), Is.False);
+            Assert.That(game.TryPlaceDrool(game.Board.Pipes[0]), Is.False);
+            Assert.That(game.TryPlaceDrool(new Vector2Int(5, 3)), Is.False);
             game.SpawnFruit(FruitKind.Strawberry, new Vector2Int(3, 3));
-            Assert.That(game.TryPlaceIce(new Vector2Int(3, 3)), Is.False);
-            Assert.That(game.TryPlaceIce(new Vector2Int(4, 3)), Is.True);
+            Assert.That(game.TryPlaceDrool(new Vector2Int(3, 3)), Is.True);
         }
-        [UnityTest] public IEnumerator PausedIceDoesNotMeltAndResumesCorrectly()
+        [UnityTest] public IEnumerator PausedDroolDoesNotExpireAndResumesCorrectly()
         {
-            game.Board.Data.iceLifetime = 1;
+            game.Board.Data.droolLifetime = 1;
             var cell = new Vector2Int(4, 3);
-            game.TryPlaceIce(cell);
+            game.TryPlaceDrool(cell);
             game.Hud.TogglePause();
             Assert.That(game.Session.State, Is.EqualTo(GameState.Paused));
-            float before = game.Board.Ice[cell];
+            float before = game.Board.Drool[cell];
             yield return new WaitForSeconds(.2f);
-            Assert.That(game.Board.Ice[cell], Is.EqualTo(before));
+            Assert.That(game.Board.Drool[cell], Is.EqualTo(before));
             game.Hud.TogglePause();
             yield return new WaitForSeconds(1.25f);
-            Assert.That(game.Board.Ice.ContainsKey(cell), Is.False);
+            Assert.That(game.Board.Drool.ContainsKey(cell), Is.False);
         }
         [Test] public void DroolStartsASlideAndWallStopsIt()
         {
@@ -67,6 +66,15 @@ namespace BetoBeto.Tests
             fruit.Tick(.1f);
             Assert.That(fruit.transform.position.x, Is.LessThan(before.x));
             Assert.That(game.Feedback.HitStopped, Is.True);
+        }
+        [UnityTest] public IEnumerator DroolCanBePlacedAgainAfterShortCooldown()
+        {
+            Assert.That(game.TryPlaceDrool(new Vector2Int(4, 3)), Is.True);
+            Assert.That(game.DroolCooldown, Is.EqualTo(.3f));
+            Assert.That(game.TryPlaceDrool(new Vector2Int(4, 2)), Is.False);
+            yield return new WaitForSeconds(.4f);
+            Assert.That(game.TryPlaceDrool(new Vector2Int(4, 2)), Is.True);
+            Assert.That(game.Board.Drool.Count, Is.EqualTo(2));
         }
         [Test] public void DroolAtFruitCellActuallyTriggersSlide()
         {
@@ -202,12 +210,15 @@ namespace BetoBeto.Tests
         }
         [Test] public void RetryResetsCountersActorsAndTemporaryObjects()
         {
-            game.TryPlaceIce(new Vector2Int(4, 3));
+            game.TryPlaceDrool(new Vector2Int(4, 3));
+            game.TryScare(new Vector2Int(4, 3), Vector2Int.right, 0);
             game.Session.Escape(); game.Session.Harvest(FruitKind.Strawberry, 3);
             game.SpawnFruit(FruitKind.Strawberry, new Vector2Int(3, 3));
             game.StartGame();
             Assert.That(game.Session.Escaped + game.Session.Score, Is.Zero);
-            Assert.That(game.Board.Ice.Count + game.Board.Drool.Count + game.ActiveFruitCount, Is.Zero);
+            Assert.That(game.Board.Drool.Count + game.ActiveFruitCount, Is.Zero);
+            Assert.That(game.DroolCooldown, Is.Zero);
+            Assert.That(game.Player.IsCharging, Is.False);
             Assert.That(game.Session.State, Is.EqualTo(GameState.Playing));
         }
         FruitAgent SpawnReady(FruitKind kind, Vector2Int cell)

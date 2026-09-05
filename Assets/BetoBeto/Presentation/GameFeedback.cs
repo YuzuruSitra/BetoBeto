@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BetoBeto.Core;
 using BetoBeto.Enemies;
+using BetoBeto.Player;
 using BetoBeto.Stage;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -11,6 +12,7 @@ namespace BetoBeto.Presentation
     public sealed class GameFeedback : MonoBehaviour
     {
         public static readonly Color Mint = new Color(.48f, 1, .83f);
+        public static readonly Color Lavender = new Color(.84f, .67f, 1);
         GameController game;
         readonly Dictionary<Vector2Int, Transform> props = new Dictionary<Vector2Int, Transform>();
         Vector3 cameraRest;
@@ -70,13 +72,37 @@ namespace BetoBeto.Presentation
             game.Hud.FloatMessage(point + Vector3.up * 1.9f, fruit.Chain + " CHAIN!", Mint, 30 + Mathf.Min(fruit.Chain, 6), "chain");
             game.Audio.PlayChain(fruit.Chain);
         }
-        public void WallImpact(FruitAgent fruit, bool ice)
+        public void ScareReady(Vector3 point)
+        {
+            Ring(point, Color.white, .35f, 1.2f, .32f);
+            game.Audio.Play("scareReady");
+        }
+        public void FruitScared(FruitAgent fruit)
+        {
+            game.Hud.FloatMessage(fruit.transform.position + Vector3.up * 1.2f, "！", Lavender, 35);
+            Ring(fruit.transform.position, Lavender, .18f, .55f, .22f);
+        }
+        public void ScareBurst(Vector3 source, Vector3 front, float seconds, int hits)
+        {
+            bool charged = ScareRules.IsCharged(seconds);
+            float power = ScareRules.Charge01(seconds);
+            Vector3 point = charged ? source : front;
+            float radius = charged ? ScareRules.Radius(seconds) : .65f;
+            Ring(point, Lavender, .15f, radius, .22f + power * .22f);
+            Ring(point, Color.white, .1f, radius * .88f, .3f + power * .22f);
+            if (!charged) Ring(source, Lavender, .15f, .65f, .28f);
+            Splash(source, charged ? Vector3.zero : (front - source).normalized, 6 + Mathf.RoundToInt(power * 12), game.assets.sparkleMaterial, 1.3f + power);
+            if (hits > 0) Kick(.045f + power * .06f, .025f);
+            game.Hud.FloatMessage(source + Vector3.up * 1.5f, power >= 1 ? "わあっ！！" : "わっ！", Lavender, 26 + Mathf.RoundToInt(power * 10), "scare");
+            game.Audio.PlayScare(power);
+        }
+        public void WallImpact(FruitAgent fruit)
         {
             Vector3 point = fruit.transform.position + fruit.Forward * .43f;
-            Ring(point, ice ? Mint : new Color(1, .8f, .44f), .2f, 1.4f, .33f);
-            Splash(point, -fruit.Forward, 18, ice ? game.assets.droolMaterial : game.assets.sparkleMaterial, 3.6f);
+            Ring(point, new Color(1, .8f, .44f), .2f, 1.4f, .33f);
+            Splash(point, -fruit.Forward, 18, game.assets.sparkleMaterial, 3.6f);
             Kick(.15f + Mathf.Min(fruit.Chain, 5) * .017f, .058f);
-            game.Hud.FloatMessage(point + Vector3.up * .85f, ice ? "カチン！" : "ゴツン！", new Color(1, .88f, .61f), 29);
+            game.Hud.FloatMessage(point + Vector3.up * .85f, "ゴツン！", new Color(1, .88f, .61f), 29);
             Wobble(fruit.TargetCell, fruit.Forward);
             game.Audio.Play("wall");
         }

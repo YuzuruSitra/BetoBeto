@@ -19,11 +19,11 @@ namespace BetoBeto.UI
         GameObject modal;
         RectTransform feedbackLayer;
         readonly Dictionary<string, FloatingWord> messages = new Dictionary<string, FloatingWord>();
-        Text escapeText, timeText, scoreText, noticeText, countText, stageText, iceText, droolText, countdown;
+        Text escapeText, timeText, scoreText, noticeText, countText, stageText, scareText, droolText, countdown;
         Text dessertText;
         readonly Text[] recipeCounts = new Text[4];
         readonly Image[] recipeFills = new Image[4];
-        Image recipeFill;
+        Image recipeFill, scareCharge;
         bool pausedByModal;
         GameState stateBeforeModal;
         public bool ModalOpen => modal != null && modal.activeSelf;
@@ -83,8 +83,9 @@ namespace BetoBeto.UI
             var footer = Stretch(root, "Controls", Vector2.zero, new Vector2(1, .106f), new Vector2(23, 19), new Vector2(-23, 0), Cream);
             Label(footer, "左スティック / 十字キー  移動", new Vector2(23, -13), new Vector2(390, 26), 17, Ink, FontStyle.Bold);
             Label(footer, "右スティックで向き調整  ·  MENUで一時停止", new Vector2(24, -43), new Vector2(410, 23), 13, Muted);
-            iceText = Label(footer, "", new Vector2(440, -13), new Vector2(470, 26), 17, Ink, FontStyle.Bold);
-            Label(footer, $"左ボタン  ·  向いている前方1マス  ·  {game.Board.Data.iceLifetime:0.#}秒で溶ける", new Vector2(441, -43), new Vector2(520, 23), 13, Muted);
+            scareText = Label(footer, "", new Vector2(440, -10), new Vector2(550, 26), 17, Ink, FontStyle.Bold);
+            Label(footer, "左ボタン (X / □)  ·  単押し：自分＋前方 / 長押し：最大半径6マス", new Vector2(441, -36), new Vector2(560, 23), 13, Muted);
+            scareCharge = Fill(Box(footer, "Scare charge track", new Vector2(441, -65), new Vector2(530, 5), Hex("E9E2D6")), Hex("AD82D6"));
             droolText = Label(footer, "", new Vector2(1020, -13), new Vector2(400, 26), 17, Ink, FontStyle.Bold);
             Label(footer, "下ボタン  ·  足元に置いて連鎖！", new Vector2(1021, -43), new Vector2(430, 23), 13, Muted);
             feedbackLayer = new GameObject("Floating feedback", typeof(RectTransform)).GetComponent<RectTransform>();
@@ -135,11 +136,12 @@ namespace BetoBeto.UI
             stateBeforeModal = game.Session.State;
             pausedByModal = stateBeforeModal == GameState.Playing;
             if (pausedByModal) game.Session.State = GameState.Paused;
+            game.Player?.CancelScare();
             modal = Overlay("Options", .85f);
             var card = CenterCard(modal.transform, "Options card", new Vector2(760, 716));
             Label(card, pausedByModal ? "ひとやすみ" : "あそびかた・音量設定", new Vector2(35, -29), new Vector2(690, 51), 30, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-            Label(card, $"01  フルーツは普段、シュレッダーを避けて歩く。\n02  氷で道をふさぐ。{game.Board.Data.iceLifetime:0.#}秒で溶けるのでタイミングが大事。\n03  足元によだれを置き、進行方向へまっすぐ滑らせる。\n04  ほかのフルーツを巻き込むほど加速＆得点アップ！\n05  滑らせた勢いで、ピンクのシュレッダーに突っ込ませよう。", new Vector2(46, -112), new Vector2(675, 182), 17, Ink);
-            Label(card, "左スティックで移動 / 右スティックで向き / 下ボタンでよだれ\n左ボタンで前方に氷 / 音量は上下で選び、左右で調整", new Vector2(46, -307), new Vector2(675, 63), 16, Muted);
+            Label(card, "01  フルーツは普段、シュレッダーを避けて歩く。\n02  単押し：自分＋前方1マスの敵を、向いている方向へ。\n03  長押し：周囲の敵を、おばけから離れる方向へ。\n04  1.5秒で最大半径6マス。ボタンを離すと発動！\n05  逃げ道によだれを置くと、まっすぐ滑って連鎖する。\n06  刃の1マス前なら、驚かすだけでも飛び込ませられる！", new Vector2(46, -112), new Vector2(675, 182), 17, Ink);
+            Label(card, "左スティックで移動 / 右スティックで向き / 下ボタンでよだれ\n左ボタンで驚かす：ためて離すと発動 / 音量は上下・左右で調整", new Vector2(46, -307), new Vector2(675, 63), 16, Muted);
             SliderRow(card, "BGM", -399, game.Audio.MusicVolume, game.Audio.SetMusic);
             SliderRow(card, "効果音", -469, game.Audio.EffectsVolume, game.Audio.SetEffects);
             var resume = Button(card, pausedByModal ? "キッチンに戻る" : "閉じる", new Vector2(50, -563), new Vector2(660, 55), Pink, Color.white, () => CloseModal(true), 21);
@@ -174,7 +176,13 @@ namespace BetoBeto.UI
             float fraction = session.RecipeCount / (float)session.Recipe.Total;
             countText.text = $"できあがり  {Mathf.RoundToInt(fraction * 100)}%";
             recipeFill.rectTransform.anchorMax = new Vector2(fraction, 1);
-            iceText.text = game.IceCooldown > 0 ? $"ICE BLOCK   あと {game.IceCooldown:0.0} 秒" : "ICE BLOCK   氷で道を変える";
+            var player = game.Player;
+            bool charging = player != null && player.IsCharging;
+            scareText.text = charging
+                ? player.ChargeSeconds < ScareRules.TapSeconds ? "BOO!   自分＋前方1マス · 向いている方向へ"
+                    : $"BOO!   {(player.Charge01 >= 1 ? "MAX! " : "チャージ ")}半径{player.ScareRadius}マス · 離して発動"
+                : "BOO!   驚かして向きを変える";
+            scareCharge.rectTransform.anchorMax = new Vector2(charging ? player.Charge01 : 0, 1);
             droolText.text = game.DroolCooldown > 0 ? $"DROOL   あと {game.DroolCooldown:0.0} 秒" : "DROOL   よだれで滑らせる";
             noticeText.text = !GamepadControls.Ready ? "ゲームパッドを接続して、いずれかのボタンを押してください" : session.State == GameState.Playing && Time.unscaledTime < game.NoticeUntil ? game.Notice : "";
             countdown.text = GamepadControls.Ready && session.State == GameState.Playing && game.Countdown > 0 ? Mathf.CeilToInt(game.Countdown).ToString() : "";

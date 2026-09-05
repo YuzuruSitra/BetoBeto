@@ -27,7 +27,7 @@ namespace BetoBeto.Tests
         }
         [TearDown] public void Cleanup() { pad.Dispose(); }
 
-        [UnityTest] public IEnumerator RightStickTurnsInPlaceAndPlacesIceInFrontDroolAtFeet()
+        [UnityTest] public IEnumerator RightStickTurnsInPlaceAndScaresInFrontDroolsAtFeet()
         {
             var ghost = Object.FindFirstObjectByType<GhostController>();
             var cell = new Vector2Int(4, 4);
@@ -42,21 +42,24 @@ namespace BetoBeto.Tests
             Assert.That(ghost.Facing, Is.EqualTo(Vector2Int.right), "Stick drift must not change facing.");
             yield return pad.Press(GamepadButton.South);
             Assert.That(game.Board.Drool.ContainsKey(cell), Is.True);
+            var fruit = game.SpawnFruit(FruitKind.Strawberry, cell + Vector2Int.right);
+            fruit.Tick(.7f);
             yield return pad.Press(GamepadButton.West);
-            Assert.That(game.Board.Ice.ContainsKey(cell + Vector2Int.right), Is.True);
-            Assert.That(game.Board.Ice.Count, Is.EqualTo(1));
+            Assert.That(fruit.IsFleeing, Is.True);
+            Assert.That(fruit.Direction, Is.EqualTo(Vector2Int.right));
             Assert.That(ghost.transform.position, Is.EqualTo(game.Board.Data.World(cell)));
         }
-        [UnityTest] public IEnumerator BlockedForwardIceDoesNotPlaceOnAnotherTile()
+        [UnityTest] public IEnumerator ScaringEmptyFrontTileDoesNotAffectFruitBehindPlayer()
         {
             var ghost = Object.FindFirstObjectByType<GhostController>();
             ghost.transform.position = game.Board.Data.World(new Vector2Int(7, 4));
             pad.State(new GamepadState { rightStick = Vector2.up });
             yield return null; yield return null;
-            Assert.That(game.Board.Walls.Contains(ghost.IceTarget), Is.True);
+            Assert.That(game.Board.Walls.Contains(ghost.ScareTarget), Is.True);
+            var fruit = game.SpawnFruit(FruitKind.Strawberry, new Vector2Int(7, 5));
+            fruit.Tick(.7f);
             yield return pad.Press(GamepadButton.West);
-            Assert.That(game.Board.Ice, Is.Empty);
-            Assert.That(game.IceCooldown, Is.Zero);
+            Assert.That(fruit.IsFleeing, Is.False);
         }
         [UnityTest] public IEnumerator FruitFaceFollowsWalkingAndCollisionSlide()
         {

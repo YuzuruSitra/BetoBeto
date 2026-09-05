@@ -6,7 +6,7 @@
   let stage = M.clone(M.sample), brush = '#', undo = [], redo = [], drawing = false, panning = false, space = false;
   let last = null, hover = null, strokeBefore = null, zoom = 1, baseCell = 40, pan = { x: 0, y: 0 }, dimensions = { w: 1, h: 1 }, toastTimer;
   try { const saved = localStorage.getItem(storageKey); if (saved) { const candidate = JSON.parse(saved); if (Array.isArray(candidate.rows) && candidate.rows.length === candidate.height && candidate.rows.every(row => typeof row === 'string' && row.length === candidate.width) && candidate.width >= 16 && candidate.width <= 32 && candidate.height >= 9 && candidate.height <= 18 && candidate.recipe) stage = candidate; } } catch (_) {}
-  const fields = ['name', 'dessert', 'width', 'height', 'escapeLimit', 'spawnInterval', 'iceLifetime', 'droolLifetime'];
+  const fields = ['name', 'dessert', 'width', 'height', 'escapeLimit', 'spawnInterval', 'droolLifetime'];
   const ingredients = ['strawberry', 'blueberry', 'orange', 'melon'];
   function sync() {
     for (const key of fields) $(key).value = stage[key];
