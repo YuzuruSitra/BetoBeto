@@ -6,7 +6,19 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/BetoBeto/Scenes/Title.unity
+    guid: 4da8a2a231511324caf69f44c68b5f17
+  - enabled: 1
+    path: Assets/BetoBeto/Scenes/StageSelect.unity
+    guid: 0d90023328c88454bb33a957d36cf71d
+  - enabled: 1
+    path: Assets/BetoBeto/Scenes/Kitchen.unity
+    guid: cfc1c5b9efc326b4783351fdb7a01567
+  - enabled: 1
+    path: Assets/BetoBeto/Scenes/Kitchen02.unity
+    guid: 5c181febaa1718043a6784e77f7ccf93
+  - enabled: 1
+    path: Assets/BetoBeto/Scenes/Result.unity
+    guid: 2dfa09c116e09dc46b4638bee6839712
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

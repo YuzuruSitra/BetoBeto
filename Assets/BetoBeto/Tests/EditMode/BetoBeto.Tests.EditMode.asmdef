@@ -1,0 +1,6 @@
+{
+  "name": "BetoBeto.Tests.EditMode",
+  "references": ["BetoBeto.Runtime", "BetoBeto.Editor"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

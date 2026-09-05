@@ -1,0 +1,7 @@
+{
+  "name": "BetoBeto.Editor",
+  "rootNamespace": "BetoBeto.Editor",
+  "references": ["BetoBeto.Runtime"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

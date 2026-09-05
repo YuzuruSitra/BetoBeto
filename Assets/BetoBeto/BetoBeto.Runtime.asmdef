@@ -1,0 +1,6 @@
+{
+  "name": "BetoBeto.Runtime",
+  "rootNamespace": "BetoBeto",
+  "references": ["Unity.InputSystem", "Unity.ugui"],
+  "autoReferenced": true
+}

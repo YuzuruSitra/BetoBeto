@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bff4b9b142ddfa438c4b46f8d32c323, type: 3}
+  m_Name: GameAssets
+  m_EditorClassIdentifier: BetoBeto.Runtime::BetoBeto.Core.GameAssets
+  tile: {fileID: 2758218566353440756, guid: 2245337853216d04a87f494640705dc1, type: 3}
+  wall: {fileID: 7022957316174179287, guid: 41b4108bba644014d80d0b62972f352a, type: 3}
+  pipe: {fileID: 8395480134984301213, guid: 990fde6635b8cfd43b5c03e9bfb8db36, type: 3}
+  shredder: {fileID: 6779962682988676621, guid: 128a4c38740312640bcb350c5c68aa60, type: 3}
+  exit: {fileID: 914409903353964397, guid: 852bd4130ada0184280751566c075af3, type: 3}
+  playerStart: {fileID: 6472417708552024958, guid: e50de578e437b2b49bc558bcf31253c6, type: 3}
+  ghost: {fileID: 6986263598238758455, guid: 1c3a4a7155d1d8042abf0f1a2a1e2b34, type: 3}
+  ice: {fileID: 5442817956387831448, guid: ffc0a5dbfd41f3941b7d6c3b2d54f723, type: 3}
+  drool: {fileID: 4097679366210277601, guid: 693608889429ed348bfcac3221aea0a5, type: 3}
+  fruits:
+  - {fileID: 5968596507438207331, guid: b321e6727569b3f4f9d52fa6f5e0b450, type: 3}
+  - {fileID: 107356315629159679, guid: 099ee13a884c66f4cb8a3e67d8078485, type: 3}
+  - {fileID: 2125199468409084405, guid: e85c888da2924bf458aacfb1b280bab6, type: 3}
+  - {fileID: 3976561658103070156, guid: ea94263c3d57ab44bb39db5ef575eb95, type: 3}
+  fruitMaterials:
+  - {fileID: 2100000, guid: 16effac04ec944443a666e417c117f95, type: 2}
+  - {fileID: 2100000, guid: 2bd3f387939199644925e8d94f910d4d, type: 2}
+  - {fileID: 2100000, guid: d0b0733dc4e1ad841ab73d3c8ea7ad45, type: 2}
+  - {fileID: 2100000, guid: de3f5955ec4b44a438058dde17d72273, type: 2}
+  sparkleMaterial: {fileID: 2100000, guid: 7062605f2d1eec94fb4c73da2557bfc5, type: 2}
+  placementMaterial: {fileID: 2100000, guid: 94b9a68d820e9fc4ba033dc5ccba3598, type: 2}
+  effectMaterial: {fileID: 2100000, guid: fc98ca3d39901fc4a815ea9ca74d3afd, type: 2}
+  droolMaterial: {fileID: 2100000, guid: 2af268637f5b81e4db368a2f14a8d4fb, type: 2}

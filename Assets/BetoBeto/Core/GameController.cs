@@ -1,0 +1,283 @@
+using System.Collections.Generic;
+using System.Collections;
+using BetoBeto.Audio;
+using BetoBeto.Enemies;
+using BetoBeto.Player;
+using BetoBeto.Presentation;
+using BetoBeto.Stage;
+using BetoBeto.UI;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+namespace BetoBeto.Core
+{
+    public sealed class GameController : MonoBehaviour
+    {
+        public static GameController Instance { get; private set; }
+        public GameAssets assets;
+        public StageLayout layout;
+        public Camera gameCamera;
+        public GameSession Session { get; private set; }
+        public StageBoard Board { get; private set; }
+        public Camera GameCamera => gameCamera;
+        public GameAudio Audio { get; private set; }
+        public GameHud Hud { get; private set; }
+        public GameFeedback Feedback { get; private set; }
+        public Transform FeedbackRoot => effects;
+        public float IceCooldown { get; private set; }
+        public float DroolCooldown { get; private set; }
+        public float Countdown { get; private set; }
+        public int ActiveFruitCount => fruits.Count;
+        public string Notice { get; private set; }
+        public float NoticeUntil { get; private set; }
+        public IReadOnlyList<FruitAgent> Fruits => fruits;
+        readonly List<FruitAgent> fruits = new List<FruitAgent>();
+        readonly Dictionary<Vector2Int, GameObject> iceVisuals = new Dictionary<Vector2Int, GameObject>();
+        readonly Dictionary<Vector2Int, GameObject> droolVisuals = new Dictionary<Vector2Int, GameObject>();
+        readonly List<Vector2Int> expired = new List<Vector2Int>();
+        Transform actors;
+        Transform effects;
+        Transform pointer;
+        Renderer pointerRenderer;
+        Material pointerMaterial;
+        float spawnTimer;
+        int spawnIndex;
+        int lastWidth, lastHeight;
+        GameState shownState;
+
+        void Awake()
+        {
+            Instance = this;
+            GameFlow.SceneReady();
+            Application.targetFrameRate = 60;
+            Application.runInBackground = true;
+            Board = new StageBoard(layout);
+            Session = new GameSession(Board.Data);
+            Audio = GameAudio.GetOrCreate();
+            actors = new GameObject("Actors").transform;
+            effects = new GameObject("Feedback").transform;
+            Feedback = gameObject.AddComponent<GameFeedback>();
+            Feedback.Initialize(this);
+            Hud = gameObject.AddComponent<GameHud>();
+            Hud.Initialize(this);
+            BuildPointer();
+            FitCamera();
+            StartGame();
+        }
+        void BuildPointer()
+        {
+            var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            go.name = "Placement highlight";
+            Destroy(go.GetComponent<Collider>());
+            pointer = go.transform;
+            pointer.localScale = new Vector3(.92f, .025f, .92f);
+            pointerMaterial = new Material(assets.placementMaterial != null ? assets.placementMaterial : assets.sparkleMaterial);
+            pointerMaterial.color = new Color(.4f, 1, .9f);
+            pointerRenderer = go.GetComponent<Renderer>();
+            pointerRenderer.sharedMaterial = pointerMaterial;
+            go.SetActive(false);
+        }
+        void Update()
+        {
+            if (Screen.width != lastWidth || Screen.height != lastHeight) FitCamera();
+            var keyboard = Keyboard.current;
+            if (keyboard != null)
+            {
+                if (keyboard.escapeKey.wasPressedThisFrame) Hud.TogglePause();
+            }
+            if (Session.State == GameState.Playing)
+            {
+                float dt = Feedback.SimulationDelta;
+                IceCooldown = Mathf.Max(0, IceCooldown - dt);
+                DroolCooldown = Mathf.Max(0, DroolCooldown - dt);
+                Session.Elapsed += dt;
+                TickPlacement(Board.Ice, iceVisuals, dt, true);
+                TickPlacement(Board.Drool, droolVisuals, dt, false);
+                Countdown = Mathf.Max(0, Countdown - dt);
+                if (Countdown <= 0)
+                {
+                    spawnTimer -= dt;
+                    if (spawnTimer <= 0 && fruits.Count < 24 && Board.Pipes.Count > 0)
+                    {
+                        SpawnFruit(NextKind(), Board.Pipes[spawnIndex % Board.Pipes.Count]);
+                        spawnIndex++;
+                        spawnTimer = Board.Data.spawnInterval;
+                    }
+                    for (int i = fruits.Count - 1; i >= 0; i--)
+                    {
+                        if (Session.State != GameState.Playing) break;
+                        fruits[i].Tick(dt);
+                        if (Feedback.HitStopped) break;
+                    }
+                    fruits.RemoveAll(f => f == null || f.Removed);
+                }
+            }
+            if (shownState != Session.State)
+            {
+                shownState = Session.State;
+                if (shownState == GameState.Won || shownState == GameState.Lost)
+                {
+                    pointer.gameObject.SetActive(false);
+                    Audio.Play(shownState == GameState.Won ? "win" : "escape");
+                    if (shownState == GameState.Won) for (int i = 0; i < 4; i++) Burst(Board.Data.World(Board.PlayerStart), (FruitKind)i, 12);
+                    StartCoroutine(GoToResult());
+                }
+            }
+            Hud.Refresh();
+        }
+        public void StartGame()
+        {
+            StopAllCoroutines();
+            ClearChildren(actors); ClearChildren(effects);
+            Feedback.ResetFeedback(); Hud.ClearFeedback();
+            fruits.Clear(); iceVisuals.Clear(); droolVisuals.Clear();
+            Board = new StageBoard(layout);
+            Session = new GameSession(Board.Data) { State = GameState.Playing };
+            shownState = GameState.Playing;
+            IceCooldown = DroolCooldown = 0;
+            spawnTimer = 0; spawnIndex = 0; Countdown = 2.8f;
+            var ghost = Instantiate(assets.ghost, Board.Data.World(Board.PlayerStart), Quaternion.identity, actors);
+            ghost.GetComponent<GhostController>().Initialize(this);
+            Notify("よだれで滑らせて、ピンクのシュレッダーへ！", 6);
+        }
+        IEnumerator GoToResult()
+        {
+            yield return new WaitForSecondsRealtime(1.1f);
+            GameFlow.Complete(Session, Board.Data);
+        }
+        FruitKind NextKind()
+        {
+            FruitKind[] sequence = { FruitKind.Strawberry, FruitKind.Blueberry, FruitKind.Orange, FruitKind.Strawberry, FruitKind.Blueberry, FruitKind.Melon, FruitKind.Orange };
+            var kind = sequence[spawnIndex % sequence.Length];
+            if (Session.Harvested[(int)kind] < Session.Recipe.For(kind)) return kind;
+            for (int i = 0; i < 4; i++) if (Session.Harvested[i] < Session.Recipe.For((FruitKind)i)) return (FruitKind)i;
+            return kind;
+        }
+        public FruitAgent SpawnFruit(FruitKind kind, Vector2Int cell)
+        {
+            var instance = Instantiate(assets.fruits[(int)kind], Board.Data.World(cell), Quaternion.identity, actors);
+            var fruit = instance.GetComponent<FruitAgent>();
+            fruit.Initialize(this, cell, (spawnIndex & 1) == 0);
+            fruits.Add(fruit);
+            return fruit;
+        }
+        public bool TryPlaceIce(Vector2Int cell)
+        {
+            if (Session.State != GameState.Playing || IceCooldown > 0) return false;
+            if (!Board.CanPlace(cell) || Board.Drool.ContainsKey(cell)) { Notify("ここには氷を置けません", 1.2f); return false; }
+            foreach (var fruit in fruits)
+                if (!fruit.Removed && (fruit.Cell == cell || fruit.TargetCell == cell)) { Notify("フルーツのいるマスには置けません", 1.2f); return false; }
+            Board.Ice.Add(cell, Board.Data.iceLifetime);
+            iceVisuals.Add(cell, Instantiate(assets.ice, Board.Data.World(cell), Quaternion.identity, effects));
+            IceCooldown = .7f;
+            Audio.Play("ice"); return true;
+        }
+        public bool TryPlaceDrool(Vector2Int cell)
+        {
+            if (Session.State != GameState.Playing || DroolCooldown > 0) return false;
+            if (!Board.CanPlace(cell)) { Notify("床の上でよだれを置こう", 1.2f); return false; }
+            if (!Board.Drool.ContainsKey(cell)) droolVisuals.Add(cell, Instantiate(assets.drool, Board.Data.World(cell, .025f), Quaternion.identity, effects));
+            Board.Drool[cell] = Board.Data.droolLifetime;
+            DroolCooldown = 1.25f; Audio.Play("drool");
+            foreach (var fruit in fruits) if (!fruit.Removed && fruit.Cell == cell) fruit.BeginSlide(fruit.Direction, 1);
+            return true;
+        }
+        void TickPlacement(Dictionary<Vector2Int, float> timers, Dictionary<Vector2Int, GameObject> visuals, float dt, bool ice)
+        {
+            expired.Clear();
+            // Snapshot keys because timer values are written back while iterating.
+            var keys = new List<Vector2Int>(timers.Keys);
+            foreach (var cell in keys)
+            {
+                float remaining = timers[cell] - dt;
+                timers[cell] = remaining;
+                if (remaining <= 0) { expired.Add(cell); continue; }
+                if (visuals.TryGetValue(cell, out var go) && go != null)
+                {
+                    float shrink = remaining < 1.4f ? .82f + .18f * Mathf.Abs(Mathf.Sin(remaining * 11)) : 1;
+                    go.transform.localScale = ice ? new Vector3(1, Mathf.Lerp(.55f, 1, remaining / Board.Data.iceLifetime), 1) * shrink : Vector3.one * shrink;
+                }
+            }
+            foreach (var cell in expired)
+            {
+                timers.Remove(cell);
+                if (visuals.TryGetValue(cell, out var go)) Destroy(go);
+                visuals.Remove(cell);
+            }
+        }
+        public void ShowPlacement(Vector2Int cell, bool visible)
+        {
+            pointer.gameObject.SetActive(visible && Session.State == GameState.Playing && Board.Data.Contains(cell));
+            pointer.position = Board.Data.World(cell, .018f);
+            pointerMaterial.color = Board.CanPlace(cell) && !Board.Drool.ContainsKey(cell) ? new Color(.48f, .91f, .9f) : new Color(1, .35f, .42f);
+        }
+        public void PropagateSlide(FruitAgent source)
+        {
+            foreach (var target in fruits)
+            {
+                if (target == source || target.Removed || target.Sliding) continue;
+                Vector3 delta = target.transform.position - source.transform.position;
+                if (delta.sqrMagnitude > .64f) continue;
+                Vector3 forward = new Vector3(source.Direction.x, 0, -source.Direction.y);
+                if (Vector3.Dot(delta, forward) < -.15f) continue;
+                target.JoinSlide(source);
+            }
+        }
+        public void OnSlide(FruitAgent fruit, bool collision)
+        {
+            Session.RecordChain(fruit.Chain);
+            if (collision)
+            {
+                Feedback.ChainImpact(fruit);
+                Notify($"{fruit.Chain} CHAIN!  巻き込むほど加速！", 2);
+            }
+            else Feedback.SlideStart(fruit);
+        }
+        public void HarvestFruit(FruitAgent fruit)
+        {
+            if (fruit.Removed || !fruit.Sliding || !Board.Shredders.Contains(fruit.Cell)) return;
+            Feedback.Harvest(fruit);
+            Session.Harvest(fruit.kind, fruit.Chain);
+            Notify($"+{100 * fruit.Chain}   {GameHud.FruitNames[(int)fruit.kind]}を収穫！", 1.7f);
+            fruit.MarkRemoved();
+        }
+        public void EscapeFruit(FruitAgent fruit)
+        {
+            if (fruit.Removed) return;
+            Session.Escape(); Audio.Play("escape");
+            Notify($"フルーツが逃げた！  あと{Mathf.Max(0, Session.EscapeLimit - Session.Escaped)}回", 2);
+            fruit.MarkRemoved();
+        }
+        public void Notify(string message, float duration) { Notice = message; NoticeUntil = Time.unscaledTime + duration; }
+        public void Burst(Vector3 position, FruitKind kind, int amount)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                var bit = GameObject.CreatePrimitive(i % 3 == 0 ? PrimitiveType.Cube : PrimitiveType.Sphere);
+                bit.name = "Fruit confetti"; Destroy(bit.GetComponent<Collider>());
+                bit.transform.SetParent(effects);
+                bit.transform.position = position + Vector3.up * .45f;
+                bit.transform.localScale = Vector3.one * Random.Range(.08f, .19f);
+                bit.GetComponent<Renderer>().sharedMaterial = i % 4 == 0 ? assets.sparkleMaterial : assets.fruitMaterials[(int)kind];
+                bit.AddComponent<BurstEffect>().Initialize(new Vector3(Random.Range(-2f, 2f), Random.Range(1.5f, 3.5f), Random.Range(-2f, 2f)), Random.Range(.5f, .9f));
+            }
+        }
+        void FitCamera()
+        {
+            lastWidth = Screen.width; lastHeight = Screen.height;
+            gameCamera.rect = new Rect(.013f, .12f, .755f, .745f);
+            float aspect = Mathf.Max(.5f, Screen.width * gameCamera.rect.width / (Screen.height * gameCamera.rect.height));
+            float vertical = Board.Data.height * .866f + 2.3f;
+            gameCamera.orthographicSize = Mathf.Max(vertical * .5f, (Board.Data.width + 1.7f) / (2 * aspect));
+            var target = new Vector3(0, .45f, .2f);
+            gameCamera.transform.position = target + new Vector3(0, 18, -10.3923f);
+            gameCamera.transform.LookAt(target);
+            Feedback.SetCameraRest();
+        }
+        static void ClearChildren(Transform root)
+        {
+            for (int i = root.childCount - 1; i >= 0; i--) { root.GetChild(i).gameObject.SetActive(false); Destroy(root.GetChild(i).gameObject); }
+        }
+        void OnDestroy() { if (Instance == this) Instance = null; if (pointerMaterial != null) Destroy(pointerMaterial); }
+    }
+}

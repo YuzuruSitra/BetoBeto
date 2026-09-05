@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BetoBeto — Kitchen Planner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-icon">B.</span><span>BETO BETO<small>KITCHEN PLANNER</small></span></a>
+    <span class="workspace-label">ステージエディタ <span class="tag">OFFLINE</span></span>
+    <div class="file-actions"><button id="load">JSONを開く</button><button id="export" class="primary">JSONを書き出す <span>↗</span></button></div>
+    <input id="file" type="file" accept=".json,application/json" hidden>
+  </header>
+  <main>
+    <aside class="palette">
+      <div class="eyebrow">01 / LAYOUT</div><h1>キッチンを作ろう。</h1><p class="intro">道を描いて、罠を置く。<br>フルーツたちの逃走劇を設計。</p>
+      <div class="tool-list" role="toolbar" aria-label="配置ツール">
+        <button class="tool active" data-brush="#"><span class="swatch cookie">▦</span><span>クッキーの壁<small>フルーツの進路をふさぐ</small></span><kbd>1</kbd></button>
+        <button class="tool" data-brush="."><span class="swatch floor">◇</span><span>床 / 消しゴム<small>通れる道をつくる</small></span><kbd>2</kbd></button>
+        <button class="tool" data-brush="P"><span class="swatch pipe">⇣</span><span>フルーツパイプ<small>最上段に2〜3基</small></span><kbd>3</kbd></button>
+        <button class="tool" data-brush="X"><span class="swatch shredder">✳</span><span>シュレッダー<small>4〜8箇所に配置</small></span><kbd>4</kbd></button>
+        <button class="tool" data-brush="E"><span class="swatch exit">↘</span><span>出口<small>外周に配置する</small></span><kbd>5</kbd></button>
+        <button class="tool" data-brush="G"><span class="swatch ghost">●</span><span>ゴースト開始位置<small>1箇所 · 壁をすり抜ける</small></span><kbd>6</kbd></button>
+      </div>
+      <div class="tip"><span>ちいさなヒント</span>曲がり角の先にシュレッダーを。<br>氷でふさぐ余地を残すと、<br>誘導する楽しさが生まれます。</div>
+      <button id="new" class="subtle">新しいステージ</button><button id="sample" class="subtle">サンプルを読み込む</button>
+    </aside>
+    <section class="workspace" aria-label="グリッド編集エリア">
+      <div class="canvas-toolbar"><div><strong id="map-name">はじめてのキッチン</strong><span id="dimensions">16 × 9</span></div><div class="history"><button id="undo" title="元に戻す (Ctrl+Z)">↶</button><button id="redo" title="やり直す (Ctrl+Shift+Z)">↷</button><span class="divider"></span><button id="zoom-out" aria-label="縮小">−</button><output id="zoom">100%</output><button id="zoom-in" aria-label="拡大">＋</button><button id="fit">全体表示</button></div></div>
+      <div class="canvas-wrap" id="canvas-wrap"><canvas id="canvas" tabindex="0" aria-label="左ドラッグで配置、右ドラッグで消去。ホイールで拡大縮小。"></canvas><div class="north-label">FRUIT PIPES / NORTH</div><div id="toast" role="status"></div></div>
+      <div class="canvas-status"><span><i></i><span id="save-state">この端末に自動保存</span></span><span id="coords">マスを選んでペイント</span><span>左ドラッグ：配置　右：消去　ホイール：ズーム　Space＋ドラッグ：移動</span></div>
+      <div class="validation" id="validation"><div><strong id="validation-title">レイアウトを確認中</strong><span id="placement-counts"></span></div><ul id="errors"></ul></div>
+    </section>
+    <aside class="settings">
+      <div class="eyebrow">02 / RECIPE & RULES</div><h2>ステージ設定</h2>
+      <label>ステージ名<input id="name" maxlength="48"></label>
+      <label>つくるスイーツ<input id="dessert" maxlength="48"></label>
+      <div class="two-col"><label>幅 <small>16–32</small><input id="width" type="number" min="16" max="32"></label><label>高さ <small>9–18</small><input id="height" type="number" min="9" max="18"></label></div>
+      <button id="resize">盤面サイズを適用</button>
+      <hr><h3>必要なフルーツ</h3><p class="caption">すべて集めるとスイーツが完成。</p>
+      <div class="ingredient"><span><i style="--fruit:#E96778"></i>イチゴ</span><input id="strawberry" aria-label="必要なイチゴの数" type="number" min="0" max="200"></div>
+      <div class="ingredient"><span><i style="--fruit:#7C86C3"></i>ブルーベリー</span><input id="blueberry" aria-label="必要なブルーベリーの数" type="number" min="0" max="200"></div>
+      <div class="ingredient"><span><i style="--fruit:#EDAA55"></i>オレンジ</span><input id="orange" aria-label="必要なオレンジの数" type="number" min="0" max="200"></div>
+      <div class="ingredient"><span><i style="--fruit:#9BAF68"></i>メロン</span><input id="melon" aria-label="必要なメロンの数" type="number" min="0" max="200"></div>
+      <hr><h3>ゲームルール</h3>
+      <div class="rule"><label for="escapeLimit">脱出上限</label><input id="escapeLimit" type="number" min="1" max="99"><span>個</span></div>
+      <div class="rule"><label for="spawnInterval">出現間隔</label><input id="spawnInterval" type="number" min="0.5" max="30" step="0.1"><span>秒</span></div>
+      <div class="rule"><label for="iceLifetime">氷の寿命</label><input id="iceLifetime" type="number" min="1" max="30" step="0.5"><span>秒</span></div>
+      <div class="rule"><label for="droolLifetime">よだれの寿命</label><input id="droolLifetime" type="number" min="1" max="60" step="0.5"><span>秒</span></div>
+      <div class="unity-note"><b>UNITYへの読み込み</b><p>JSONを書き出したら、Unityの<br><code>BetoBeto → Stage JSON Importer</code><br>から新しいシーンを作成できます。</p></div>
+    </aside>
+  </main>
+  <script src="stage-model.js"></script><script src="editor.js"></script>
+</body>
+</html>
