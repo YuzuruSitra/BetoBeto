@@ -91,3 +91,7 @@ Nodeでモデルのテスト10件を確認。JSONの入出力、配置制約、�
 今回のビルド警告1件は、Unity PipelineのPlayerサーバー無効化に関する通知です。Unity EditorからのUnityCLI操作は利用できます。ブラウザではFSR補間シェーダーの未対応／除外について警告が出ていますが、実行時エラーはありませんでした。現在のゲームはポストプロセス効果を使用していません。
 
 Webの入力仕様は[Unity公式マニュアル](https://docs.unity3d.com/6000.0/Documentation/Manual/webgl-input.html)、音声開始の制約は[Web Audioの公式説明](https://docs.unity3d.com/6000.0/Documentation/Manual/webgl-audio.html)に沿っています。
+
+## 既存ステージのJSON更新（2026-09-05）
+
+`Stage JSON Importer` に「既存シーンを更新して保存」を追加し、ユーザーが本機能を使用してステージ1を更新しました。今後の動作確認はユーザーが行います。この変更のために追加した自動テストと既存テストへの調整は、ユーザーの指定により取り除いています。

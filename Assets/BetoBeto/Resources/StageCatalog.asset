@@ -15,7 +15,7 @@ MonoBehaviour:
   stages:
   - id: Kitchen
     title: "\u306F\u3058\u3081\u3066\u306E\u30AD\u30C3\u30C1\u30F3"
-    description: "\u30BC\u30EA\u30FC\u3067\u53CD\u8EE2\u3001\u30AF\u30C3\u30AD\u30FC\u3092\u5272\u3063\u3066\u3001\u659C\u9762\u304B\u3089\u5203\u3078\u30025\u7A2E\u985E\u306E\u30AE\u30DF\u30C3\u30AF\u3092\u8A66\u305D\u3046\u3002"
+    description: "ゼリーと斜面で向きを変え、クッキーを割って刃へ送り込もう。"
     sceneName: Kitchen
     layoutJson: {fileID: 4900000, guid: 0ed3330bb355b5445ad3e2bcb4949bc8, type: 3}
   - id: Kitchen02

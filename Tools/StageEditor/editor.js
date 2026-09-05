@@ -202,7 +202,7 @@
     const errors = M.validate(stage); if (errors.length) { toast('書き出す前に、下の検証項目を修正してください'); return; }
     const url = URL.createObjectURL(new Blob([JSON.stringify(stage, null, 2) + '\n'], { type: 'application/json' }));
     const a = document.createElement('a'); a.href = url; a.download = (stage.name.replace(/[\\/:*?"<>|]/g, '-') || 'kitchen') + '.json';
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); toast('JSONを書き出しました');
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); toast('JSONを書き出しました。Unityでインポートしてください');
   };
   new ResizeObserver(resizeCanvas).observe(wrap);
   sync(); fit();

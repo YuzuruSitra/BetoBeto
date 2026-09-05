@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using BetoBeto.Core;
 using BetoBeto.Stage;
 using BetoBeto.UI;
@@ -14,15 +15,28 @@ namespace BetoBeto.Editor
 {
     public sealed class StageImporter : EditorWindow
     {
-        string jsonPath = "";
-        string message = "JSONを選択して検証すると、新しい編集可能なシーンを作成できます。";
+        [SerializeField] string jsonPath = "";
+        [SerializeField] SceneAsset updateTarget;
+        string message = "JSONを選択し、新規作成または既存シーンの更新を選んでください。";
         Vector2 scroll;
         [MenuItem("BetoBeto/Stage JSON Importer")]
         public static void Open() => GetWindow<StageImporter>("BetoBeto · Stage Importer");
+        void OnEnable()
+        {
+            minSize = new Vector2(440, 480);
+            if (updateTarget == null) SelectOpenStage();
+        }
+        void SelectOpenStage()
+        {
+            var scene = SceneManager.GetActiveScene();
+            if (scene.IsValid() && !string.IsNullOrEmpty(scene.path) && SceneComponents<StageLayout>(scene).Length == 1)
+                updateTarget = AssetDatabase.LoadAssetAtPath<SceneAsset>(scene.path);
+        }
         void OnGUI()
         {
+            scroll = EditorGUILayout.BeginScrollView(scroll);
             GUILayout.Label("ステージJSON → Unityシーン", EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox("壁・パイプ・シュレッダーなどをPrefabとして配置します。新しいシーンに生成し、既存のシーンは保持します。", MessageType.Info);
+            EditorGUILayout.HelpBox("書き出したJSONを読み込み、配置とステージのルールをUnityに反映します。", MessageType.Info);
             jsonPath = EditorGUILayout.TextField("JSON", jsonPath);
             if (GUILayout.Button("JSONを選択"))
             {
@@ -34,22 +48,48 @@ namespace BetoBeto.Editor
                 try { var data = StageData.Parse(File.ReadAllText(jsonPath)); message = $"OK: {data.name}  ({data.width} × {data.height})"; }
                 catch (Exception e) { message = e.Message; }
             }
-            if (GUILayout.Button("新しいシーンを生成して保存"))
+            bool playing = EditorApplication.isPlayingOrWillChangePlaymode;
+            if (playing) EditorGUILayout.HelpBox("シーンの作成・更新は再生を停止してから行ってください。", MessageType.Info);
+            using (new EditorGUI.DisabledScope(playing))
             {
-                try
+                GUILayout.Space(8);
+                GUILayout.Label("新規ステージ", EditorStyles.boldLabel);
+                if (GUILayout.Button("新しいシーンを生成して保存"))
                 {
-                    string json = File.ReadAllText(jsonPath); StageData.Parse(json);
-                    string savePath = EditorUtility.SaveFilePanelInProject("シーンを保存", "Kitchen", "unity", "保存先を指定", "Assets/BetoBeto/Scenes");
-                    if (!string.IsNullOrEmpty(savePath))
+                    try
                     {
-                        if (File.Exists(savePath)) throw new IOException("既存シーンの上書きを避けるため、別のファイル名で保存してください。");
-                        CreateScene(json, savePath); message = "生成しました: " + savePath;
+                        string json = File.ReadAllText(jsonPath); StageData.Parse(json);
+                        string savePath = EditorUtility.SaveFilePanelInProject("シーンを保存", "Kitchen", "unity", "保存先を指定", "Assets/BetoBeto/Scenes");
+                        if (!string.IsNullOrEmpty(savePath))
+                        {
+                            if (File.Exists(savePath)) throw new IOException("同じシーンへ反映するには、下の「既存シーンを更新して保存」を使用してください。");
+                            CreateScene(json, savePath); message = "生成しました: " + savePath;
+                        }
+                    }
+                    catch (Exception e) { message = e.Message; }
+                }
+                GUILayout.Space(12);
+                GUILayout.Label("既存ステージ", EditorStyles.boldLabel);
+                updateTarget = (SceneAsset)EditorGUILayout.ObjectField("更新するシーン", updateTarget, typeof(SceneAsset), false);
+                if (GUILayout.Button("開いているステージを選択")) SelectOpenStage();
+                if (updateTarget != null) EditorGUILayout.LabelField(AssetDatabase.GetAssetPath(updateTarget), EditorStyles.wordWrappedMiniLabel);
+                EditorGUILayout.HelpBox("StageのTiles・Placements内をJSONから作り直して上書き保存します。この中で行った個別の配置調整も置き換わります。カメラ・照明・それ以外のオブジェクトは維持し、ステージ名と選択画面のプレビューも更新します。", MessageType.Info);
+                using (new EditorGUI.DisabledScope(updateTarget == null))
+                {
+                    if (GUILayout.Button("既存シーンを更新して保存"))
+                    {
+                        try
+                        {
+                            string path = AssetDatabase.GetAssetPath(updateTarget);
+                            UpdateScene(File.ReadAllText(jsonPath), path);
+                            message = "更新しました: " + path + "\nステージセレクトから再選択して確認できます。WebGL版への反映には再ビルドが必要です。";
+                        }
+                        catch (Exception e) { message = e.Message; }
                     }
                 }
-                catch (Exception e) { message = e.Message; }
             }
             if (GUILayout.Button("独立ステージエディタを開く")) Application.OpenURL(new Uri(Path.GetFullPath("Tools/StageEditor/index.html")).AbsoluteUri);
-            scroll = EditorGUILayout.BeginScrollView(scroll); EditorGUILayout.HelpBox(message, MessageType.None); EditorGUILayout.EndScrollView();
+            EditorGUILayout.HelpBox(message, MessageType.None); EditorGUILayout.EndScrollView();
         }
         [MenuItem("BetoBeto/Create Initial Prototype")]
         public static void CreateInitialPrototype()
@@ -84,6 +124,8 @@ namespace BetoBeto.Editor
         }
         public static Scene CreateScene(string json, string scenePath)
         {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("再生を停止してからシーンを作成してください。");
+            if (File.Exists(scenePath)) throw new IOException("既存シーンにはUpdateSceneを使用してください。");
             var data = StageData.Parse(json);
             var assets = PrototypeArt.EnsureAssets();
             // Additive preserves unsaved work in any currently open scene.
@@ -93,18 +135,7 @@ namespace BetoBeto.Editor
             layout.sourceJson = json;
             layout.tiles = new GameObject("Tiles").transform; layout.tiles.SetParent(layout.transform);
             layout.placements = new GameObject("Placements · edit prefab instances here").transform; layout.placements.SetParent(layout.transform);
-            for (int y = 0; y < data.height; y++) for (int x = 0; x < data.width; x++)
-            {
-                var cell = new Vector2Int(x, y);
-                Instantiate(assets.tile, layout.tiles, data.World(cell), $"Tile {x:00},{y:00}");
-                char symbol = data.At(cell);
-                var prefab = PlacementPrefab(assets, symbol);
-                if (prefab != null)
-                {
-                    var prop = Instantiate(prefab, layout.placements, data.World(cell), $"{prefab.name} [{x},{y}]");
-                    prop.transform.rotation = PlacementRotation(symbol);
-                }
-            }
+            PopulateLayout(data, assets, layout.tiles, layout.placements);
             var environment = new GameObject("Kitchen presentation").transform;
             var counterMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             ColorUtility.TryParseHtmlString("#32576B", out var color); counterMaterial.color = color;
@@ -136,7 +167,89 @@ namespace BetoBeto.Editor
             Debug.Log("BetoBeto scene created: " + scenePath);
             return scene;
         }
-        static void RegisterStage(string scenePath, string json)
+        public static Scene UpdateScene(string json, string scenePath)
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("再生を停止してからシーンを更新してください。");
+            var data = StageData.Parse(json);
+            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath) == null)
+                throw new ArgumentException("更新する既存のシーンを選択してください。");
+            if ((File.GetAttributes(scenePath) & FileAttributes.ReadOnly) != 0)
+                throw new IOException("更新先のシーンが読み取り専用です。");
+
+            var scene = SceneManager.GetSceneByPath(scenePath);
+            bool opened = !scene.IsValid() || !scene.isLoaded;
+            GameObject prepared = null;
+            try
+            {
+                if (opened) scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+                var layouts = SceneComponents<StageLayout>(scene);
+                if (layouts.Length != 1) throw new InvalidOperationException("StageLayoutが1つあるゲーム本編のシーンを選択してください。タイトルやステージセレクトは更新できません。");
+                var layout = layouts[0];
+                if (layout.tiles == null || layout.placements == null || layout.tiles == layout.placements
+                    || !layout.tiles.IsChildOf(layout.transform) || !layout.placements.IsChildOf(layout.transform)
+                    || layout.tiles == layout.transform || layout.placements == layout.transform
+                    || layout.tiles.IsChildOf(layout.placements) || layout.placements.IsChildOf(layout.tiles))
+                    throw new InvalidOperationException("StageLayoutのTiles・Placements参照を確認してください。");
+                var game = SceneComponents<GameController>(scene).SingleOrDefault(item => item.layout == layout);
+                if (game == null || game.assets == null) throw new InvalidOperationException("StageLayoutを参照するGameControllerとGameAssetsが必要です。");
+                if (game.assets.tile == null || data.rows.SelectMany(row => row).Any(symbol => symbol != '.' && PlacementPrefab(game.assets, symbol) == null))
+                    throw new InvalidOperationException("JSONで使用する配置物のPrefabがGameAssetsに設定されていません。");
+
+                // Finish instantiating first, so malformed input or missing assets cannot erase the authored layout.
+                prepared = new GameObject("Preparing stage import");
+                SceneManager.MoveGameObjectToScene(prepared, scene);
+                var tiles = new GameObject("Tiles").transform; tiles.SetParent(prepared.transform);
+                var placements = new GameObject("Placements").transform; placements.SetParent(prepared.transform);
+                PopulateLayout(data, game.assets, tiles, placements);
+                ReplaceChildren(layout.tiles, tiles);
+                ReplaceChildren(layout.placements, placements);
+                UnityEngine.Object.DestroyImmediate(prepared); prepared = null;
+                layout.sourceJson = json;
+                layout.gameObject.name = "Stage · " + data.name;
+                // The generated countertop follows the board dimensions; authored cameras and lighting stay intact.
+                var presentation = scene.GetRootGameObjects().FirstOrDefault(root => root.name == "Kitchen presentation");
+                var counter = presentation != null ? presentation.transform.Find("Kitchen countertop") : null;
+                if (counter != null)
+                {
+                    var size = counter.localScale; size.x = data.width + 1.3f; size.z = data.height + 1.25f;
+                    counter.localScale = size;
+                }
+                EditorSceneManager.MarkSceneDirty(scene);
+                if (!EditorSceneManager.SaveScene(scene, scenePath)) throw new IOException("シーンを保存できませんでした。保存先を確認してください。");
+                RegisterStage(scenePath, json, true);
+                SceneManager.SetActiveScene(scene);
+                Selection.activeGameObject = layout.gameObject;
+                Debug.Log("BetoBeto scene updated: " + scenePath);
+                return scene;
+            }
+            catch
+            {
+                if (prepared != null) UnityEngine.Object.DestroyImmediate(prepared);
+                if (opened && scene.IsValid() && scene.isLoaded) EditorSceneManager.CloseScene(scene, true);
+                throw;
+            }
+        }
+        static T[] SceneComponents<T>(Scene scene) where T : Component =>
+            scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<T>(true)).ToArray();
+        static void PopulateLayout(StageData data, GameAssets assets, Transform tiles, Transform placements)
+        {
+            for (int y = 0; y < data.height; y++) for (int x = 0; x < data.width; x++)
+            {
+                var cell = new Vector2Int(x, y);
+                Instantiate(assets.tile, tiles, data.World(cell), $"Tile {x:00},{y:00}");
+                char symbol = data.At(cell);
+                var prefab = PlacementPrefab(assets, symbol);
+                if (prefab == null) continue;
+                var prop = Instantiate(prefab, placements, data.World(cell), $"{prefab.name} [{x},{y}]");
+                prop.transform.rotation = PlacementRotation(symbol);
+            }
+        }
+        static void ReplaceChildren(Transform destination, Transform prepared)
+        {
+            for (int i = destination.childCount - 1; i >= 0; i--) UnityEngine.Object.DestroyImmediate(destination.GetChild(i).gameObject);
+            while (prepared.childCount > 0) prepared.GetChild(0).SetParent(destination, true);
+        }
+        static void RegisterStage(string scenePath, string json, bool updateExisting = false)
         {
             var data = StageData.Parse(json);
             const string catalogPath = "Assets/BetoBeto/Resources/StageCatalog.asset";
@@ -146,26 +259,47 @@ namespace BetoBeto.Editor
             if (catalog == null) { catalog = ScriptableObject.CreateInstance<StageCatalog>(); AssetDatabase.CreateAsset(catalog, catalogPath); }
             var entries = new List<StageEntry>(catalog.stages ?? Array.Empty<StageEntry>());
             string sceneName = Path.GetFileNameWithoutExtension(scenePath);
-            if (!entries.Exists(entry => entry.sceneName == sceneName))
+            var entry = entries.Find(item => item.sceneName == sceneName);
+            if (entry == null || updateExisting)
             {
-                TextAsset source = null;
-                foreach (string guid in AssetDatabase.FindAssets("t:TextAsset", new[] { "Assets/BetoBeto/Stages" }))
+                TextAsset source = entry?.layoutJson;
+                string sourcePath = source != null ? AssetDatabase.GetAssetPath(source) : null;
+                bool shared = source != null && entries.Any(other => other != entry && other.layoutJson == source);
+                if (source != null && source.text != json && !shared && sourcePath.StartsWith("Assets/", StringComparison.Ordinal)
+                    && sourcePath.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
                 {
-                    var text = AssetDatabase.LoadAssetAtPath<TextAsset>(AssetDatabase.GUIDToAssetPath(guid));
-                    if (text != null && text.text == json) { source = text; break; }
+                    File.WriteAllText(sourcePath, json);
+                    AssetDatabase.ImportAsset(sourcePath, ImportAssetOptions.ForceUpdate);
+                    source = AssetDatabase.LoadAssetAtPath<TextAsset>(sourcePath);
                 }
+                if (source != null && source.text != json) source = null;
+                if (entry == null)
+                    foreach (string guid in AssetDatabase.FindAssets("t:TextAsset", new[] { "Assets/BetoBeto/Stages" }))
+                    {
+                        var text = AssetDatabase.LoadAssetAtPath<TextAsset>(AssetDatabase.GUIDToAssetPath(guid));
+                        if (text != null && text.text == json) { source = text; break; }
+                    }
                 if (source == null)
                 {
-                    string sourcePath = AssetDatabase.GenerateUniqueAssetPath("Assets/BetoBeto/Stages/" + sceneName + ".json");
+                    sourcePath = AssetDatabase.GenerateUniqueAssetPath("Assets/BetoBeto/Stages/" + sceneName + ".json");
                     File.WriteAllText(sourcePath, json); AssetDatabase.ImportAsset(sourcePath); source = AssetDatabase.LoadAssetAtPath<TextAsset>(sourcePath);
                 }
-                entries.Add(new StageEntry { id = sceneName, title = data.name, sceneName = sceneName, layoutJson = source,
-                    description = data.width == 16 ? "2本のパイプと4つの罠。驚かせて、よだれへ誘導しよう。" : "3本のパイプから大にぎわい。長い通路で連鎖をねらおう。" });
+                if (entry == null)
+                {
+                    entry = new StageEntry { id = sceneName, sceneName = sceneName,
+                        description = "驚かせて、よだれへ誘導しよう。" };
+                    entries.Add(entry);
+                }
+                entry.title = data.name; entry.layoutJson = source;
                 catalog.stages = entries.ToArray(); EditorUtility.SetDirty(catalog);
             }
             var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-            if (!scenes.Exists(s => s.path == scenePath)) { scenes.Add(new EditorBuildSettingsScene(scenePath, true)); EditorBuildSettings.scenes = scenes.ToArray(); }
-            AssetDatabase.SaveAssets();
+            if (!scenes.Exists(s => s.path == scenePath))
+            {
+                scenes.Add(new EditorBuildSettingsScene(scenePath, true)); EditorBuildSettings.scenes = scenes.ToArray();
+                AssetDatabase.SaveAssets();
+            }
+            else AssetDatabase.SaveAssetIfDirty(catalog);
         }
         static void EnsureMenuScene(MenuKind kind)
         {
