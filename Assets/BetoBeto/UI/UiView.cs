@@ -13,7 +13,7 @@ namespace BetoBeto.UI
     public abstract class UiView : MonoBehaviour
     {
         protected RectTransform root;
-        Font font;
+        Font font, headingFont, numberFont;
         Sprite rounded;
         protected EventSystem events;
         InputSystemUIInputModule inputModule;
@@ -21,15 +21,20 @@ namespace BetoBeto.UI
         Canvas uiCanvas;
         float textScale = -1;
         readonly List<InputActionReference> actionReferences = new List<InputActionReference>();
-        protected static readonly Color Ink = Hex("253E51"), Muted = Hex("6A8090"), Cream = Hex("FFF8EA"), Pink = Hex("E8788B"), Mint = Hex("81CFC7");
+        protected static readonly Color Ink = Hex("51382F"), Muted = Hex("987668"), Cream = Hex("FFF7EB"), Pink = Hex("EE7E8A"), Mint = Hex("94B88A"), Navy = Hex("3C526E");
         protected static readonly Color[] FruitColors = { Hex("E96778"), Hex("7C86C3"), Hex("EDAA55"), Hex("9BAF68") };
         protected void InitializeUi()
         {
-            font = Resources.Load<Font>("Fonts/MPLUSRounded1c-Regular");
+            font = Resources.Load<Font>("Fonts/MPLUSRounded1c-Medium");
+            headingFont = Resources.Load<Font>("Fonts/ZenMaruGothic-Bold");
+            numberFont = Resources.Load<Font>("Fonts/MPLUSRounded1c-Bold");
             if (font == null) font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             rounded = CreateRoundedSprite();
             var canvasObject = new GameObject("BetoBeto UI", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-            root = canvasObject.GetComponent<RectTransform>();
+            var design = new GameObject("Kitchen design canvas", typeof(RectTransform));
+            root = design.GetComponent<RectTransform>(); root.SetParent(canvasObject.transform, false);
+            root.anchorMin = root.anchorMax = root.pivot = new Vector2(.5f, .5f);
+            root.sizeDelta = KitchenLayout.DesignSize;
             uiCanvas = canvasObject.GetComponent<Canvas>(); uiCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             var scaler = canvasObject.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -52,6 +57,36 @@ namespace BetoBeto.UI
             inputModule.deselectOnBackgroundClick = false;
             inputModule.moveRepeatDelay = .35f; inputModule.moveRepeatRate = .14f;
             inputModule.enabled = GamepadControls.BrowserReady;
+        }
+        protected void BuildBackdrop(bool gameplay = false)
+        {
+            var backdrop = new GameObject("Illustrated kitchen surround", typeof(RectTransform), typeof(KitchenBackdropGraphic));
+            var rect = backdrop.GetComponent<RectTransform>(); rect.SetParent(root, false);
+            rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.offsetMin = rect.offsetMax = Vector2.zero;
+            var graphic = backdrop.GetComponent<KitchenBackdropGraphic>(); graphic.showBoard = gameplay; graphic.raycastTarget = false;
+        }
+        protected Image Art(Transform parent, string name, Sprite sprite, Vector2 position, Vector2 size)
+        {
+            var rect = Box(parent, name, position, size, Color.white);
+            var image = rect.GetComponent<Image>(); image.sprite = sprite; image.type = Image.Type.Simple;
+            image.preserveAspect = true; image.raycastTarget = false;
+            return image;
+        }
+        protected TartPreview Dessert(Transform parent, Vector2 position, float scale = 1)
+        {
+            var obj = new GameObject("Recipe tart", typeof(RectTransform), typeof(TartPreview));
+            var rect = obj.GetComponent<RectTransform>(); rect.SetParent(parent, false);
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0, 1);
+            rect.anchoredPosition = position; rect.sizeDelta = new Vector2(500, 340); rect.localScale = Vector3.one * scale;
+            var preview = obj.GetComponent<TartPreview>(); preview.Initialize(); return preview;
+        }
+        protected void Border(RectTransform rect, Color color, float width = 2)
+        {
+            var outline = rect.gameObject.AddComponent<Outline>(); outline.effectColor = color; outline.effectDistance = new Vector2(width, -width);
+        }
+        protected void Numeric(Text label)
+        {
+            if (numberFont != null) label.font = numberFont;
         }
         InputActionReference Reference(InputAction action)
         {
@@ -123,7 +158,7 @@ namespace BetoBeto.UI
         }
         protected GameObject Overlay(string name, float alpha)
         {
-            var rect = Stretch(root, name, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Color(.065f, .15f, .20f, alpha));
+            var rect = Stretch(root, name, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Color(.22f, .14f, .11f, alpha));
             rect.GetComponent<Image>().sprite = null;
             return rect.gameObject;
         }
@@ -131,6 +166,7 @@ namespace BetoBeto.UI
         {
             var card = Box(parent, name, Vector2.zero, size, Cream);
             card.anchorMin = card.anchorMax = new Vector2(.5f, .5f); card.pivot = new Vector2(.5f, .5f);
+            Border(card, Hex("E9B49E"), 4);
             return card;
         }
         protected RectTransform Box(Transform parent, string name, Vector2 position, Vector2 size, Color color)
@@ -154,6 +190,11 @@ namespace BetoBeto.UI
             var rect = go.GetComponent<RectTransform>(); rect.SetParent(parent, false);
             rect.anchorMin = rect.anchorMax = new Vector2(0, 1); rect.pivot = new Vector2(0, 1); rect.anchoredPosition = position; rect.sizeDelta = size;
             var label = go.GetComponent<Text>(); label.font = font; label.text = text; label.fontSize = fontSize; label.color = color; label.fontStyle = style;
+            if (style == FontStyle.Bold)
+            {
+                label.font = fontSize >= 25 && headingFont != null ? headingFont : numberFont != null ? numberFont : font;
+                label.fontStyle = FontStyle.Normal;
+            }
             label.alignment = anchor; label.raycastTarget = false; label.horizontalOverflow = HorizontalWrapMode.Wrap; label.verticalOverflow = VerticalWrapMode.Overflow;
             label.supportRichText = false;
             return label;
@@ -161,6 +202,7 @@ namespace BetoBeto.UI
         protected RectTransform Button(Transform parent, string text, Vector2 position, Vector2 size, Color background, Color foreground, Action clicked, int fontSize = 16)
         {
             var rect = Box(parent, text, position, size, background);
+            var shadow = rect.gameObject.AddComponent<Shadow>(); shadow.effectColor = new Color(.43f, .22f, .15f, .22f); shadow.effectDistance = new Vector2(0, -4);
             var button = rect.gameObject.AddComponent<Button>();
             button.targetGraphic = rect.GetComponent<Image>();
             var colors = button.colors; colors.highlightedColor = new Color(1.05f, 1.05f, 1.05f); colors.pressedColor = new Color(.88f, .88f, .88f); button.colors = colors;

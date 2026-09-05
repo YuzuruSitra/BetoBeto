@@ -159,7 +159,7 @@ StageSelect.unity
 | `Assets/BetoBeto/Tests` | EditMode／PlayModeテスト |
 | `Tools/StageEditor` | Unityに依存しない配置ツール |
 
-ゲーム画面のUIはラフ画像に準拠せず、レシピ進捗・脱出数・操作が読み取れる独自構成です。仮BGM・効果音はコードで合成し、音量はPlayerPrefsに別々に保存します。日本語フォントはM PLUS Rounded 1cを同梱しています。ライセンスと出典は `Docs/third-party.md` に記載しています。
+ゲーム画面のUIは `ui-images-unique-2026-09-06/完成イメージ.png` に合わせた木製フレーム、上部カウンター、材料カード、大きなタルトで構成しています。タルトのトッピングと数値は種類ごとの収穫進捗に連動します。タイトル・ステージ選択・リザルト・設定も同じ配色で統一しています。文字は実際のUnity UI Textを使い、見出しはZen Maru Gothic Bold、本文・数値はM PLUS Rounded 1c Medium/Boldです。素材とレイアウトの説明は `Docs/ui-implementation.md`、フォントの出典とライセンスは `Docs/third-party.md` を参照してください。仮BGM・効果音はコードで合成し、音量はPlayerPrefsに別々に保存します。
 
 滑走速度と壁での硬直は `Enemies/FruitAgent.cs`、揺れ・飛沫・ヒットストップの強さは `Presentation/GameFeedback.cs`、残像と潰れ方は `Presentation/FruitMotionVfx.cs` で調整できます。滑走は初速7.5マス/秒、巻き込み1体ごとに0.65マス/秒加算（加速は6体分まで）、壁の硬直は0.48秒です。
 

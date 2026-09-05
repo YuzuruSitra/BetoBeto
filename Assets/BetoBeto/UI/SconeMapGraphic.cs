@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 namespace BetoBeto.UI
 {
+    [RequireComponent(typeof(CanvasRenderer))]
     public sealed class SconeMapGraphic : MaskableGraphic
     {
         public int turns;
