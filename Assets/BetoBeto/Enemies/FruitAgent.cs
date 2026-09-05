@@ -26,19 +26,25 @@ namespace BetoBeto.Enemies
         public float SlidingSpeed => 7.5f + Mathf.Min(Chain - 1, 6) * .65f;
         public float CurrentSpeed => (Sliding ? SlidingSpeed : Speed) * (IsFrozen ? game.Board.Data.frozenSpeedMultiplier : 1);
         public Vector3 Forward => new Vector3(Direction.x, 0, -Direction.y);
+        public Vector2Int TravelDirection => moving ? moveDirection : Direction;
         GameController game;
         FruitMotionVfx motion;
         ActorFacing visualFacing;
         readonly Dictionary<Vector2Int, int> visits = new Dictionary<Vector2Int, int>();
+        readonly HashSet<FruitAgent> slideContacts = new HashSet<FruitAgent>();
         bool moving, preferLeft, needsObstacleTurn;
+        Vector2Int moveDirection = Directions.Down;
         float spawnDelay = .65f, immunity, stunned, stunDuration, recoil, fleeRemaining;
         Vector3 stunOrigin;
         SlideCombo combo;
+        SlideCombo pendingCombo;
+        Vector2Int pendingDirection;
 
         // All members of a collision chain share its speed and score multiplier.
         sealed class SlideCombo
         {
             public int Count;
+            public SlideCombo MergedInto;
             public readonly HashSet<FruitAgent> Members = new HashSet<FruitAgent>();
         }
 
@@ -56,6 +62,7 @@ namespace BetoBeto.Enemies
         public void Tick(float dt)
         {
             if (Removed || dt <= 0) return;
+            slideContacts.RemoveWhere(ContactSeparated);
             immunity = Mathf.Max(0, immunity - dt);
             fleeRemaining = Mathf.Max(0, fleeRemaining - dt);
             FrozenRemaining = Mathf.Max(0, FrozenRemaining - dt);
@@ -70,6 +77,13 @@ namespace BetoBeto.Enemies
                 stunned = Mathf.Max(0, stunned - dt);
                 float progress = 1 - stunned / stunDuration;
                 transform.position = Vector3.Lerp(stunOrigin, game.Board.Data.World(Cell), progress) - Forward * (Mathf.Sin(progress * Mathf.PI) * recoil);
+                if (stunned <= 0 && pendingCombo != null)
+                {
+                    var group = pendingCombo;
+                    var direction = pendingDirection;
+                    pendingCombo = null;
+                    StartSlide(direction, group, true);
+                }
                 return;
             }
             float timeLeft = dt;
@@ -78,22 +92,30 @@ namespace BetoBeto.Enemies
                 if (!moving && !ChooseNext()) return;
                 bool walkingCookie = !Sliding && CanBumpCookie(TargetCell);
                 bool returningInsidePipe = Cell == TargetCell && game.Board.Pipes.Contains(Cell);
-                if (!Sliding && BlocksWalkingFromCell(TargetCell) && !walkingCookie && !returningInsidePipe)
+                if (!Sliding && game.Board.BlocksWalking(TargetCell, moveDirection) && !walkingCookie && !returningInsidePipe)
                 {
                     StopAtWall(); return;
                 }
-                bool obstacle = walkingCookie || (Sliding && game.Board.BlocksSliding(TargetCell, TargetCell - Cell));
+                bool obstacle = walkingCookie || (Sliding && game.Board.BlocksSliding(TargetCell, moveDirection));
                 Vector3 target = game.Board.Data.World(TargetCell);
-                if (obstacle) target -= Forward * .62f;
+                if (obstacle) target -= new Vector3(moveDirection.x, 0, -moveDirection.y) * .62f;
                 float distance = Vector3.Distance(transform.position, target);
                 float speed = CurrentSpeed;
                 float travel = Mathf.Min(timeLeft * speed, distance);
                 Vector3 from = transform.position;
-                transform.position = Vector3.MoveTowards(transform.position, target, travel);
+                Vector3 to = Vector3.MoveTowards(from, target, travel);
+                bool contact = game.FindSlideContact(this, from, to, out var slideSource, out var slideTarget, out float hit);
+                if (contact) { to = Vector3.Lerp(from, to, hit); travel *= hit; }
+                transform.position = to;
                 timeLeft -= travel / speed;
                 if (game.Gimmicks.CheckMovingBlade(this, from, transform.position)) return;
                 if (!game.Board.Data.Contains(game.Board.Data.Cell(transform.position))) { game.EscapeFruit(this); return; }
-                if (Sliding) game.PropagateSlide(this);
+                if (contact && slideTarget.JoinSlide(slideSource))
+                {
+                    if (game.Feedback.HitStopped) return;
+                    // Joining a chain can reverse this mover and change its destination mid-segment.
+                    continue;
+                }
                 if (distance > travel + .001f) break;
                 if (obstacle)
                 {
@@ -113,8 +135,8 @@ namespace BetoBeto.Enemies
                     if (game.Board.Jellies.Contains(TargetCell))
                     {
                         var jelly = TargetCell;
-                        Redirect(-Direction);
-                        TargetCell = Cell; moving = true;
+                        Redirect(-moveDirection);
+                        MoveToCell(Cell);
                         game.Feedback.Ricochet(this, jelly, false);
                     }
                     else if (game.Board.HasIceWall(TargetCell))
@@ -144,7 +166,7 @@ namespace BetoBeto.Enemies
                     if (Sliding && game.Gimmicks.HitScone(Cell)) game.Feedback.CookieImpact(this, Cell, true, 0);
                     else
                     {
-                        Redirect(GimmickRules.SconeReflection(Direction, turns));
+                        Redirect(GimmickRules.SconeReflection(moveDirection, turns));
                         game.Feedback.Ricochet(this, Cell, true, Sliding ? game.Board.SconeHitsLeft[Cell] : -1);
                     }
                 }
@@ -178,8 +200,18 @@ namespace BetoBeto.Enemies
                 Direction = next;
                 visualFacing.Face(Direction);
             }
-            TargetCell = Cell + Direction;
-            moving = true; return true;
+            MoveToCell(Cell + Direction);
+            return true;
+        }
+        void MoveToCell(Vector2Int target)
+        {
+            TargetCell = target;
+            Vector3 delta = game.Board.Data.World(target) - transform.position;
+            moveDirection = delta.sqrMagnitude < .000001f ? moveDirection
+                : Mathf.Abs(delta.x) > Mathf.Abs(delta.z)
+                    ? (delta.x > 0 ? Vector2Int.right : Vector2Int.left)
+                    : (delta.z > 0 ? Vector2Int.down : Vector2Int.up);
+            moving = true;
         }
         bool BlocksWalkingFromCell(Vector2Int cell) => game.Board.BlocksWalking(cell, cell - Cell);
         bool CanBumpCookie(Vector2Int cell) => kind == FruitKind.Orange
@@ -256,17 +288,17 @@ namespace BetoBeto.Enemies
                     < (transform.position - game.Board.Data.World(Cell)).sqrMagnitude)) anchor = TargetCell;
             }
             Direction = away;
-            TargetCell = anchor;
+            MoveToCell(anchor);
             moving = (transform.position - game.Board.Data.World(anchor)).sqrMagnitude > .0001f;
             if (!moving) Cell = anchor;
-            stunned = 0; needsObstacleTurn = false;
+            stunned = 0; needsObstacleTurn = false; pendingCombo = null;
             fleeRemaining = Sliding ? 0 : ScareRules.FleeSeconds;
             visualFacing.Face(Direction);
             motion.Scare();
             game.Feedback.FruitScared(this);
             // A scare aimed at the adjacent blade commits to a dive without snapping the fruit to the tile center.
             if (!Sliding && game.Board.HasShredder(game.Board.Data.Cell(transform.position) + Direction))
-                StartSlide(Direction, new SlideCombo { Count = 1 }, false, false);
+                StartSlide(Direction, new SlideCombo { Count = 1 }, false);
             else if (!moving && !Sliding && game.Board.Drool.ContainsKey(Cell)) BeginSlide(Direction, 1);
             return true;
         }
@@ -276,25 +308,80 @@ namespace BetoBeto.Enemies
         }
         public bool JoinSlide(FruitAgent source)
         {
-            if (!source.Sliding || source.combo == null || source.combo.Members.Contains(this)) return false;
-            return StartSlide(source.Direction, source.combo, true);
+            if (!CanJoinSlide(source)) return false;
+            if (stunned > 0)
+            {
+                // Remember the impact without restarting the recoil or global hit-stop.
+                pendingCombo = source.combo;
+                pendingDirection = source.TravelDirection;
+                motion.Impact(.6f);
+            }
+            else if (!StartSlide(source.TravelDirection, source.combo, true)) return false;
+            slideContacts.Add(source);
+            source.slideContacts.Add(this);
+            return true;
         }
-        bool StartSlide(Vector2Int direction, SlideCombo group, bool collision, bool snapToCell = true)
+        bool ContactSeparated(FruitAgent other)
         {
+            if (other == null || other.Removed) return true;
+            Vector3 delta = other.transform.position - transform.position;
+            return delta.x * delta.x + delta.z * delta.z > .81f;
+        }
+        public bool CanJoinSlide(FruitAgent source) => source != null && source != this && !source.Removed
+            && source.Sliding && !source.IsStunned && source.combo != null
+            && !slideContacts.Contains(source) && !source.slideContacts.Contains(this)
+            && !Removed && spawnDelay <= 0 && (!Sliding || combo != source.combo);
+        bool StartSlide(Vector2Int direction, SlideCombo group, bool collision)
+        {
+            // A queued impact follows any merges that happened while the fruit was recoiling.
+            while (group.MergedInto != null) group = group.MergedInto;
             // Wall recoil must finish before a new slide can begin. Otherwise overlapping followers
             // repeatedly cancel the stun and slam this fruit into the same wall, restarting hit-stop.
-            if (Removed || spawnDelay > 0 || Sliding || stunned > 0 || immunity > 0 || direction.sqrMagnitude != 1) return false;
-            Cell = game.Board.Data.Cell(transform.position);
-            if (snapToCell) transform.position = game.Board.Data.World(Cell);
-            if (group.Members.Add(this) && collision) group.Count++;
+            // Shredder immunity protects the melon's health; it must not disable fruit contact.
+            if (Removed || spawnDelay > 0 || stunned > 0 || direction.sqrMagnitude != 1
+                || (Sliding && (!collision || combo == group))) return false;
+            pendingCombo = null;
+            SlideCombo previous = combo;
+            if (game.Board.Pipes.Contains(Cell)) direction = Directions.Down;
+            // Preserve the travelled segment instead of snapping over a tile's arrival callback.
+            // In particular, a fruit entering a scone still has to reach and react to that scone.
+            if (moving)
+            {
+                Vector2Int oldCell = Cell, oldTarget = TargetCell;
+                int dot = direction.x * moveDirection.x + direction.y * moveDirection.y;
+                Vector2Int anchor;
+                if (dot > 0) anchor = oldTarget;
+                else if (dot < 0) anchor = oldCell;
+                else anchor = (transform.position - game.Board.Data.World(oldTarget)).sqrMagnitude
+                    < (transform.position - game.Board.Data.World(oldCell)).sqrMagnitude ? oldTarget : oldCell;
+                // Cell remains the last reached centre, even when returning along the same segment.
+                MoveToCell(anchor);
+            }
+            else
+            {
+                Cell = game.Board.Data.Cell(transform.position);
+                if ((transform.position - game.Board.Data.World(Cell)).sqrMagnitude > .000001f) MoveToCell(Cell);
+            }
+            bool added = false;
+            if (collision && previous != null && previous != group)
+            {
+                // Merge history once, while preserving the headings of the other branch members.
+                foreach (var member in previous.Members)
+                {
+                    if (group.Members.Add(member)) { group.Count++; added = true; }
+                    if (member != null && member.combo == previous) member.combo = group;
+                }
+                previous.MergedInto = group;
+            }
+            if (group.Members.Add(this) && collision) { group.Count++; added = true; }
             combo = group;
-            Direction = game.Board.Pipes.Contains(Cell) ? Directions.Down : direction;
-            Sliding = true; moving = false; stunned = 0; fleeRemaining = 0; needsObstacleTurn = false;
+            Direction = direction;
+            Sliding = true; stunned = 0; fleeRemaining = 0; needsObstacleTurn = false;
             visualFacing.Face(Direction);
             motion.StartSlide();
-            // A collision can snap a walking fruit onto the plate before its normal arrival callback.
-            if (game.Board.Freezers.Contains(Cell)) Freeze();
-            game.OnSlide(this, collision);
+            if (game.Board.Freezers.Contains(game.Board.Data.Cell(transform.position))) Freeze();
+            // Rejoining after separation moves the fruit again without farming chain count or hit-stop.
+            game.OnSlide(this, collision && added);
             return true;
         }
         public void HitShredder()

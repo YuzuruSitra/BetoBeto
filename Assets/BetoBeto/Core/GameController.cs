@@ -215,15 +215,34 @@ namespace BetoBeto.Core
         public void PropagateSlide(FruitAgent source)
         {
             if (source.Removed || !source.Sliding || source.IsStunned) return;
-            foreach (var target in fruits)
+            // Keep point-contact callers working; normal movement uses the swept query below.
+            for (int i = 0; i < fruits.Count; i++)
             {
-                if (target == source || target.Removed || target.Sliding || target.IsStunned) continue;
-                Vector3 delta = target.transform.position - source.transform.position;
-                if (delta.sqrMagnitude > .64f) continue;
-                Vector3 forward = new Vector3(source.Direction.x, 0, -source.Direction.y);
-                if (Vector3.Dot(delta, forward) < -.15f) continue;
-                target.JoinSlide(source);
+                if (!FindSlideContact(source, source.transform.position, source.transform.position,
+                    out var slideSource, out var target, out _) || !target.JoinSlide(slideSource)) break;
             }
+        }
+        public bool FindSlideContact(FruitAgent mover, Vector3 from, Vector3 to,
+            out FruitAgent slideSource, out FruitAgent slideTarget, out float fraction)
+        {
+            slideSource = slideTarget = null; fraction = float.PositiveInfinity;
+            if (mover.Removed || mover.IsStunned) return false;
+            foreach (var other in fruits)
+            {
+                if (other == mover || other.Removed) continue;
+                var source = mover.Sliding ? mover : other;
+                var target = mover.Sliding ? other : mover;
+                if (!target.CanJoinSlide(source)) continue;
+                Vector3 centre = other.transform.position;
+                if (!GimmickRules.SweepCircle(new Vector2(from.x, from.z), new Vector2(to.x, to.z),
+                    new Vector2(centre.x, centre.z), .8f, out float hit) || hit >= fraction) continue;
+                Vector3 contact = Vector3.Lerp(from, to, hit);
+                Vector3 delta = mover.Sliding ? centre - contact : contact - centre;
+                Vector2Int direction = source.TravelDirection;
+                if (delta.x * direction.x - delta.z * direction.y < -.15f) continue;
+                slideSource = source; slideTarget = target; fraction = hit;
+            }
+            return slideTarget != null;
         }
         public void OnSlide(FruitAgent fruit, bool collision)
         {
