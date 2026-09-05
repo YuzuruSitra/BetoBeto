@@ -184,7 +184,7 @@ namespace BetoBeto.Enemies
         {
             Direction = direction;
             visualFacing.Face(Direction);
-            motion.Ricochet();
+            if (Sliding) motion.Ricochet();
         }
         public void Freeze()
         {

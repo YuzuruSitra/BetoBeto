@@ -12,7 +12,7 @@ namespace BetoBeto.Presentation
         Transform visual;
         Vector3 restScale;
         readonly TrailRenderer[] trails = new TrailRenderer[2];
-        float impact, dropTimer, fright, bounce, stepHeight;
+        float impact, dropTimer, fright, bounce;
         GameObject frost;
         public void Initialize(GameController controller, FruitAgent actor, Transform model)
         {
@@ -61,11 +61,6 @@ namespace BetoBeto.Presentation
                 trails[i].emitting = fruit.Sliding;
                 trails[i].time = .22f + Mathf.Min(fruit.Chain - 1, 5) * .025f;
             }
-            float surfaceHeight = !fruit.Sliding && game.Board.HasScone(game.Board.Data.Cell(transform.position)) ? .33f : 0;
-            stepHeight = Mathf.MoveTowards(stepHeight, surfaceHeight, dt * 3);
-            // Raise only the model so grid movement and fruit-to-fruit contact remain on the board plane.
-            if (visual != null) visual.localPosition += Vector3.up * stepHeight;
-            if (frost != null) frost.transform.localPosition = Vector3.up * (.5f + stepHeight);
             if (dt <= 0) return;
             impact = Mathf.MoveTowards(impact, 0, dt * 3.6f);
             fright = Mathf.MoveTowards(fright, 0, dt * 3);
