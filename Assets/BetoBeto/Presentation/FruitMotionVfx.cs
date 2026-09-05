@@ -11,6 +11,7 @@ namespace BetoBeto.Presentation
         FruitAgent fruit;
         Transform visual;
         Vector3 restScale;
+        bool hasModelAnimation;
         readonly TrailRenderer[] trails = new TrailRenderer[2];
         float impact, dropTimer, fright, bounce;
         GameObject coating;
@@ -18,6 +19,7 @@ namespace BetoBeto.Presentation
         {
             game = controller; fruit = actor; visual = model;
             if (visual != null) restScale = visual.localScale;
+            hasModelAnimation = visual != null && visual.GetComponent<FruitModelVisual>() != null;
             coating = new GameObject("Chocolate coating");
             coating.transform.SetParent(transform, false);
             coating.transform.localScale = Vector3.one * (fruit.kind == FruitKind.Blueberry ? .78f : fruit.kind == FruitKind.Melon ? 1.14f : 1);
@@ -78,8 +80,12 @@ namespace BetoBeto.Presentation
                 float pulse = impact * .3f;
                 var scale = new Vector3(1 + stretch + pulse - fright * .16f, 1 - stretch - pulse + fright * .45f, 1 + stretch + pulse - fright * .16f);
                 visual.localScale = Vector3.Lerp(visual.localScale, Vector3.Scale(restScale, scale), dt * 23);
-                var lean = fruit.Sliding ? Quaternion.Euler(-17, 0, 0) : Quaternion.identity;
-                visual.localRotation = Quaternion.Slerp(visual.localRotation, lean, dt * 15);
+                if (!hasModelAnimation)
+                {
+                    var lean = fruit.Sliding ? Quaternion.Euler(-17, 0, 0) : Quaternion.identity;
+                    visual.localRotation = Quaternion.Slerp(visual.localRotation, lean, dt * 15);
+                }
+                if (hasModelAnimation) visual.localPosition = Vector3.zero;
                 if (bounce > 0) visual.localPosition += Vector3.up * (Mathf.Sin(bounce / .3f * Mathf.PI) * .32f);
             }
             if (!fruit.Sliding) { dropTimer = 0; return; }

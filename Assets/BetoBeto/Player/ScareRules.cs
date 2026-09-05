@@ -6,7 +6,7 @@ namespace BetoBeto.Player
     {
         public const float TapSeconds = .25f;
         public const float FullChargeSeconds = 1.5f;
-        public const float FleeSeconds = 1.5f;
+        public const float FleeSeconds = 3f;
         public const int MaxRadius = 6;
 
         public static bool IsCharged(float seconds) => seconds >= TapSeconds;

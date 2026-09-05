@@ -11,17 +11,22 @@ namespace BetoBeto.Player
         GameController game;
         ActorFacing visualFacing;
         ScarePreview preview;
+        GhostModelVisual modelVisual;
         bool fullChargeFeedback;
         public Vector2Int Facing { get; private set; } = Directions.Down;
         public Vector2Int Cell => game.Board.Data.Cell(transform.position);
         public Vector2Int ScareTarget => Cell + Facing;
         public bool IsCharging { get; private set; }
+        public bool IsDrooling { get; private set; }
         public float ChargeSeconds { get; private set; }
         public float Charge01 => ScareRules.Charge01(ChargeSeconds);
+        public float MoveSpeed01 { get; private set; }
         public int ScareRadius => ScareRules.Radius(ChargeSeconds);
         public void Initialize(GameController controller)
         {
             game = controller;
+            modelVisual = GetComponentInChildren<GhostModelVisual>();
+            if (modelVisual != null) modelVisual.Initialize(game, this);
             visualFacing = gameObject.AddComponent<ActorFacing>();
             visualFacing.Initialize(game.assets.effectMaterial, true);
             preview = gameObject.AddComponent<ScarePreview>();
@@ -32,9 +37,12 @@ namespace BetoBeto.Player
             if (game == null) return;
             if (game.Session.State != GameState.Playing || !GamepadControls.Ready)
             {
+                MoveSpeed01 = 0;
                 CancelScare(); return;
             }
             Vector2 input = GamepadControls.Move;
+            IsDrooling = GamepadControls.DroolHeld;
+            Vector3 previousPosition = transform.position;
             if (input.sqrMagnitude > 0)
             {
                 transform.position += new Vector3(input.x, 0, input.y) * (moveSpeed * game.Feedback.SimulationDelta);
@@ -47,7 +55,10 @@ namespace BetoBeto.Player
             position.x = Mathf.Clamp(position.x, -(data.width - 1) * .5f, (data.width - 1) * .5f);
             position.z = Mathf.Clamp(position.z, -(data.height - 1) * .5f, (data.height - 1) * .5f);
             transform.position = position;
-            if (GamepadControls.ScarePressed)
+            float distancePerFrame = moveSpeed * game.Feedback.SimulationDelta;
+            MoveSpeed01 = distancePerFrame > 0 ? Mathf.Clamp01((position - previousPosition).magnitude / distancePerFrame) : 0;
+            if (IsDrooling) CancelScare();
+            if (!IsDrooling && GamepadControls.ScarePressed)
             {
                 IsCharging = true; ChargeSeconds = 0; fullChargeFeedback = false;
             }
@@ -64,7 +75,8 @@ namespace BetoBeto.Player
                 }
                 else
                 {
-                    if (GamepadControls.ScareReleased) game.TryScare(transform.position, Facing, ChargeSeconds);
+                    if (GamepadControls.ScareReleased && game.TryScare(transform.position, Facing, ChargeSeconds))
+                        modelVisual?.PlaySpook();
                     CancelScare();
                 }
             }

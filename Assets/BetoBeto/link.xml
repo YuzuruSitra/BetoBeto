@@ -1,0 +1,7 @@
+<linker>
+  <!-- GameFeedback and GameController create sphere primitives at runtime and then remove
+       their colliders. Keep the component type available after replacing the primitive characters. -->
+  <assembly fullname="UnityEngine.PhysicsModule">
+    <type fullname="UnityEngine.SphereCollider" preserve="all" />
+  </assembly>
+</linker>

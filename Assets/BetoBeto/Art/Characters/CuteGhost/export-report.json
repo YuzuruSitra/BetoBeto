@@ -1,0 +1,47 @@
+{
+  "source": "G:\\Blender\\CleanAssets\\BETOBETO_CuteGhost\\Blender\\CuteGhost_Rig.blend",
+  "blender": "G:\\Blender\\5.2.0\\blender-5.2.0-windows-x64\\blender.exe",
+  "fps": 30.0,
+  "clips": [
+    {
+      "name": "Idle",
+      "action": "Idle_Float",
+      "firstFrame": 0,
+      "lastFrame": 60,
+      "smileMin": 0.0,
+      "smileMax": 0.0
+    },
+    {
+      "name": "Move",
+      "action": "Move",
+      "firstFrame": 0,
+      "lastFrame": 60,
+      "smileMin": 0.0,
+      "smileMax": 0.0
+    },
+    {
+      "name": "YODAREStart",
+      "action": "YodareStart",
+      "firstFrame": 0,
+      "lastFrame": 10,
+      "smileMin": 0.0,
+      "smileMax": 1.0
+    },
+    {
+      "name": "Yodare",
+      "action": "Yodare",
+      "firstFrame": 0,
+      "lastFrame": 4,
+      "smileMin": 0.6000000238418579,
+      "smileMax": 1.0
+    },
+    {
+      "name": "Spook",
+      "action": "Spook",
+      "firstFrame": 0,
+      "lastFrame": 4,
+      "smileMin": 0.0,
+      "smileMax": 0.0
+    }
+  ]
+}

@@ -22,9 +22,32 @@ namespace BetoBeto.Editor
             PlayerSettings.WebGL.showDiagnostics = false;
             PlayerSettings.defaultWebScreenWidth = 1600;
             PlayerSettings.defaultWebScreenHeight = 900;
+            ConfigureCharacterTextures();
             var font = AssetImporter.GetAtPath("Assets/BetoBeto/Resources/Fonts/MPLUSRounded1c-Regular.ttf") as TrueTypeFontImporter;
             if (font != null && !font.includeFontData) { font.includeFontData = true; font.SaveAndReimport(); }
             AssetDatabase.SaveAssets();
+        }
+
+        // Large imported PBR maps otherwise expand to hundreds of MB on WebGL startup.
+        // Keep the original files and desktop import settings; the board displays small characters.
+        static void ConfigureCharacterTextures()
+        {
+            foreach (string root in new[] { "Assets/BetoBeto/Art/Characters/CuteGhost", "Assets/BetoBeto/Art/Characters/Fruits" })
+            {
+                if (!AssetDatabase.IsValidFolder(root)) continue;
+                foreach (string guid in AssetDatabase.FindAssets("t:Texture2D", new[] { root }))
+                {
+                    var importer = AssetImporter.GetAtPath(AssetDatabase.GUIDToAssetPath(guid)) as TextureImporter;
+                    if (importer == null) continue;
+                    var web = importer.GetPlatformTextureSettings("WebGL");
+                    if (web.overridden && web.maxTextureSize <= 1024) continue;
+                    web.name = "WebGL";
+                    web.overridden = true;
+                    web.maxTextureSize = Mathf.Min(importer.maxTextureSize, 1024);
+                    importer.SetPlatformTextureSettings(web);
+                    importer.SaveAndReimport();
+                }
+            }
         }
         [MenuItem("BetoBeto/Build/WebGL")]
         public static void Build()

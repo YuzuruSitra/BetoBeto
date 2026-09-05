@@ -1,0 +1,110 @@
+{
+  "tool": "Built-in image_gen",
+  "date": "2026-09-06",
+  "direction": "黒背景・正方形・3DCG。フルーツは最新添付ラフの輪郭と顔配置を優先。眉毛・手足なし。メロンの上まぶたは眉毛と区別。",
+  "assets": [
+    {
+      "file": "ghost_front.png",
+      "prompt": "Use case: identity-preserve, background edit. Edit this exact ghost front reference. Replace the entire light background with uniform pure black #000000. Preserve the same character, orthographic front view, T-pose, no legs or feet, red and white gingham bib apron and pocket, innocent huge sparkling eyes, fang, drool, creamy white body and curling single lower wisp. Keep full silhouette, framing, scale and proportions EXACTLY unchanged. Soft studio lighting on character only. No scenery, floor, shadow, halo, text, vignette or gradient. One square image.",
+      "references": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\ghost_front.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-1b37c55c-4f2c-45c9-8365-515433e81e64.png"
+    },
+    {
+      "file": "ghost_side.png",
+      "prompt": "Use case: identity-preserve character turnaround correction. Input1 is the exact FRONT identity master; input2 is the SIDE image to correct. Output one square STRICT ORTHOGRAPHIC LEFT PROFILE image, face pointing LEFT. User says side is too flat: give head, cheek, belly and back a rounder, balanced volumetric silhouette; a softly plump ovoid ghost with gentle forward belly curvature, not a flat-front slab or a squeezed wafer. Anatomical depth roughly equal to frontal torso width; avoid overinflation. Same vertical scale and body height as front image. Same character, creamy white material, red-white gingham bib apron front only, matching pocket and straps, huge innocent eye in profile, little fang/drool. Maintain true T-pose in 3D: arms extend laterally toward/away from camera so near hand is end-on at shoulder, NOT pointing forward. NO legs or feet, ONE lower ghost wisp. Solid PURE BLACK #000000 background, no floor/shadow/gradient/halo/text, soft studio light on ghost only. Full silhouette with margins. Preserve front identity and apron details.",
+      "references": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\ghost_front.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\ghost_side.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-c53b4b12-b00f-4e14-9e6e-d47b9b19ecde.png"
+    },
+    {
+      "file": "ghost_back.png",
+      "prompt": "Use case: identity-preserve background correction. Input1 is the rear turnaround to edit. Input2 is same ghost's final front design and BLACK background reference. Change input1 background to uniform PURE BLACK #000000. Preserve exact rear orthographic T-pose, body dimensions, single continuous legless ghost silhouette, white satin 3D CGI material, short wisp curling toward viewer LEFT, red apron upper strap and waist band, side ties. No face on back, no back apron bib or pocket. Full silhouette same framing, square image. Soft studio illumination on character only, NO legs, feet, floor, shadow, halo, text or scenery.",
+      "references": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\ghost_back.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\ghost_front.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-9eba0d3a-3645-4b08-a93a-6e2f57f3082d.png"
+    },
+    {
+      "file": "strawberry_normal.png",
+      "prompt": "Use case: sketch-to-render character concept. IMAGE 1 is the user's AUTHORITATIVE DESIGN drawing; preserve its simple eccentric shape language and exact facial feature placement/proportions. IMAGE 2 is ONLY the dimensional 3D CGI medium reference (physical materials, soft light, modeled eyeballs and mouth depth); do not borrow its face or clothing. Render ONLY this character: LEFTMOST strawberry in the sketch. A gently irregular, slightly leaning red heart/teardrop fruit, tapered low end, modest small green pointed leaf crown, sparse tiny yellow seeds. Face placed in upper-middle body as drawn: TWO small-to-medium round white eyes, each with a dark rounded pupil, widely spaced, a very simple small mouth with ONE small rectangular upper tooth. No oversized cheek bulges or grin dimples. NORMAL version: relaxed round eyes and a small slightly parted mouth, neutral naive expression. Do not turn this into the elaborate grinning strawberry from previous attempts. Critical: NO EYEBROWS WHATSOEVER, NO eyebrow ridges, no black strips above eyes, no extra wrinkles or cheek bulges, no nose. Keep face SIMPLE exactly like sketch. Render in genuinely dimensional high-quality 3D CGI, tangible fruit volume with physically based skin and fine surface texture, glossy white spherical modeled eyes softly protruding from fruit with their own highlights and gentle contact shadows, a small actual recessed mouth cavity rather than a drawn line, tooth modeled as enamel if specified. Smooth continuous light-to-shadow volume, upper-left area key and soft fill, restrained subsurface scattering; the medium should read like a photographed 3D animated film character, never flat illustration or cel shading. User explicitly wants NO ARMS, HANDS, LEGS, FEET: remove sketch limbs entirely. One square image, single full fruit silhouette with 10 percent margins, centered near-front view showing face proportions clearly. Solid PURE BLACK #000000 backdrop, no floor, scenery, shadow on background, text, other characters, frames or effects. Preserve natural stem/calyx when described, but don't invent props. This NORMAL pose will be reused unchanged for a scared-face-only variation. Prioritize matching user's sketch over embellishment.",
+      "references": [
+        "C:\\Users\\ymdak\\AppData\\Local\\Temp\\codex-clipboard-8f76984d-0966-484b-afee-b9b6c06703c1.png",
+        "C:\\Users\\ymdak\\AppData\\Local\\Temp\\codex-clipboard-13122f47-8791-4b64-9a08-b81db2115245.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-4187fc58-9c1f-45b3-bb07-da98e5dfc2c8.png"
+    },
+    {
+      "file": "strawberry_scared.png",
+      "prompt": "Use case: identity-preserve expression-only edit. Attached image is the EXACT approved normal character master. Create one square SCARED facial expression variant of this exact same 3D CGI fruit. Change to a startled face: eyes opened wider and dark pupils slightly smaller, mouth open into a round surprised gasp with the SAME single small upper tooth visible. Innocent comic panic. Change ONLY the eyes/eyelids and mouth expression. Lock original body silhouette, exact pose and camera angle, stem/calyx/leaves, seeds/netting placement, skin materials, colors, lighting, image size, framing and solid pure BLACK background. NO eyebrows or eyebrow ridges whatsoever; absolutely no dark strokes or raised strips above eyes. Keep face very simple, no extra nose, cheek bulges, creases, sweat drops, tears, accessories or motion lines. NO arms, hands, legs or feet. Maintain tangible three-dimensional CGI with physically modeled round eyeballs and recessed mouth volume, no drawing, outlines, flat textures or cel shading. Output ONLY one image, no comparison grid.",
+      "references": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-e3d399d4-2bff-41c5-b2e1-b27a1b5a7387.png"
+    },
+    {
+      "file": "blueberry_normal.png",
+      "prompt": "Use case: sketch-to-render character concept. IMAGE 1 is the user's AUTHORITATIVE DESIGN drawing; preserve its simple eccentric shape language and exact facial feature placement/proportions. IMAGE 2 is ONLY the dimensional 3D CGI medium reference (physical materials, soft light, modeled eyeballs and mouth depth); do not borrow its face or clothing. Render ONLY this character: SECOND FROM LEFT blueberry in the sketch. Simple almost spherical deep blueberry-blue fruit, a small pointed blue calyx tuft offset at the upper-right outline, understated subtle natural powder bloom. Two LARGE round white eyes with dark pupils, larger relative to its body than strawberry's eyes, matching sketch placement; a tiny inverted-u mouth. Gentle worried, innocent and cute NORMAL expression. No tooth, no nose, no human cheek anatomy. Critical: NO EYEBROWS WHATSOEVER, NO eyebrow ridges, no black strips above eyes, no extra wrinkles or cheek bulges, no nose. Keep face SIMPLE exactly like sketch. Render in genuinely dimensional high-quality 3D CGI, tangible fruit volume with physically based skin and fine surface texture, glossy white spherical modeled eyes softly protruding from fruit with their own highlights and gentle contact shadows, a small actual recessed mouth cavity rather than a drawn line, tooth modeled as enamel if specified. Smooth continuous light-to-shadow volume, upper-left area key and soft fill, restrained subsurface scattering; the medium should read like a photographed 3D animated film character, never flat illustration or cel shading. User explicitly wants NO ARMS, HANDS, LEGS, FEET: remove sketch limbs entirely. One square image, single full fruit silhouette with 10 percent margins, centered near-front view showing face proportions clearly. Solid PURE BLACK #000000 backdrop, no floor, scenery, shadow on background, text, other characters, frames or effects. Preserve natural stem/calyx when described, but don't invent props. This NORMAL pose will be reused unchanged for a scared-face-only variation. Prioritize matching user's sketch over embellishment.",
+      "references": [
+        "C:\\Users\\ymdak\\AppData\\Local\\Temp\\codex-clipboard-8f76984d-0966-484b-afee-b9b6c06703c1.png",
+        "C:\\Users\\ymdak\\AppData\\Local\\Temp\\codex-clipboard-13122f47-8791-4b64-9a08-b81db2115245.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-302ad183-6da4-4a78-868e-a9eb283e480b.png"
+    },
+    {
+      "file": "blueberry_scared.png",
+      "prompt": "Use case: identity-preserve expression-only edit. Attached image is the EXACT approved normal character master. Create one square SCARED facial expression variant of this exact same 3D CGI fruit. Change to a cute startled face: round eyes opened wider, pupils a little smaller, tiny mouth becomes a small round surprised O. Keep gentle cuteness, no exaggerated horror or added teeth. Change ONLY the eyes/eyelids and mouth expression. Lock original body silhouette, exact pose and camera angle, stem/calyx/leaves, seeds/netting placement, skin materials, colors, lighting, image size, framing and solid pure BLACK background. NO eyebrows or eyebrow ridges whatsoever; absolutely no dark strokes or raised strips above eyes. Keep face very simple, no extra nose, cheek bulges, creases, sweat drops, tears, accessories or motion lines. NO arms, hands, legs or feet. Maintain tangible three-dimensional CGI with physically modeled round eyeballs and recessed mouth volume, no drawing, outlines, flat textures or cel shading. Output ONLY one image, no comparison grid.",
+      "references": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\blueberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-f3045135-c489-42b0-9afc-19f3b09091f2.png"
+    },
+    {
+      "file": "orange_normal.png",
+      "prompt": "Create one square 3D CGI character image. Image1 is user's authoritative fruit design sketch; depict ONLY the THIRD character, the orange. Image2 is the matching finished strawberry: match its physical 3D fruit skin, dimensional eyes, lighting, background and simple face treatment. The orange is a broad slightly asymmetric round citrus fruit with a small rounded bump at upper-right top resembling a dekopon fruit. Fine orange rind pores. Match sketch face: two SMALL widely spaced round white eyes with small dark pupils, a simple downturned mouth with one central rectangular lower tooth sticking upward making the stepped mouth line. Blank slightly puzzled neutral expression, simple and funny. NO EYEBROWS, no brow ridges, no black strips above eyes, no nose, extra cheeks or lips, no moustache. Absolutely no arms, hands, legs or feet. A fruit with a simple sculpted face only. Real three-dimensional modeled eyeballs with highlights and contact shadows, small recessed mouth, physically based fruit materials and soft upper-left key light, smooth continuous volume shading like image2. No outlines or cel shading. Full silhouette centered in near-front view with 10 percent margin. Solid pure BLACK #000000 background. No text, floor, scenery, additional characters or props. NORMAL expression identity master.",
+      "references": [
+        "C:\\Users\\ymdak\\AppData\\Local\\Temp\\codex-clipboard-8f76984d-0966-484b-afee-b9b6c06703c1.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-e6f0302a-f61c-4ba2-91a1-cbf2baff1a07.png"
+    },
+    {
+      "file": "orange_scared.png",
+      "prompt": "Use case: identity-preserve facial expression edit. Attached image is the EXACT normal orange character master. Create ONE square SCARED expression version, changing ONLY eyes and mouth. Eyes open a little wider and pupils become smaller, retaining the original small widely spaced eye positions. Mouth opens into a modest rounded startled gasp, retain the SAME small rectangular LOWER tooth protruding upward from the lower mouth edge. A simple blank character suddenly surprised. Preserve EXACT original fruit silhouette including upper-right dekopon bump, rind pores, orange material, lighting, camera angle, framing and pure BLACK background. NO eyebrows whatsoever, no brow ridges, no dark marks or extra pieces above eyes, no nose, no extra cheek/lip bulges, no sweat, effects, props or text. NO arms, hands, legs or feet. Keep physically modeled three-dimensional eyes and mouth, premium tangible CGI style, no outlines or illustration. Only expression changes; all other details fixed. Output a single square image, no grid.",
+      "references": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\orange_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-6c38c9f2-be11-4ae5-8f7a-3742b7644a56.png"
+    },
+    {
+      "file": "melon_normal.png",
+      "prompt": "Use case: sketch-to-render character concept. IMAGE 1 is the user's AUTHORITATIVE DESIGN drawing; preserve its simple eccentric shape language and exact facial feature placement/proportions. IMAGE 2 is ONLY the dimensional 3D CGI medium reference (physical materials, soft light, modeled eyeballs and mouth depth); do not borrow its face or clothing. Render ONLY this character: RIGHTMOST melon boss in sketch. Large broad round green muskmelon, pale cream raised netted rind pattern, short crooked T-shaped stem at upper-right. Eyes with sleepy HALF-CLOSED UPPER EYELIDS, eyelids are continuous GREEN fruit-skin caps touching/covering eyeballs and are NOT separate eyebrows. There must be NO eyebrow strips or hair above either eye. Large two-lobed pale cream moustache below eyes, softly swept-out ends, following exact sketch shape and placement. No nose added. Closed small mouth almost hidden beneath moustache. NORMAL expression: heavy-lidded unimpressed boss authority. Preserve minimal simple sketch face, don't add angry brow creases, lips or chin. Critical: NO EYEBROWS WHATSOEVER, NO eyebrow ridges, no black strips above eyes, no extra wrinkles or cheek bulges, no nose. Keep face SIMPLE exactly like sketch. Render in genuinely dimensional high-quality 3D CGI, tangible fruit volume with physically based skin and fine surface texture, glossy white spherical modeled eyes softly protruding from fruit with their own highlights and gentle contact shadows, a small actual recessed mouth cavity rather than a drawn line, tooth modeled as enamel if specified. Smooth continuous light-to-shadow volume, upper-left area key and soft fill, restrained subsurface scattering; the medium should read like a photographed 3D animated film character, never flat illustration or cel shading. User explicitly wants NO ARMS, HANDS, LEGS, FEET: remove sketch limbs entirely. One square image, single full fruit silhouette with 10 percent margins, centered near-front view showing face proportions clearly. Solid PURE BLACK #000000 backdrop, no floor, scenery, shadow on background, text, other characters, frames or effects. Preserve natural stem/calyx when described, but don't invent props. This NORMAL pose will be reused unchanged for a scared-face-only variation. Prioritize matching user's sketch over embellishment.",
+      "references": [
+        "C:\\Users\\ymdak\\AppData\\Local\\Temp\\codex-clipboard-8f76984d-0966-484b-afee-b9b6c06703c1.png",
+        "C:\\Users\\ymdak\\AppData\\Local\\Temp\\codex-clipboard-13122f47-8791-4b64-9a08-b81db2115245.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-f68aefcf-540b-47e8-8ea6-f5fa1997b7fd.png"
+    },
+    {
+      "file": "melon_scared.png",
+      "prompt": "Use case: identity-preserve expression-only edit. Attached image is the EXACT approved normal character master. Create one square SCARED facial expression variant of this exact same 3D CGI fruit. Change to a startled boss face: lift the upper EYELIDS to reveal fully wide-open round eyes with smaller pupils; open a surprised rounded mouth below the unchanged two-lobed moustache. Preserve the moustache shape and material; boss loses composure. No additional tooth. Change ONLY the eyes/eyelids and mouth expression. Lock original body silhouette, exact pose and camera angle, stem/calyx/leaves, seeds/netting placement, skin materials, colors, lighting, image size, framing and solid pure BLACK background. NO eyebrows or eyebrow ridges whatsoever; absolutely no dark strokes or raised strips above eyes. Keep face very simple, no extra nose, cheek bulges, creases, sweat drops, tears, accessories or motion lines. NO arms, hands, legs or feet. Maintain tangible three-dimensional CGI with physically modeled round eyeballs and recessed mouth volume, no drawing, outlines, flat textures or cel shading. Output ONLY one image, no comparison grid.",
+      "references": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\melon_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-be59a71a-a8b7-4d81-8db9-a33e20e79b11.png"
+    },
+    {
+      "file": "fruit_limbs.png",
+      "prompt": "Use case: stylized-concept CGI model reference. Reference images define the tangible volumetric 3D CGI style of a fruit cartoon game. Create ONE generic anatomy base: a plain neutral warm-gray SPHERE torso, with TWO simple slender warm-brown rubber-hose ARMS coming from left/right side of sphere and TWO matching short LEGS coming from the lower sphere. Arms extended horizontally in T-pose, each ending in a simple clearly sculpted cartoon hand with three rounded fingers and a thumb. Legs separated, each ending in a small rounded broad foot with simple toe end; bare hands/feet, no gloves, socks or shoes. Entire sphere and all four appendages visible, no face, no fruit texture, no stem, no clothes or additional pieces. This is the reusable limbs template for all fruits. Real dimensional 3D geometry, physically based satin material, soft area light upper left and softer fill right, strong rounded volume and natural crevice shadows, not a drawing or cel shading. One square image, strict front view, centered full body with 10 percent margins around hand/foot extents, PURE BLACK #000000 background, no floor, cast shadow on background, text, grid or annotations.",
+      "references": [
+        "C:\\Users\\ymdak\\AppData\\Local\\Temp\\codex-clipboard-13122f47-8791-4b64-9a08-b81db2115245.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-383354bb-c08b-4fc0-9d92-5f58e1530ff5.png"
+    }
+  ]
+}

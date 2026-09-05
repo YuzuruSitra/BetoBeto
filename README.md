@@ -163,6 +163,10 @@ StageSelect.unity
 
 滑走速度と壁での硬直は `Enemies/FruitAgent.cs`、揺れ・飛沫・ヒットストップの強さは `Presentation/GameFeedback.cs`、残像と潰れ方は `Presentation/FruitMotionVfx.cs` で調整できます。滑走は初速7.5マス/秒、巻き込み1体ごとに0.65マス/秒加算（加速は6体分まで）、壁の硬直は0.48秒です。
 
+フルーツ4種類は `Assets/BetoBeto/Art/Characters/Fruits` のリグ付きモデルを使用します。驚かされた後は3秒間、驚き顔で両手を上げてバタバタ走ります。滑走中も驚き顔になり、滑走開始ごとに仰向け・うつ伏せのモーションをランダムに選びます。導入元・サイズ・表情切り替え・検証記録は `Docs/fruit-models.md` を参照してください。
+
+お化けは `Assets/BetoBeto/Art/Characters/CuteGhost` のリグ付きモデルを使用します。移動速度でIdle／Moveをブレンドし、よだれボタン押下中はカメラを向いてYODAREStart→Yodareを連続再生し、Yodareボーンから透明なよだれが床に落下します。離すと通常動作へ戻り、怖がらせるときはSpookを0.5秒再生します。Blend更新後は `Tools/Blender/Export-CuteGhost.ps1` で再出力できます。設定と再出力手順は `Docs/ghost-models.md` を参照してください。
+
 驚かす範囲・チャージ時間・逃走時間は `Player/ScareRules.cs`、チャージと範囲の表示は `Presentation/ScarePreview.cs`、よだれの再使用待ちは `Core/GameController.cs` の `DroolReuseSeconds` で調整できます。旧能力の氷Prefabは互換性のため残しています。水たまりから生じる氷の壁は `Prefabs/Stage/IceWall.prefab` を使い、JSONの `iceLifetime` で寿命を調整します。
 
 ## 検証コマンド
