@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "name": "いっぱしキッチン",
+  "dessert": "フルーツタルト",
+  "width": 16,
+  "height": 9,
+  "rows": [
+    "##CPC#C##C#CPC##",
+    "C1.....JJ.....2C",
+    "C....X....X....C",
+    "CC.C...34.....CC",
+    "CJ.....2X.....JC",
+    "CC...2.G..1.C.CC",
+    "X..CF..X4..F...X",
+    "C4...3J##J4...3C",
+    "###.########.###"
+  ],
+  "recipe": {
+    "strawberry": 6,
+    "blueberry": 5,
+    "orange": 4,
+    "melon": 2
+  },
+  "escapeLimit": 10,
+  "spawnInterval": 2.5,
+  "iceLifetime": 5,
+  "droolLifetime": 10,
+  "cookieHits": 3,
+  "cookieRespawnSeconds": 12,
+  "sconeRespawnSeconds": 5,
+  "movingShredderSpeed": 1,
+  "freezerSeconds": 3,
+  "frozenSpeedMultiplier": 0.35
+}
