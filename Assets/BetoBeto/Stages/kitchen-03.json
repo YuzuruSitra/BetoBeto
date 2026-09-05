@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "name": "駆け出しキッチン",
+  "dessert": "フルーツタルト",
+  "width": 16,
+  "height": 9,
+  "rows": [
+    "###P####C###P###",
+    "#1.....2CJ....2#",
+    "J...CC.3......3#",
+    "#JC....H...XCCJ#",
+    "#C..CX.J4...C.2#",
+    "#....4.JJ.3....#",
+    "#.......G.C.V..#",
+    "#4.3XC....C...3#",
+    "##.###..########"
+  ],
+  "recipe": {
+    "strawberry": 5,
+    "blueberry": 4,
+    "orange": 3,
+    "melon": 1
+  },
+  "escapeLimit": 8,
+  "spawnInterval": 3.6,
+  "iceLifetime": 5,
+  "droolLifetime": 10,
+  "cookieHits": 3,
+  "cookieRespawnSeconds": 20,
+  "sconeRespawnSeconds": 5,
+  "movingShredderSpeed": 1,
+  "freezerSeconds": 3,
+  "frozenSpeedMultiplier": 0.35
+}

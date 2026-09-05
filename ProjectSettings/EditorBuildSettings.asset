@@ -23,5 +23,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/BetoBeto/Scenes/Kitchen05.unity
     guid: 40cffd765fc14b242b929ef8d892dcef
+  - enabled: 1
+    path: Assets/BetoBeto/Scenes/Kitchen03.unity
+    guid: 4052feb9f6677b34ca2517abd2427ff6
+  - enabled: 1
+    path: Assets/BetoBeto/Scenes/Kitchen04.unity
+    guid: 6450c7131a0805c489f5d194a97db7c1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
