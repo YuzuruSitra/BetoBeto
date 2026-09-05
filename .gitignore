@@ -12,6 +12,7 @@
 /[Bb]uild/
 /[Bb]uilds/
 /[Ll]ogs/
+/Data/Plugins/lib_burst_generated.*
 /[Uu]ser[Ss]ettings/
 *.log
 

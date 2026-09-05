@@ -7,7 +7,6 @@ using BetoBeto.Presentation;
 using BetoBeto.Stage;
 using BetoBeto.UI;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace BetoBeto.Core
 {
@@ -44,6 +43,7 @@ namespace BetoBeto.Core
         int spawnIndex;
         int lastWidth, lastHeight;
         GameState shownState;
+        bool hadController;
 
         void Awake()
         {
@@ -80,12 +80,10 @@ namespace BetoBeto.Core
         void Update()
         {
             if (Screen.width != lastWidth || Screen.height != lastHeight) FitCamera();
-            var keyboard = Keyboard.current;
-            if (keyboard != null)
-            {
-                if (keyboard.escapeKey.wasPressedThisFrame) Hud.TogglePause();
-            }
-            if (Session.State == GameState.Playing)
+            if (GamepadControls.PausePressed || (Hud.ModalOpen && GamepadControls.CancelPressed)) Hud.TogglePause();
+            if (hadController && !GamepadControls.Ready && Session.State == GameState.Playing) Hud.ShowOptions();
+            hadController = GamepadControls.Ready;
+            if (Session.State == GameState.Playing && GamepadControls.Ready)
             {
                 float dt = Feedback.SimulationDelta;
                 IceCooldown = Mathf.Max(0, IceCooldown - dt);
@@ -136,6 +134,8 @@ namespace BetoBeto.Core
             shownState = GameState.Playing;
             IceCooldown = DroolCooldown = 0;
             spawnTimer = 0; spawnIndex = 0; Countdown = 2.8f;
+            hadController = GamepadControls.Ready;
+            GamepadControls.SuppressActionsUntilRelease();
             var ghost = Instantiate(assets.ghost, Board.Data.World(Board.PlayerStart), Quaternion.identity, actors);
             ghost.GetComponent<GhostController>().Initialize(this);
             Notify("よだれで滑らせて、ピンクのシュレッダーへ！", 6);
@@ -209,7 +209,9 @@ namespace BetoBeto.Core
         {
             pointer.gameObject.SetActive(visible && Session.State == GameState.Playing && Board.Data.Contains(cell));
             pointer.position = Board.Data.World(cell, .018f);
-            pointerMaterial.color = Board.CanPlace(cell) && !Board.Drool.ContainsKey(cell) ? new Color(.48f, .91f, .9f) : new Color(1, .35f, .42f);
+            bool available = Board.CanPlace(cell) && !Board.Drool.ContainsKey(cell) && IceCooldown <= 0;
+            foreach (var fruit in fruits) if (!fruit.Removed && (fruit.Cell == cell || fruit.TargetCell == cell)) available = false;
+            pointerMaterial.color = available ? new Color(.48f, .91f, .9f) : new Color(1, .35f, .42f);
         }
         public void PropagateSlide(FruitAgent source)
         {

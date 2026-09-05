@@ -77,6 +77,7 @@ namespace BetoBeto.Editor
             PlayerSettings.defaultScreenHeight = 900;
             PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
             PlayerSettings.runInBackground = true;
+            WebBuild.Configure();
             EditorSettings.enterPlayModeOptions = EnterPlayModeOptions.None;
             AssetDatabase.SaveAssets();
             EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/BetoBeto/Scenes/Title.unity");

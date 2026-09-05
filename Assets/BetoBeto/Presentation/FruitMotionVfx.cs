@@ -44,7 +44,7 @@ namespace BetoBeto.Presentation
             for (int i = 0; i < trails.Length; i++)
             {
                 if (trails[i] == null) continue;
-                trails[i].transform.localPosition = Vector3.up * .13f + side * (i == 0 ? -.2f : .2f) - fruit.Forward * .14f;
+                trails[i].transform.position = transform.position + Vector3.up * .13f + side * (i == 0 ? -.2f : .2f) - fruit.Forward * .14f;
                 trails[i].emitting = fruit.Sliding;
                 trails[i].time = .22f + Mathf.Min(fruit.Chain - 1, 5) * .025f;
             }
@@ -56,7 +56,7 @@ namespace BetoBeto.Presentation
                 float pulse = impact * .3f;
                 var scale = new Vector3(1 + stretch + pulse, 1 - stretch - pulse, 1 + stretch + pulse);
                 visual.localScale = Vector3.Lerp(visual.localScale, Vector3.Scale(restScale, scale), dt * 23);
-                var lean = fruit.Sliding ? Quaternion.Euler(fruit.Forward.z * 17, 0, -fruit.Forward.x * 17) : Quaternion.identity;
+                var lean = fruit.Sliding ? Quaternion.Euler(-17, 0, 0) : Quaternion.identity;
                 visual.localRotation = Quaternion.Slerp(visual.localRotation, lean, dt * 15);
             }
             if (!fruit.Sliding) { dropTimer = 0; return; }

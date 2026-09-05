@@ -38,7 +38,13 @@ namespace BetoBeto.Audio
             warning = Tone("Escape", 200, .35f, .65f);
             clear = Tone("Complete", 660, .65f, 2);
             music.clip = MakeMusic();
-            music.Play();
+            if (Player.GamepadControls.BrowserReady) music.Play();
+        }
+        // Called by the WebGL template inside the initial click gesture.
+        public void UnlockFromBrowser()
+        {
+            Player.GamepadControls.UnlockBrowser();
+            if (!music.isPlaying) music.Play();
         }
         public void SetMusic(float volume) { MusicVolume = Mathf.Clamp01(volume); music.volume = MusicVolume; PlayerPrefs.SetFloat("BetoBeto.Music", MusicVolume); }
         public void SetEffects(float volume) { EffectsVolume = Mathf.Clamp01(volume); effects.volume = EffectsVolume; PlayerPrefs.SetFloat("BetoBeto.Sfx", EffectsVolume); }

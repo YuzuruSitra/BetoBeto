@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using BetoBeto.Player;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
@@ -11,21 +15,96 @@ namespace BetoBeto.UI
         protected RectTransform root;
         Font font;
         Sprite rounded;
+        protected EventSystem events;
+        InputSystemUIInputModule inputModule;
+        InputActionAsset uiActions;
+        Canvas uiCanvas;
+        float textScale = -1;
+        readonly List<InputActionReference> actionReferences = new List<InputActionReference>();
         protected static readonly Color Ink = Hex("253E51"), Muted = Hex("6A8090"), Cream = Hex("FFF8EA"), Pink = Hex("E8788B"), Mint = Hex("81CFC7");
         protected static readonly Color[] FruitColors = { Hex("E96778"), Hex("7C86C3"), Hex("EDAA55"), Hex("9BAF68") };
         protected void InitializeUi()
         {
-            font = Font.CreateDynamicFontFromOSFont(new[] { "Yu Gothic UI", "Yu Gothic", "Meiryo", "Noto Sans CJK JP", "Arial" }, 32);
+            font = Resources.Load<Font>("Fonts/MPLUSRounded1c-Regular");
             if (font == null) font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             rounded = CreateRoundedSprite();
             var canvasObject = new GameObject("BetoBeto UI", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             root = canvasObject.GetComponent<RectTransform>();
-            var canvas = canvasObject.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            uiCanvas = canvasObject.GetComponent<Canvas>(); uiCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             var scaler = canvasObject.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1600, 900); scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
-            if (FindAnyObjectByType<EventSystem>() == null)
-                new GameObject("Event System", typeof(EventSystem), typeof(InputSystemUIInputModule));
+            events = FindAnyObjectByType<EventSystem>();
+            if (events == null) events = new GameObject("Event System", typeof(EventSystem)).GetComponent<EventSystem>();
+            inputModule = events.GetComponent<InputSystemUIInputModule>();
+            if (inputModule == null) inputModule = events.gameObject.AddComponent<InputSystemUIInputModule>();
+            uiActions = ScriptableObject.CreateInstance<InputActionAsset>();
+            var map = uiActions.AddActionMap("Kitchen UI");
+            var move = map.AddAction("Navigate", InputActionType.Value, expectedControlLayout: "Vector2");
+            move.AddBinding("<Gamepad>/leftStick"); move.AddBinding("<Gamepad>/dpad");
+            var submit = map.AddAction("Submit", InputActionType.Button, "<Gamepad>/buttonSouth");
+            var point = map.AddAction("Point", InputActionType.PassThrough, "<Mouse>/position", expectedControlLayout: "Vector2");
+            var click = map.AddAction("Click", InputActionType.PassThrough, "<Mouse>/leftButton");
+            inputModule.actionsAsset = uiActions;
+            inputModule.move = Reference(move); inputModule.submit = Reference(submit);
+            inputModule.point = Reference(point); inputModule.leftClick = Reference(click);
+            inputModule.cancel = null;
+            inputModule.deselectOnBackgroundClick = false;
+            inputModule.moveRepeatDelay = .35f; inputModule.moveRepeatRate = .14f;
+            inputModule.enabled = GamepadControls.BrowserReady;
+        }
+        InputActionReference Reference(InputAction action)
+        {
+            var reference = InputActionReference.Create(action); actionReferences.Add(reference); return reference;
+        }
+        protected void FocusScope(Transform scope, Selectable preferred = null)
+        {
+            Canvas.ForceUpdateCanvases();
+            var controls = scope.GetComponentsInChildren<Selectable>().Where(s => s.IsActive() && s.IsInteractable()).ToArray();
+            foreach (var control in controls)
+            {
+                var nav = new Navigation { mode = Navigation.Mode.Explicit };
+                nav.selectOnUp = Neighbor(control, controls, Vector2.up);
+                nav.selectOnDown = Neighbor(control, controls, Vector2.down);
+                if (control is not Slider)
+                {
+                    nav.selectOnLeft = Neighbor(control, controls, Vector2.left);
+                    nav.selectOnRight = Neighbor(control, controls, Vector2.right);
+                }
+                control.navigation = nav;
+            }
+            events.sendNavigationEvents = true;
+            var selected = preferred != null && controls.Contains(preferred) ? preferred : controls.FirstOrDefault();
+            events.SetSelectedGameObject(selected == null ? null : selected.gameObject);
+        }
+        static Selectable Neighbor(Selectable current, Selectable[] controls, Vector2 direction)
+        {
+            var rect = (RectTransform)current.transform;
+            Vector2 center = rect.TransformPoint(rect.rect.center);
+            float best = 0; Selectable next = null;
+            foreach (var other in controls)
+            {
+                if (other == current) continue;
+                var target = (RectTransform)other.transform;
+                Vector2 delta = (Vector2)target.TransformPoint(target.rect.center) - center;
+                float score = Vector2.Dot(delta, direction) / Mathf.Max(1, delta.sqrMagnitude);
+                if (score > best) { best = score; next = other; }
+            }
+            return next;
+        }
+        protected void DisableNavigation()
+        {
+            events.sendNavigationEvents = false; events.SetSelectedGameObject(null);
+        }
+        void LateUpdate()
+        {
+            if (inputModule != null && inputModule.enabled != GamepadControls.BrowserReady) inputModule.enabled = GamepadControls.BrowserReady;
+            if (uiCanvas != null && !Mathf.Approximately(textScale, uiCanvas.scaleFactor))
+            {
+                // A browser resize can change only the Canvas scale, leaving old low-resolution glyph meshes cached.
+                textScale = uiCanvas.scaleFactor;
+                foreach (var label in root.GetComponentsInChildren<Text>()) label.SetVerticesDirty();
+            }
         }
         protected void SliderRow(RectTransform parent, string text, float y, float value, Action<float> changed)
         {
@@ -40,6 +119,7 @@ namespace BetoBeto.UI
             slider.handleRect = handle; slider.targetGraphic = handle.GetComponent<Image>();
             slider.minValue = 0; slider.maxValue = 1; slider.value = value;
             slider.onValueChanged.AddListener(v => { changed(v); percent.text = Mathf.RoundToInt(v * 100) + "%"; });
+            sliderRoot.gameObject.AddComponent<PadSelection>();
         }
         protected GameObject Overlay(string name, float alpha)
         {
@@ -85,6 +165,7 @@ namespace BetoBeto.UI
             button.targetGraphic = rect.GetComponent<Image>();
             var colors = button.colors; colors.highlightedColor = new Color(1.05f, 1.05f, 1.05f); colors.pressedColor = new Color(.88f, .88f, .88f); button.colors = colors;
             button.onClick.AddListener(() => clicked());
+            rect.gameObject.AddComponent<PadSelection>();
             Label(rect, text, Vector2.zero, size, fontSize, foreground, FontStyle.Bold, TextAnchor.MiddleCenter);
             return rect;
         }
@@ -110,6 +191,11 @@ namespace BetoBeto.UI
         }
         protected static Color Hex(string value) { ColorUtility.TryParseHtmlString("#" + value, out var color); return color; }
         protected static string FormatTime(float elapsed) => $"{(int)elapsed / 60:00}:{(int)elapsed % 60:00}";
-        protected virtual void OnDestroy() { if (rounded != null) { Destroy(rounded.texture); Destroy(rounded); } }
+        protected virtual void OnDestroy()
+        {
+            if (rounded != null) { Destroy(rounded.texture); Destroy(rounded); }
+            foreach (var reference in actionReferences) Destroy(reference);
+            if (uiActions != null) { uiActions.Disable(); Destroy(uiActions); }
+        }
     }
 }

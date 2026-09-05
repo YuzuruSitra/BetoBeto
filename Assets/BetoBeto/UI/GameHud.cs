@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BetoBeto.Core;
 using BetoBeto.Presentation;
+using BetoBeto.Player;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
@@ -32,6 +33,7 @@ namespace BetoBeto.UI
             game = controller;
             InitializeUi();
             BuildHud();
+            DisableNavigation();
         }
         void BuildHud()
         {
@@ -79,12 +81,12 @@ namespace BetoBeto.UI
             countdown.rectTransform.pivot = new Vector2(.5f, .5f);
 
             var footer = Stretch(root, "Controls", Vector2.zero, new Vector2(1, .106f), new Vector2(23, 19), new Vector2(-23, 0), Cream);
-            Label(footer, "W A S D / ↑↓←→", new Vector2(23, -13), new Vector2(260, 26), 17, Ink, FontStyle.Bold);
-            Label(footer, "移動  ·  クッキーの壁をすり抜ける", new Vector2(24, -43), new Vector2(315, 23), 13, Muted);
+            Label(footer, "左スティック / 十字キー  移動", new Vector2(23, -13), new Vector2(390, 26), 17, Ink, FontStyle.Bold);
+            Label(footer, "右スティックで向き調整  ·  MENUで一時停止", new Vector2(24, -43), new Vector2(410, 23), 13, Muted);
             iceText = Label(footer, "", new Vector2(440, -13), new Vector2(470, 26), 17, Ink, FontStyle.Bold);
-            Label(footer, $"左クリックで指定マス / Eで前方  ·  {game.Board.Data.iceLifetime:0.#}秒で溶ける", new Vector2(441, -43), new Vector2(480, 23), 13, Muted);
+            Label(footer, $"左ボタン  ·  向いている前方1マス  ·  {game.Board.Data.iceLifetime:0.#}秒で溶ける", new Vector2(441, -43), new Vector2(520, 23), 13, Muted);
             droolText = Label(footer, "", new Vector2(1020, -13), new Vector2(400, 26), 17, Ink, FontStyle.Bold);
-            Label(footer, "Space / 右クリック  ·  足元に置いて連鎖！", new Vector2(1021, -43), new Vector2(430, 23), 13, Muted);
+            Label(footer, "下ボタン  ·  足元に置いて連鎖！", new Vector2(1021, -43), new Vector2(430, 23), 13, Muted);
             feedbackLayer = new GameObject("Floating feedback", typeof(RectTransform)).GetComponent<RectTransform>();
             feedbackLayer.SetParent(root, false);
             feedbackLayer.anchorMin = Vector2.zero; feedbackLayer.anchorMax = Vector2.one;
@@ -137,18 +139,21 @@ namespace BetoBeto.UI
             var card = CenterCard(modal.transform, "Options card", new Vector2(760, 716));
             Label(card, pausedByModal ? "ひとやすみ" : "あそびかた・音量設定", new Vector2(35, -29), new Vector2(690, 51), 30, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
             Label(card, $"01  フルーツは普段、シュレッダーを避けて歩く。\n02  氷で道をふさぐ。{game.Board.Data.iceLifetime:0.#}秒で溶けるのでタイミングが大事。\n03  足元によだれを置き、進行方向へまっすぐ滑らせる。\n04  ほかのフルーツを巻き込むほど加速＆得点アップ！\n05  滑らせた勢いで、ピンクのシュレッダーに突っ込ませよう。", new Vector2(46, -112), new Vector2(675, 182), 17, Ink);
-            Label(card, "必要な材料が全部そろえばクリア。脱出上限に達すると失敗。\nメロンは最初の1回だけ耐えて跳ね返る。", new Vector2(46, -307), new Vector2(675, 63), 16, Muted);
+            Label(card, "左スティックで移動 / 右スティックで向き / 下ボタンでよだれ\n左ボタンで前方に氷 / 音量は上下で選び、左右で調整", new Vector2(46, -307), new Vector2(675, 63), 16, Muted);
             SliderRow(card, "BGM", -399, game.Audio.MusicVolume, game.Audio.SetMusic);
             SliderRow(card, "効果音", -469, game.Audio.EffectsVolume, game.Audio.SetEffects);
-            Button(card, pausedByModal ? "キッチンに戻る" : "閉じる", new Vector2(50, -563), new Vector2(660, 55), Pink, Color.white, () => CloseModal(true), 21);
+            var resume = Button(card, pausedByModal ? "キッチンに戻る" : "閉じる", new Vector2(50, -563), new Vector2(660, 55), Pink, Color.white, () => CloseModal(true), 21);
             if (pausedByModal) Button(card, "ステージ選択へ", new Vector2(50, -635), new Vector2(660, 38), Hex("E9EEE9"), Ink, GameFlow.StageSelect, 16);
             else Label(card, "音量は自動で保存されます", new Vector2(50, -644), new Vector2(660, 24), 13, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
+            FocusScope(modal.transform, resume.GetComponent<Button>());
         }
         void CloseModal(bool restore)
         {
             if (modal != null) { modal.SetActive(false); Destroy(modal); modal = null; }
             if (restore && pausedByModal && game.Session.State == GameState.Paused) game.Session.State = stateBeforeModal;
             pausedByModal = false;
+            DisableNavigation();
+            GamepadControls.SuppressActionsUntilRelease();
             PlayerPrefs.Save();
         }
         public void Refresh()
@@ -171,8 +176,8 @@ namespace BetoBeto.UI
             recipeFill.rectTransform.anchorMax = new Vector2(fraction, 1);
             iceText.text = game.IceCooldown > 0 ? $"ICE BLOCK   あと {game.IceCooldown:0.0} 秒" : "ICE BLOCK   氷で道を変える";
             droolText.text = game.DroolCooldown > 0 ? $"DROOL   あと {game.DroolCooldown:0.0} 秒" : "DROOL   よだれで滑らせる";
-            noticeText.text = session.State == GameState.Playing && Time.unscaledTime < game.NoticeUntil ? game.Notice : "";
-            countdown.text = session.State == GameState.Playing && game.Countdown > 0 ? Mathf.CeilToInt(game.Countdown).ToString() : "";
+            noticeText.text = !GamepadControls.Ready ? "ゲームパッドを接続して、いずれかのボタンを押してください" : session.State == GameState.Playing && Time.unscaledTime < game.NoticeUntil ? game.Notice : "";
+            countdown.text = GamepadControls.Ready && session.State == GameState.Playing && game.Countdown > 0 ? Mathf.CeilToInt(game.Countdown).ToString() : "";
         }
     }
 }

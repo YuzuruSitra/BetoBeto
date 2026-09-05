@@ -15,9 +15,12 @@ namespace BetoBeto.Tests
     public sealed class KitchenPlayTests
     {
         GameController game;
+        PadTestInput pad;
+        [TearDown] public void CleanupInput() { pad?.Dispose(); }
         [UnitySetUp]
         public IEnumerator Setup()
         {
+            pad = new PadTestInput();
             yield return SceneManager.LoadSceneAsync("Kitchen");
             yield return null;
             game = GameController.Instance;
@@ -180,39 +183,22 @@ namespace BetoBeto.Tests
                 Assert.That(game.Session.TotalHarvested, Is.Zero, scene);
             }
         }
-        [UnityTest] public IEnumerator GhostMovesThroughCookieWallWithKeyboard()
+        [UnityTest] public IEnumerator GhostMovesThroughCookieWallWithGamepad()
         {
             var ghost = Object.FindFirstObjectByType<GhostController>();
             var cell = new Vector2Int(7, 3);
             ghost.transform.position = game.Board.Data.World(new Vector2Int(7, 4));
             Assert.That(game.Board.Walls.Contains(cell), Is.True);
-            var testSettings = InputSystem.settings;
-            var originalBackground = testSettings.backgroundBehavior;
-            var originalEditorInput = testSettings.editorInputBehaviorInPlayMode;
-            testSettings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
-            testSettings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
-            var keyboard = InputSystem.AddDevice<Keyboard>();
-            try
+            float deadline = Time.realtimeSinceStartup + 1;
+            float destination = game.Board.Data.World(cell).z + .05f;
+            while (ghost.transform.position.z < destination && Time.realtimeSinceStartup < deadline)
             {
-                // A CLI test must not depend on which editor window currently has focus.
-                float deadline = Time.realtimeSinceStartup + 1;
-                float destination = game.Board.Data.World(cell).z + .05f;
-                while (ghost.transform.position.z < destination && Time.realtimeSinceStartup < deadline)
-                {
-                    keyboard.MakeCurrent();
-                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W));
-                    yield return null;
-                }
-                InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                pad.State(new GamepadState { leftStick = Vector2.up });
                 yield return null;
-                Assert.That(ghost.transform.position.z, Is.GreaterThan(game.Board.Data.World(cell).z - .3f));
             }
-            finally
-            {
-                InputSystem.RemoveDevice(keyboard);
-                testSettings.backgroundBehavior = originalBackground;
-                testSettings.editorInputBehaviorInPlayMode = originalEditorInput;
-            }
+            pad.State(new GamepadState());
+            yield return null;
+            Assert.That(ghost.transform.position.z, Is.GreaterThan(game.Board.Data.World(cell).z - .3f));
         }
         [Test] public void RetryResetsCountersActorsAndTemporaryObjects()
         {

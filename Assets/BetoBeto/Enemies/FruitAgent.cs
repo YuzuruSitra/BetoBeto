@@ -22,6 +22,7 @@ namespace BetoBeto.Enemies
         public Vector3 Forward => new Vector3(Direction.x, 0, -Direction.y);
         GameController game;
         FruitMotionVfx motion;
+        ActorFacing visualFacing;
         readonly Dictionary<Vector2Int, int> visits = new Dictionary<Vector2Int, int>();
         bool moving, preferLeft;
         float spawnDelay = .65f, immunity, stunned, stunDuration, recoil;
@@ -39,6 +40,8 @@ namespace BetoBeto.Enemies
             game = controller; Cell = TargetCell = cell; preferLeft = turnLeft;
             Health = kind == FruitKind.Melon ? 2 : 1;
             transform.position = game.Board.Data.World(cell);
+            visualFacing = gameObject.AddComponent<ActorFacing>();
+            visualFacing.Initialize(game.assets.effectMaterial, false);
             motion = gameObject.AddComponent<FruitMotionVfx>();
             motion.Initialize(game, this, transform.Find("Visual"));
             visits[cell] = 1;
@@ -94,6 +97,7 @@ namespace BetoBeto.Enemies
                     else if (kind != FruitKind.Orange) preferLeft = !preferLeft;
                 }
                 Direction = next;
+                visualFacing.Face(Direction);
             }
             TargetCell = Cell + Direction;
             if (Sliding ? game.Board.Blocked(TargetCell) : game.Board.BlocksWalking(TargetCell)) { StopAtWall(); return false; }
@@ -134,6 +138,7 @@ namespace BetoBeto.Enemies
             if (group.Members.Add(this) && collision) group.Count++;
             combo = group;
             Direction = direction; Sliding = true; moving = false; stunned = 0;
+            visualFacing.Face(Direction);
             motion.StartSlide();
             game.OnSlide(this, collision);
             return true;

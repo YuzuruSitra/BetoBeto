@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BETO BETO · おばけのスイーツキッチン</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #173747; color: #fff8ea; font-family: system-ui, sans-serif; }
+    body { min-height: 100vh; display: grid; place-content: center; padding: 18px; }
+    main { width: min(1600px, calc(100vw - 36px), calc((100vh - 106px) * 16 / 9)); }
+    #stage { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #244b5d; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 65px #081f2b70; }
+    #stage:fullscreen { border-radius: 0; display: grid; place-items: center; background: #173747; }
+    canvas { display: block; width: 100%; height: 100%; outline: none; }
+    #stage:fullscreen canvas { width: min(100vw, calc(100vh * 16 / 9)); height: min(100vh, calc(100vw * 9 / 16)); }
+    #welcome { position: absolute; inset: 0; background: #173747ed; display: grid; place-content: center; gap: 20px; text-align: center; padding: 24px; }
+    #welcome[hidden] { display: none; }
+    h1 { font-size: clamp(32px, 5vw, 64px); letter-spacing: .12em; margin: 0; }
+    p { line-height: 1.8; margin: 0; color: #bfd8d6; }
+    button { border: 0; border-radius: 12px; font: inherit; font-weight: 700; cursor: pointer; padding: 14px 24px; color: #253e51; background: #81cfc7; }
+    #start { color: white; background: #e8788b; }
+    button:disabled { opacity: .6; cursor: wait; }
+    button:focus-visible { outline: 3px solid #fff8ea; outline-offset: 4px; }
+    progress { width: 100%; accent-color: #81cfc7; height: 7px; }
+    footer { display: flex; align-items: center; justify-content: space-between; gap: 14px; font-size: 12px; margin-top: 14px; }
+    footer button { padding: 8px 15px; flex-shrink: 0; }
+    #error { color: #ffd5d8; max-width: 600px; }
+    a { color: #bfd8d6; }
+  </style>
+</head>
+<body>
+  <main>
+    <div id="stage">
+      <canvas id="unity-canvas" width="1600" height="900" tabindex="0" aria-label="BetoBeto ゲーム画面"></canvas>
+      <section id="welcome">
+        <h1>BETO BETO</h1>
+        <p>おばけのスイーツキッチン<br>ゲームパッドを接続してお待ちください</p>
+        <progress id="progress" value="0" max="1" aria-label="読み込み進捗"></progress>
+        <button id="start" disabled>キッチンを準備しています…</button>
+        <p id="help">最初にクリックすると、ゲームの音が有効になります。</p>
+        <p id="error" role="alert" hidden></p>
+      </section>
+    </div>
+    <footer>
+      <span>左スティック：移動 · 右スティック：向き · 下ボタン：よだれ · 左ボタン：氷 · MENU：一時停止</span>
+      <button id="fullscreen" disabled>全画面</button>
+      <a href="StreamingAssets/ThirdParty/MPLUSRounded1c-OFL.txt" target="_blank" rel="noopener">Font license</a>
+    </footer>
+  </main>
+  <script>
+    const canvas = document.getElementById('unity-canvas');
+    const start = document.getElementById('start');
+    const progress = document.getElementById('progress');
+    const fullscreen = document.getElementById('fullscreen');
+    function fail(message) {
+      const error = document.getElementById('error');
+      error.textContent = '起動できませんでした。ページを再読み込みしてください。 ' + message;
+      error.hidden = false;
+      start.disabled = true;
+    }
+    const config = {
+      arguments: [],
+#if PROGRESSIVE_ASSET_LOADING
+      primaryDataUrls: {{{ JSON.stringify(PRIMARY_DATA_FILES) }}},
+      secondaryDataUrls: {{{ JSON.stringify(SECONDARY_DATA_FILES) }}},
+#else
+      dataUrl: 'Build/{{{ DATA_FILENAME }}}',
+#endif
+      frameworkUrl: 'Build/{{{ FRAMEWORK_FILENAME }}}',
+      codeUrl: 'Build/{{{ CODE_FILENAME }}}',
+      streamingAssetsUrl: 'StreamingAssets',
+      companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+      productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+      productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+      fullscreenElementID: 'stage',
+      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.5),
+      showBanner: (message, type) => { if (type === 'error') fail(message); else console.warn(message); }
+    };
+    const loader = document.createElement('script');
+    loader.src = 'Build/{{{ LOADER_FILENAME }}}';
+    loader.onerror = () => fail('ゲームデータを取得できません。');
+    loader.onload = () => createUnityInstance(canvas, config, value => { progress.value = value; }).then(instance => {
+      start.disabled = false;
+      start.textContent = 'クリックしてはじめる';
+      progress.hidden = true;
+      document.getElementById('help').textContent = '開始後、パッドのいずれかのボタンを押すと認識されます。';
+      start.onclick = () => {
+        instance.SendMessage('BetoBeto Audio', 'UnlockFromBrowser');
+        document.getElementById('welcome').hidden = true;
+        fullscreen.disabled = false;
+        canvas.focus();
+      };
+      fullscreen.onclick = () => { instance.SetFullscreen(1); canvas.focus(); };
+    }).catch(fail);
+    document.body.appendChild(loader);
+  </script>
+</body>
+</html>

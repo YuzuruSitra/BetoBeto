@@ -2,7 +2,7 @@ using BetoBeto.Audio;
 using BetoBeto.Core;
 using BetoBeto.Stage;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using BetoBeto.Player;
 using UnityEngine.UI;
 
 namespace BetoBeto.UI
@@ -17,6 +17,7 @@ namespace BetoBeto.UI
         GameObject options;
         GameObject selectionPage;
         int page;
+        Selectable primary, previousSelection;
         void Awake()
         {
             GameFlow.SceneReady();
@@ -26,19 +27,18 @@ namespace BetoBeto.UI
             if (screen == MenuKind.Title) BuildTitle();
             else if (screen == MenuKind.StageSelect) BuildStageSelect();
             else BuildResult();
+            FocusScope(root, primary);
         }
         void Update()
         {
-            if (Keyboard.current == null || GameFlow.IsLoading) return;
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (GameFlow.IsLoading) return;
+            if (GamepadControls.CancelPressed)
             {
                 if (options != null) CloseOptions();
                 else if (screen == MenuKind.StageSelect) GameFlow.Title();
                 else if (screen == MenuKind.Result) GameFlow.StageSelect();
             }
-            if (options != null) return;
-            if (screen == MenuKind.Title && Keyboard.current.enterKey.wasPressedThisFrame) GameFlow.StageSelect();
-            if (screen == MenuKind.Result && Keyboard.current.rKey.wasPressedThisFrame && GameFlow.LastResult != null) GameFlow.Retry();
+            if (GamepadControls.PausePressed) { if (options != null) CloseOptions(); else ShowOptions(); }
         }
         void BuildHeader()
         {
@@ -56,8 +56,8 @@ namespace BetoBeto.UI
             Label(root, "BETO\nBETO", new Vector2(80, -224), new Vector2(600, 210), 90, Cream, FontStyle.Bold);
             Label(root, "にげるフルーツ、\nまとめてツルン。", new Vector2(90, -457), new Vector2(640, 97), 33, Cream, FontStyle.Bold);
             Label(root, "氷で道を変えて、よだれでひと滑り。\n小さなおばけの、とびきり甘い大作戦。", new Vector2(92, -576), new Vector2(580, 69), 18, Hex("B7D0D3"));
-            Button(root, "ステージを選ぶ    →", new Vector2(90, -688), new Vector2(480, 67), Pink, Color.white, GameFlow.StageSelect, 23);
-            Label(root, "ENTER でステージ選択へ", new Vector2(92, -776), new Vector2(480, 25), 12, Hex("A7C0C7"));
+            primary = Button(root, "ステージを選ぶ    →", new Vector2(90, -688), new Vector2(480, 67), Pink, Color.white, GameFlow.StageSelect, 23).GetComponent<Button>();
+            Label(root, "ゲームパッド専用  /  下ボタンで決定・右ボタンで戻る", new Vector2(92, -776), new Vector2(590, 25), 14, Hex("A7C0C7"));
         }
         void BuildStageSelect()
         {
@@ -91,7 +91,8 @@ namespace BetoBeto.UI
                 Label(card, entry.title, new Vector2(30, -316), new Vector2(610, 39), 26, Ink, FontStyle.Bold);
                 Label(card, entry.description, new Vector2(32, -361), new Vector2(605, 50), 15, Muted);
                 Label(card, $"材料 {data.recipe.Total}個   ·   脱出上限 {data.escapeLimit}個", new Vector2(32, -441), new Vector2(330, 25), 14, Muted);
-                Button(card, "このキッチンで作る →", new Vector2(360, -434), new Vector2(278, 58), Pink, Color.white, () => GameFlow.PlayStage(index), 18);
+                var play = Button(card, "このキッチンで作る →", new Vector2(360, -434), new Vector2(278, 58), Pink, Color.white, () => GameFlow.PlayStage(index), 18).GetComponent<Button>();
+                if (slot == 0) primary = play;
             }
             int pages = (catalog.stages.Length + 1) / 2;
             if (pages > 1)
@@ -99,6 +100,7 @@ namespace BetoBeto.UI
                 if (page > 0) Button(pageRect, "← 前へ", new Vector2(660, -817), new Vector2(120, 36), Hex("315568"), Cream, () => { page--; DrawStagePage(); });
                 if (page + 1 < pages) Button(pageRect, "次へ →", new Vector2(820, -817), new Vector2(120, 36), Hex("315568"), Cream, () => { page++; DrawStagePage(); });
             }
+            FocusScope(root, primary);
         }
         void DrawMiniMap(RectTransform card, StageData data)
         {
@@ -124,7 +126,7 @@ namespace BetoBeto.UI
             if (result == null)
             {
                 Label(card, "さあ、スイーツを作ろう。", new Vector2(40, -152), new Vector2(720, 60), 32, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-                Button(card, "ステージを選ぶ", new Vector2(120, -365), new Vector2(560, 65), Pink, Color.white, GameFlow.StageSelect, 22); return;
+                primary = Button(card, "ステージを選ぶ", new Vector2(120, -365), new Vector2(560, 65), Pink, Color.white, GameFlow.StageSelect, 22).GetComponent<Button>(); return;
             }
             Label(card, result.won ? "タルト、できあがり！" : "フルーツが逃げちゃった…", new Vector2(25, -90), new Vector2(750, 75), result.won ? 42 : 36, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
             Label(card, result.stageName, new Vector2(40, -172), new Vector2(720, 30), 16, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
@@ -132,22 +134,29 @@ namespace BetoBeto.UI
             Label(card, message, new Vector2(50, -231), new Vector2(700, 80), 23, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
             Label(card, $"SCORE  {result.score:N0}", new Vector2(30, -341), new Vector2(740, 51), 36, Pink, FontStyle.Bold, TextAnchor.MiddleCenter);
             Label(card, $"収穫 {result.harvested}個   /   脱出 {result.escaped}個   /   最大 {result.bestChain} CHAIN   /   {FormatTime(result.elapsed)}", new Vector2(35, -414), new Vector2(730, 35), 16, Ink, FontStyle.Normal, TextAnchor.MiddleCenter);
-            Button(card, "もう一度つくる", new Vector2(55, -487), new Vector2(332, 64), Pink, Color.white, GameFlow.Retry, 22);
+            primary = Button(card, "もう一度つくる", new Vector2(55, -487), new Vector2(332, 64), Pink, Color.white, GameFlow.Retry, 22).GetComponent<Button>();
             Button(card, "ステージ選択へ", new Vector2(413, -487), new Vector2(332, 64), Hex("E5ECE7"), Ink, GameFlow.StageSelect, 22);
-            Label(card, "R で再挑戦     /     ESC でステージ選択", new Vector2(40, -584), new Vector2(720, 27), 12, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
+            Label(card, "下ボタンで決定     /     右ボタンでステージ選択", new Vector2(40, -584), new Vector2(720, 27), 14, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
         }
         public void ShowOptions()
         {
             if (options != null) return;
+            previousSelection = events.currentSelectedGameObject != null ? events.currentSelectedGameObject.GetComponent<Selectable>() : primary;
             options = Overlay("Menu options", .86f);
             var card = CenterCard(options.transform, "How to play", new Vector2(760, 690));
             Label(card, "あそびかた・音量設定", new Vector2(40, -35), new Vector2(680, 53), 29, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-            Label(card, "WASD / 矢印キー：移動。クッキーの壁をすり抜けられる。\n左クリック / E：氷を生成。Space / 右クリック：足元によだれ。\nフルーツは普段シュレッダーを避ける。よだれで滑らせよう！\nほかのフルーツを巻き込むほど加速＆得点アップ。\n滑った勢いでピンクの刃へ！ メロンは2回当てよう。", new Vector2(43, -130), new Vector2(680, 180), 17, Ink);
+            Label(card, "左スティック / 十字キー：移動。右スティック：向きを変える。\n下ボタン：足元によだれ。左ボタン：向いている前方に氷。\nメニューボタン：一時停止。右ボタン：戻る。\nよだれで滑らせ、ほかのフルーツを巻き込んでピンクの刃へ！\nメロンは2回当てよう。音量は上下で選び、左右で調整。", new Vector2(43, -130), new Vector2(680, 180), 17, Ink);
             Label(card, "必要な材料が全部そろえばクリア。\n一定数のフルーツに逃げられるとゲームオーバー。", new Vector2(43, -325), new Vector2(680, 65), 17, Muted);
             SliderRow(card, "BGM", -417, audioBus.MusicVolume, audioBus.SetMusic);
             SliderRow(card, "効果音", -487, audioBus.EffectsVolume, audioBus.SetEffects);
-            Button(card, "閉じる", new Vector2(50, -580), new Vector2(660, 59), Pink, Color.white, CloseOptions, 22);
+            var close = Button(card, "閉じる", new Vector2(50, -580), new Vector2(660, 59), Pink, Color.white, CloseOptions, 22);
+            FocusScope(options.transform, close.GetComponent<Button>());
         }
-        void CloseOptions() { if (options != null) { options.SetActive(false); Destroy(options); options = null; PlayerPrefs.Save(); } }
+        void CloseOptions()
+        {
+            if (options == null) return;
+            options.SetActive(false); Destroy(options); options = null; PlayerPrefs.Save();
+            FocusScope(root, previousSelection);
+        }
     }
 }
