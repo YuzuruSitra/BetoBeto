@@ -149,7 +149,7 @@ namespace BetoBeto.UI
             else Label(card, "音量は自動で保存されます", new Vector2(50, -694), new Vector2(660, 24), 13, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
             FocusScope(modal.transform, resume.GetComponent<Button>());
         }
-        public const string GimmickHelp = "ゼリー：反転して滑り続ける。\nクッキー：滑走かオレンジで割る。復帰は初期20秒。\n移動シュレッダー：往復する刃に、タイミングを合わせる。\nスコーン：歩いて乗っても転向。滑走20回で破壊、復帰は初期5秒。\nフリーザー：しばらく減速。滑走と連鎖は続く。\n歩行：壁で右→左→右。盤外で脱出。パイプは逆走不可。";
+        public const string GimmickHelp = "ゼリー：反転して滑り続ける。\nクッキー：滑走かオレンジで割る。復帰は初期20秒。\n移動シュレッダー：往復する刃に、タイミングを合わせる。\nスコーン：斜面で転向、側面は壁。滑走20回で破壊、初期5秒で復帰。\nフリーザー：しばらく減速。滑走と連鎖は続く。\n歩行：壁で右→左→右。盤外で脱出。パイプは逆走不可。";
         void CloseModal(bool restore)
         {
             if (modal != null) { modal.SetActive(false); Destroy(modal); modal = null; }

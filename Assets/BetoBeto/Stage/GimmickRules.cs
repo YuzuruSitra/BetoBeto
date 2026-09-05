@@ -19,6 +19,11 @@ namespace BetoBeto.Stage
             return direction;
         }
         // The unrotated triangle fills the north-west half of its tile; the slope faces south-east.
+        public static bool HitsSconeSide(Vector2Int incoming, int turns)
+        {
+            Vector2Int normal = Rotate(Vector2Int.one, turns);
+            return incoming.x * normal.x + incoming.y * normal.y > 0;
+        }
         public static Vector2Int SconeReflection(Vector2Int incoming, int turns)
         {
             Vector2Int normal = Rotate(Vector2Int.one, turns);

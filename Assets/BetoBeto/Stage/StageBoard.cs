@@ -51,6 +51,9 @@ namespace BetoBeto.Stage
         public bool Blocked(Vector2Int cell) => Walls.Contains(cell) || Pipes.Contains(cell) || Jellies.Contains(cell) || HasScone(cell)
             || (Cookies.TryGetValue(cell, out var cookie) && !cookie.Broken);
         public bool BlocksSliding(Vector2Int cell) => Blocked(cell) && !HasScone(cell);
+        public bool BlocksSconeSide(Vector2Int cell, Vector2Int incoming) => HasScone(cell)
+            && GimmickRules.HitsSconeSide(incoming, Scones[cell]);
+        public bool BlocksSliding(Vector2Int cell, Vector2Int incoming) => BlocksSliding(cell) || BlocksSconeSide(cell, incoming);
         public bool HasShredder(Vector2Int cell)
         {
             if (Shredders.Contains(cell)) return true;
@@ -76,6 +79,7 @@ namespace BetoBeto.Stage
         }
         // Fruits recognise the blades while walking; a slide cannot steer around them.
         public bool BlocksWalking(Vector2Int cell) => BlocksSliding(cell) || Shredders.Contains(cell) || MoverReserves(cell);
+        public bool BlocksWalking(Vector2Int cell, Vector2Int incoming) => BlocksWalking(cell) || BlocksSconeSide(cell, incoming);
         public bool CanPlace(Vector2Int cell) => Data.Contains(cell) && !Blocked(cell) && !HasShredder(cell) && !Pipes.Contains(cell);
     }
 }

@@ -78,11 +78,11 @@ namespace BetoBeto.Enemies
                 if (!moving && !ChooseNext()) return;
                 bool walkingCookie = !Sliding && CanBumpCookie(TargetCell);
                 bool returningInsidePipe = Cell == TargetCell && game.Board.Pipes.Contains(Cell);
-                if (!Sliding && game.Board.BlocksWalking(TargetCell) && !walkingCookie && !returningInsidePipe)
+                if (!Sliding && BlocksWalkingFromCell(TargetCell) && !walkingCookie && !returningInsidePipe)
                 {
                     StopAtWall(); return;
                 }
-                bool obstacle = walkingCookie || (Sliding && game.Board.BlocksSliding(TargetCell));
+                bool obstacle = walkingCookie || (Sliding && game.Board.BlocksSliding(TargetCell, TargetCell - Cell));
                 Vector3 target = game.Board.Data.World(TargetCell);
                 if (obstacle) target -= Forward * .62f;
                 float distance = Vector3.Distance(transform.position, target);
@@ -121,6 +121,12 @@ namespace BetoBeto.Enemies
                     {
                         if (!game.Gimmicks.HitCookie(TargetCell, this)) { StopAtWall(false); return; }
                     }
+                    else if (game.Board.HasScone(TargetCell))
+                    {
+                        // The two straight sides stop a slide at the edge, but still take one hit.
+                        if (!game.Gimmicks.HitScone(TargetCell)) { StopAtWall(); return; }
+                        game.Feedback.CookieImpact(this, TargetCell, true, 0);
+                    }
                     else { StopAtWall(); return; }
                     if (game.Feedback.HitStopped) return;
                     continue;
@@ -150,16 +156,16 @@ namespace BetoBeto.Enemies
                 // The supply valve only lets newly spawned fruit out towards the board.
                 Direction = Directions.Down;
                 visualFacing.Face(Direction);
-                if (needsObstacleTurn && game.Board.BlocksWalking(Cell + Direction)) return false;
-                if (!Sliding && game.Board.BlocksWalking(Cell + Direction) && !CanBumpCookie(Cell + Direction)) return false;
+                if (needsObstacleTurn && BlocksWalkingFromCell(Cell + Direction)) return false;
+                if (!Sliding && BlocksWalkingFromCell(Cell + Direction) && !CanBumpCookie(Cell + Direction)) return false;
                 needsObstacleTurn = false;
             }
             else if (!Sliding)
             {
                 var next = needsObstacleTurn
-                    ? FruitNavigation.ChooseTurn(Cell, Direction, preferLeft, game.Board.BlocksWalking)
+                    ? FruitNavigation.ChooseTurn(Cell, Direction, preferLeft, BlocksWalkingFromCell)
                     : CanBumpCookie(Cell + Direction) ? Direction
-                    : FruitNavigation.Choose(kind, Cell, Direction, preferLeft, game.Board.BlocksWalking, VisitCount);
+                    : FruitNavigation.Choose(kind, Cell, Direction, preferLeft, BlocksWalkingFromCell, VisitCount);
                 if (next == Vector2Int.zero) return false;
                 // Alternate relative to the last actual quarter turn. A dead-end reversal does not consume it.
                 if (next == Directions.Right(Direction)) preferLeft = true;
@@ -171,6 +177,7 @@ namespace BetoBeto.Enemies
             TargetCell = Cell + Direction;
             moving = true; return true;
         }
+        bool BlocksWalkingFromCell(Vector2Int cell) => game.Board.BlocksWalking(cell, cell - Cell);
         bool CanBumpCookie(Vector2Int cell) => kind == FruitKind.Orange
             && game.Board.Cookies.TryGetValue(cell, out var cookie) && !cookie.Broken;
         void Redirect(Vector2Int direction)
@@ -274,11 +281,11 @@ namespace BetoBeto.Enemies
             Sliding = false; moving = false; combo = null;
             Cell = game.Board.Data.Cell(transform.position);
             var safeCell = Cell - Direction;
-            if (!game.Board.BlocksWalking(safeCell)) Cell = safeCell;
+            if (!BlocksWalkingFromCell(safeCell)) Cell = safeCell;
             else
             {
                 foreach (var direction in Directions.All)
-                    if (game.Board.Data.Contains(Cell + direction) && !game.Board.BlocksWalking(Cell + direction)) { Cell += direction; break; }
+                    if (game.Board.Data.Contains(Cell + direction) && !BlocksWalkingFromCell(Cell + direction)) { Cell += direction; break; }
             }
             TargetCell = Cell;
             transform.position = game.Board.Data.World(Cell);
