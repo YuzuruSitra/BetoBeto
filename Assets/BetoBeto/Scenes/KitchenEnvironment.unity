@@ -2136,6 +2136,7 @@ MonoBehaviour:
   ambient: {r: 0.48, g: 0.54, b: 0.61, a: 1}
   reflectionIntensity: 0.8
   backgroundCamera: {fileID: 600600246}
+  recipeCloth: {fileID: 1791507725}
   decorations:
   - {fileID: 1416346494}
   - {fileID: 547827376}

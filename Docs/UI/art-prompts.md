@@ -36,6 +36,14 @@ Background extraction edit. This image incorrectly has a BAKED checkerboard back
 
 Final delivered file is RGBA, 1536×1024; the top-left pixel alpha is 0.
 
+## HudRecipeLabel.png — sewn label over the existing model towel (2026-09-06)
+
+Built-in image generation tool; copied unchanged with its generated alpha to `Assets/BetoBeto/Resources/UI/HudRecipeLabel.png`. Only the title patch is generated. The gingham backing is the scene's existing 3D `GinghamTowel`; Japanese text and the tart remain live Unity elements.
+
+Final prompt:
+
+Use case: stylized-concept. Asset type: single transparent PNG game HUD recipe title label, text-free. Create a warm ivory cotton fabric sewn-on label to sit over an existing pink gingham kitchen towel in a cute 3D sweets game. Only ONE wide horizontal soft rectangular cream linen patch with gently rounded irregular fabric corners, subtle cotton weave, very thin dusty rose double stitching just inside its edges, tiny folded fabric corners, restrained warm soft edge shadow. Large uninterrupted light ivory blank center for two lines of dark Japanese text to be added in Unity. Front-on flat view, width to height about 3:1, centered with minimal transparent padding. Real transparent RGBA background outside this single label. No letters, no text, no symbols, no food, no tart, no plate, no gingham background, no wooden background, no surrounding frame or circular opening, no plastic gloss, no puffy candy border, no decorative objects. High quality soft stylized 3D fabric game UI sprite.
+
 ## FruitIcons.png
 
 Production game sprite sheet, transparent PNG, exact square 2 by 2 grid of FOUR separate fruit icons. Transparent background, no checkerboard painted, no shadows outside icons, no text, no lines, no badges, no panels. Each icon centered in its own equal-size quadrant with generous transparent padding, nothing crosses quadrant boundaries. Top-left: one shiny red whole strawberry with little green leaf crown, upright, seeds, cute soft hand-painted highlights. Top-right: one large juicy indigo blue blueberry with visible star calyx, round, soft violet reflected light. Bottom-left: one bright orange half-moon citrus wedge with juicy golden segments and orange peel, angled upright slightly to right. Bottom-right: one pale luminous green melon cube with very softly rounded edges and pale cream rind edge at bottom. Match supplied reference's ingredient icons and tart fruit, beautifully hand-painted Japanese cozy sweets game illustration, fine warm outlines, pastel light, semi 3D volume, polished charming food art, three-quarter overhead view. These sprites must read at 48 pixels and be suitable as toppings placed on a tart. Four distinct sprites only, one per quadrant, centered and occupying 65% of each quadrant.

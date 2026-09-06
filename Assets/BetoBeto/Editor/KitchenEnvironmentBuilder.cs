@@ -78,6 +78,7 @@ namespace BetoBeto.Editor
             Place("RollingPin",new Vector2(0,-1),new Vector3(-2,-.6f,-1.55f),1,12);
             Place("CookieBakingTray",new Vector2(1,-1),new Vector3(3.2f,-.6f,-.6f),1.1f,-20);
             Place("GinghamTowel",new Vector2(1,0),new Vector3(4,-.58f,0),1.8f,-12);
+            environment.recipeCloth=decorations[decorations.Count-1];
             environment.decorations=decorations.ToArray();environment.boardAnchors=anchors.ToArray();environment.offsets=offsets.ToArray();environment.Layout(16,10);
             var sun=new GameObject("Window sunlight · leaf cookie").AddComponent<Light>();sun.transform.SetParent(root.transform,false);
             sun.type=LightType.Directional;sun.transform.rotation=Quaternion.Euler(48,-34,0);sun.shadows=LightShadows.Soft;sun.shadowStrength=.58f;

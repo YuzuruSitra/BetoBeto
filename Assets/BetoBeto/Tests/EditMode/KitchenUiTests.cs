@@ -1,4 +1,5 @@
 using BetoBeto.Core;
+using BetoBeto.Presentation;
 using BetoBeto.Stage;
 using BetoBeto.UI;
 using NUnit.Framework;
@@ -12,6 +13,80 @@ namespace BetoBeto.Tests
 {
     public sealed class KitchenUiTests
     {
+        [TestCase(1600, 900)]
+        [TestCase(1920, 1200)]
+        [TestCase(1024, 768)]
+        [TestCase(720, 1280)]
+        [TestCase(2560, 1080)]
+        public void RecipeClothKeepsItsHudPositionAcrossScreenShapes(int width, int height)
+        {
+            Rect board = KitchenLayout.Viewport(width, height);
+            Rect cloth = KitchenLayout.Viewport(KitchenLayout.RecipeCloth, width, height);
+            float scale = board.width * width / KitchenLayout.Board.width;
+            Assert.That((cloth.center.x - board.center.x) * width / scale,
+                Is.EqualTo(KitchenLayout.RecipeCloth.center.x - KitchenLayout.Board.center.x).Within(.001f));
+            Assert.That((cloth.center.y - board.center.y) * height / scale,
+                Is.EqualTo(KitchenLayout.RecipeCloth.center.y - KitchenLayout.Board.center.y).Within(.001f));
+            Assert.That(cloth.width * width / (cloth.height * height),
+                Is.EqualTo(KitchenLayout.RecipeCloth.width / KitchenLayout.RecipeCloth.height).Within(.0001f));
+            Assert.That(cloth.xMin, Is.GreaterThan(board.xMax), "The cloth must not intrude on the live board.");
+            Assert.That(cloth.xMax, Is.LessThanOrEqualTo(1));
+            Assert.That(cloth.yMin, Is.GreaterThanOrEqualTo(0));
+            Assert.That(cloth.yMax, Is.LessThanOrEqualTo(1));
+        }
+
+        [Test]
+        public void RecipeClothAlignmentSurvivesCameraChangesWithoutDrifting()
+        {
+            var root = new GameObject("Recipe cloth alignment test");
+            try
+            {
+                var environment = root.AddComponent<KitchenEnvironment>();
+                var stage = new GameObject("Stage camera", typeof(Camera)).GetComponent<Camera>();
+                stage.transform.SetParent(root.transform);
+                stage.orthographic = true;
+                stage.rect = KitchenLayout.Viewport(Screen.width, Screen.height);
+                stage.transform.SetPositionAndRotation(new Vector3(0, 20, -10), Quaternion.Euler(60, 0, 0));
+                var background = new GameObject("Background camera", typeof(Camera)).GetComponent<Camera>();
+                background.transform.SetParent(root.transform);
+                background.orthographic = true;
+                environment.backgroundCamera = background;
+                var cloth = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                cloth.transform.SetParent(root.transform);
+                cloth.transform.localScale = new Vector3(3, .08f, 2);
+                cloth.transform.SetPositionAndRotation(new Vector3(8, -.58f, 0), Quaternion.Euler(0, -12, 0));
+                environment.recipeCloth = cloth.transform;
+                Vector3 proportions = cloth.transform.localScale.normalized;
+                var vertices = cloth.GetComponent<MeshFilter>().sharedMesh.vertices;
+
+                foreach (float size in new[] { 6f, 11f, 4f, 6f })
+                {
+                    stage.orthographicSize = size;
+                    environment.SyncCamera(stage);
+                    Vector3 position = cloth.transform.position;
+                    Vector3 scale = cloth.transform.localScale;
+                    for (int frame = 0; frame < 300; frame++) environment.SyncCamera(stage);
+                    Assert.That(Vector3.Distance(position, cloth.transform.position), Is.LessThan(.001f));
+                    Assert.That(Vector3.Distance(scale, cloth.transform.localScale), Is.LessThan(.001f));
+                    Assert.That(Vector3.Distance(proportions, cloth.transform.localScale.normalized), Is.LessThan(.0001f));
+                    Assert.That(cloth.transform.position.y, Is.EqualTo(-.58f).Within(.0001f), "Cloth stays on the table plane.");
+                    Vector2 min = Vector2.positiveInfinity, max = Vector2.negativeInfinity;
+                    foreach (Vector3 vertex in vertices)
+                    {
+                        Vector2 point = background.WorldToViewportPoint(cloth.transform.TransformPoint(vertex));
+                        min = Vector2.Min(min, point); max = Vector2.Max(max, point);
+                    }
+                    Rect target = KitchenLayout.Viewport(KitchenLayout.RecipeCloth, Screen.width, Screen.height);
+                    Assert.That(Vector2.Distance((min + max) * .5f, target.center), Is.LessThan(.0001f));
+                    Assert.That(max.x - min.x, Is.LessThanOrEqualTo(target.width + .0001f));
+                    Assert.That(max.y - min.y, Is.LessThanOrEqualTo(target.height + .0001f));
+                    Assert.That(Mathf.Max((max.x - min.x) / target.width, (max.y - min.y) / target.height),
+                        Is.EqualTo(1).Within(.0001f), "The real mesh fills one dimension of its HUD opening.");
+                }
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
         [TestCase(1600, 900, 134f, 108f, 894f, 650f)]
         [TestCase(1920, 1200, 160.8f, 189.6f, 1072.8f, 780f)]
         [TestCase(1024, 768, 85.76f, 165.12f, 572.16f, 416f)]
@@ -253,6 +328,7 @@ namespace BetoBeto.Tests
         [TestCase("UI/HudPause")]
         [TestCase("UI/HudProgressBadge")]
         [TestCase("UI/HudRecipeFrame")]
+        [TestCase("UI/HudRecipeLabel")]
         [TestCase("UI/HudScore")]
         [TestCase("UI/HudTime")]
         public void IllustratedAssetsAreAvailableToRuntimeResources(string path)
@@ -270,7 +346,7 @@ namespace BetoBeto.Tests
             {
                 KitchenArt.HudChef, KitchenArt.HudControls, KitchenArt.HudEscape,
                 KitchenArt.HudIngredientCard, KitchenArt.HudPause, KitchenArt.HudProgressBadge,
-                KitchenArt.HudRecipeFrame, KitchenArt.HudScore, KitchenArt.HudTime
+                KitchenArt.HudRecipeFrame, KitchenArt.HudRecipeLabel, KitchenArt.HudScore, KitchenArt.HudTime
             };
             var textures = new HashSet<Texture>();
             foreach (var sprite in sprites)
@@ -286,7 +362,7 @@ namespace BetoBeto.Tests
             string[] names =
             {
                 "HudChef", "HudControls", "HudEscape", "HudIngredientCard", "HudPause",
-                "HudProgressBadge", "HudRecipeFrame", "HudScore", "HudTime"
+                "HudProgressBadge", "HudRecipeFrame", "HudRecipeLabel", "HudScore", "HudTime"
             };
             foreach (string name in names)
             {

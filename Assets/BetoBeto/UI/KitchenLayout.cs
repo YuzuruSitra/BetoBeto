@@ -7,13 +7,18 @@ namespace BetoBeto.UI
     {
         public static readonly Vector2 DesignSize = new Vector2(1600, 900);
         public static readonly Rect Board = new Rect(134, 108, 894, 650);
+        // Screen-space footprint of the real towel behind the recipe, in bottom-left design coordinates.
+        public static readonly Rect RecipeCloth = new Rect(1130, 318, 462, 415);
 
         public static Rect Viewport(int width, int height)
+            => Viewport(Board, width, height);
+
+        public static Rect Viewport(Rect area, int width, int height)
         {
             float scale = Mathf.Min(width / DesignSize.x, height / DesignSize.y);
             var margin = (new Vector2(width, height) - DesignSize * scale) * .5f;
-            return new Rect((margin.x + Board.x * scale) / width, (margin.y + Board.y * scale) / height,
-                Board.width * scale / width, Board.height * scale / height);
+            return new Rect((margin.x + area.x * scale) / width, (margin.y + area.y * scale) / height,
+                area.width * scale / width, area.height * scale / height);
         }
 
         public static Vector2 FeedbackPosition(Vector3 viewport)

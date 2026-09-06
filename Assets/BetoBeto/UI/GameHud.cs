@@ -43,7 +43,8 @@ namespace BetoBeto.UI
             StretchArt(root, "Score HUD", KitchenArt.HudScore, new Vector2(900, -2), new Vector2(285, 176));
             StretchArt(root, "Time HUD", KitchenArt.HudTime, new Vector2(1184, -12), new Vector2(230, 150));
             StretchArt(root, "Pause HUD", KitchenArt.HudPause, new Vector2(1410, -19), new Vector2(184, 102));
-            StretchArt(root, "Recipe HUD", KitchenArt.HudRecipeFrame, new Vector2(1146, -156), new Vector2(445, 400));
+            // The scene's real gingham towel backs the recipe; only the sewn title label is UI art.
+            StretchArt(root, "Recipe cloth label", KitchenArt.HudRecipeLabel, new Vector2(1190, -177), new Vector2(358, 112));
             Art(root, "Chef ghost", KitchenArt.HudChef, new Vector2(1480, -135), new Vector2(118, 118));
             // These source textures include transparent margins. Size their painted interiors to the text.
             StretchArt(root, "Controls HUD", KitchenArt.HudControls, new Vector2(365, -758), new Vector2(835, 170));
@@ -66,10 +67,10 @@ namespace BetoBeto.UI
             Button(root, "一時停止  II", new Vector2(1421, -36), new Vector2(164, 60), Color.clear,
                 Color.white, TogglePause, 19);
 
-            dessertText = Label(root, game.Board.Data.dessert, new Vector2(1230, -185), new Vector2(268, 38), 24,
+            dessertText = Label(root, game.Board.Data.dessert, new Vector2(1230, -200), new Vector2(268, 32), 24,
                 Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
             dessertText.resizeTextForBestFit = true; dessertText.resizeTextMinSize = 16; dessertText.resizeTextMaxSize = 24;
-            Label(root, "をつくろう！", new Vector2(1230, -222), new Vector2(268, 30), 22,
+            Label(root, "をつくろう！", new Vector2(1230, -234), new Vector2(268, 27), 22,
                 Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
             tart = Dessert(root, new Vector2(1154, -278), .86f);
             for (int i = 0; i < 4; i++)

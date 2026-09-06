@@ -6,7 +6,7 @@ namespace BetoBeto.UI
     {
         static readonly Sprite[] fruits = new Sprite[4];
         static Sprite hudChef, hudControls, hudEscape, hudIngredientCard, hudPause;
-        static Sprite hudProgressBadge, hudRecipeFrame, hudScore, hudTime;
+        static Sprite hudProgressBadge, hudRecipeFrame, hudRecipeLabel, hudScore, hudTime;
         static Sprite tart;
 
         public static Sprite HudChef => Load(ref hudChef, "HudChef");
@@ -16,6 +16,7 @@ namespace BetoBeto.UI
         public static Sprite HudPause => Load(ref hudPause, "HudPause");
         public static Sprite HudProgressBadge => Load(ref hudProgressBadge, "HudProgressBadge");
         public static Sprite HudRecipeFrame => Load(ref hudRecipeFrame, "HudRecipeFrame");
+        public static Sprite HudRecipeLabel => Load(ref hudRecipeLabel, "HudRecipeLabel");
         public static Sprite HudScore => Load(ref hudScore, "HudScore");
         public static Sprite HudTime => Load(ref hudTime, "HudTime");
         public static Sprite Tart => Load(ref tart, "TartBase");
