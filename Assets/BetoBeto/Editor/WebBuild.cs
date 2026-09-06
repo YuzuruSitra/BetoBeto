@@ -32,21 +32,25 @@ namespace BetoBeto.Editor
         // Keep the original files and desktop import settings; the board displays small characters.
         static void ConfigureCharacterTextures()
         {
-            foreach (string root in new[] { "Assets/BetoBeto/Art/Characters/CuteGhost", "Assets/BetoBeto/Art/Characters/Fruits" })
+            ClampWebTextures("Assets/BetoBeto/Art/Characters/CuteGhost", 1024);
+            ClampWebTextures("Assets/BetoBeto/Art/Characters/Fruits", 1024);
+            // The recipe tart is only ever seen inside a 500 x 340 panel.
+            ClampWebTextures("Assets/BetoBeto/Art/FruitTart", 512);
+        }
+        static void ClampWebTextures(string root, int maxSize)
+        {
+            if (!AssetDatabase.IsValidFolder(root)) return;
+            foreach (string guid in AssetDatabase.FindAssets("t:Texture2D", new[] { root }))
             {
-                if (!AssetDatabase.IsValidFolder(root)) continue;
-                foreach (string guid in AssetDatabase.FindAssets("t:Texture2D", new[] { root }))
-                {
-                    var importer = AssetImporter.GetAtPath(AssetDatabase.GUIDToAssetPath(guid)) as TextureImporter;
-                    if (importer == null) continue;
-                    var web = importer.GetPlatformTextureSettings("WebGL");
-                    if (web.overridden && web.maxTextureSize <= 1024) continue;
-                    web.name = "WebGL";
-                    web.overridden = true;
-                    web.maxTextureSize = Mathf.Min(importer.maxTextureSize, 1024);
-                    importer.SetPlatformTextureSettings(web);
-                    importer.SaveAndReimport();
-                }
+                var importer = AssetImporter.GetAtPath(AssetDatabase.GUIDToAssetPath(guid)) as TextureImporter;
+                if (importer == null) continue;
+                var web = importer.GetPlatformTextureSettings("WebGL");
+                if (web.overridden && web.maxTextureSize <= maxSize) continue;
+                web.name = "WebGL";
+                web.overridden = true;
+                web.maxTextureSize = Mathf.Min(importer.maxTextureSize, maxSize);
+                importer.SetPlatformTextureSettings(web);
+                importer.SaveAndReimport();
             }
         }
         [MenuItem("BetoBeto/Build/WebGL")]

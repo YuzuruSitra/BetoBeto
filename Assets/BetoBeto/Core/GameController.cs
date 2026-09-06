@@ -286,7 +286,8 @@ namespace BetoBeto.Core
         void FitCamera()
         {
             lastWidth = Screen.width; lastHeight = Screen.height;
-            gameCamera.rect = new Rect(.013f, .12f, .755f, .745f);
+            gameCamera.rect = BetoBeto.UI.KitchenLayout.Viewport(Screen.width, Screen.height);
+            gameCamera.backgroundColor = new Color(.61f, .39f, .24f);
             float aspect = Mathf.Max(.5f, Screen.width * gameCamera.rect.width / (Screen.height * gameCamera.rect.height));
             float vertical = Board.Data.height * .866f + 2.3f;
             gameCamera.orthographicSize = Mathf.Max(vertical * .5f, (Board.Data.width + 1.7f) / (2 * aspect));

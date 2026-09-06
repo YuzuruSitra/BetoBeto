@@ -1,0 +1,195 @@
+{
+  "status": "completed",
+  "duration": 0.19,
+  "summary": {
+    "total": 26,
+    "passed": 26,
+    "failed": 0,
+    "skipped": 0,
+    "inconclusive": 0
+  },
+  "results": [
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.BackdropMeshLeavesOnlyTheGameplayCameraOpening(True)",
+      "Status": "Passed",
+      "Duration": 0.0339173,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.BackdropMeshLeavesOnlyTheGameplayCameraOpening(False)",
+      "Status": "Passed",
+      "Duration": 0.0004532,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.CameraOpeningKeepsTheIllustrationPositionAndAspectAcrossScreens(1600,900,134.0f,108.0f,894.0f,650.0f)",
+      "Status": "Passed",
+      "Duration": 0.0037507,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.CameraOpeningKeepsTheIllustrationPositionAndAspectAcrossScreens(1920,1200,160.8f,189.6f,1072.8f,780.0f)",
+      "Status": "Passed",
+      "Duration": 0.000143,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.CameraOpeningKeepsTheIllustrationPositionAndAspectAcrossScreens(1024,768,85.76f,165.12f,572.16f,416.0f)",
+      "Status": "Passed",
+      "Duration": 0.0001144,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.CameraOpeningKeepsTheIllustrationPositionAndAspectAcrossScreens(720,1280,60.3f,486.1f,402.3f,292.5f)",
+      "Status": "Passed",
+      "Duration": 0.0001052,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.CameraOpeningKeepsTheIllustrationPositionAndAspectAcrossScreens(2560,1080,480.8f,129.6f,1072.8f,780.0f)",
+      "Status": "Passed",
+      "Duration": 0.0001062,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.CompletedShowcaseRestoresAllToppingsAfterARestrictedRecipe",
+      "Status": "Passed",
+      "Duration": 0.0598708,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.FeedbackUsesBoardCoordinatesInsteadOfTheWholeScreen",
+      "Status": "Passed",
+      "Duration": 0.0008549,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.FruitAtlasUsesFourDistinctQuadrantsInRecipeOrder",
+      "Status": "Passed",
+      "Duration": 0.0030325,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.IllustratedAssetsAreAvailableToRuntimeResources(\"UI/KitchenBackdrop\")",
+      "Status": "Passed",
+      "Duration": 0.0007691,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.IllustratedAssetsAreAvailableToRuntimeResources(\"UI/TartBase\")",
+      "Status": "Passed",
+      "Duration": 0.0001386,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.IllustratedAssetsAreAvailableToRuntimeResources(\"UI/FruitIcons\")",
+      "Status": "Passed",
+      "Duration": 0.000108,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.LiveTartKeepsIngredientProgressSeparateAndResetsForRetry",
+      "Status": "Passed",
+      "Duration": 0.0039393,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ProvidedFontsLoadAndContainTheirUiCharacters(\"Fonts/ZenMaruGothic-Bold\",\"ごほうびフルーツタルト\")",
+      "Status": "Passed",
+      "Duration": 0.0045945,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ProvidedFontsLoadAndContainTheirUiCharacters(\"Fonts/MPLUSRounded1c-Medium\",\"おばけのスイーツキッチンよだれ□×\")",
+      "Status": "Passed",
+      "Duration": 0.0033058,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ProvidedFontsLoadAndContainTheirUiCharacters(\"Fonts/MPLUSRounded1c-Bold\",\"0123456789:/%脱出\")",
+      "Status": "Passed",
+      "Duration": 0.0031392,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ToppingCollectionHandlesPartialSurplusAndUnneededIngredients(0,7,0)",
+      "Status": "Passed",
+      "Duration": 0.0005242,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ToppingCollectionHandlesPartialSurplusAndUnneededIngredients(1,7,1)",
+      "Status": "Passed",
+      "Duration": 0.0001277,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ToppingCollectionHandlesPartialSurplusAndUnneededIngredients(3,7,1)",
+      "Status": "Passed",
+      "Duration": 0.000112,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ToppingCollectionHandlesPartialSurplusAndUnneededIngredients(4,7,2)",
+      "Status": "Passed",
+      "Duration": 0.0001107,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ToppingCollectionHandlesPartialSurplusAndUnneededIngredients(6,7,2)",
+      "Status": "Passed",
+      "Duration": 9.64E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ToppingCollectionHandlesPartialSurplusAndUnneededIngredients(7,7,3)",
+      "Status": "Passed",
+      "Duration": 9.09E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ToppingCollectionHandlesPartialSurplusAndUnneededIngredients(70,7,3)",
+      "Status": "Passed",
+      "Duration": 8.62E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ToppingCollectionHandlesPartialSurplusAndUnneededIngredients(0,0,0)",
+      "Status": "Passed",
+      "Duration": 8.83E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "BetoBeto.Tests.KitchenUiTests.ToppingCollectionHandlesPartialSurplusAndUnneededIngredients(12,0,0)",
+      "Status": "Passed",
+      "Duration": 8.59E-05,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}
