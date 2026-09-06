@@ -15,7 +15,7 @@ namespace BetoBeto.Editor
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.alphaIsTransparency = true;
             importer.wrapMode = TextureWrapMode.Clamp;
-            importer.maxTextureSize = 2048;
+            importer.maxTextureSize = assetPath.Contains("/Hud") ? 1024 : 2048;
         }
     }
 }

@@ -72,6 +72,12 @@ namespace BetoBeto.UI
             image.preserveAspect = true; image.raycastTarget = false;
             return image;
         }
+        protected Image StretchArt(Transform parent, string name, Sprite sprite, Vector2 position, Vector2 size)
+        {
+            var image = Art(parent, name, sprite, position, size);
+            image.preserveAspect = false;
+            return image;
+        }
         protected TartPreview Dessert(Transform parent, Vector2 position, float scale = 1)
         {
             var obj = new GameObject("Recipe tart", typeof(RectTransform), typeof(TartPreview));

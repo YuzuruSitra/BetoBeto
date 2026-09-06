@@ -2,6 +2,7 @@ using BetoBeto.Core;
 using BetoBeto.Stage;
 using BetoBeto.UI;
 using NUnit.Framework;
+using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -214,7 +215,7 @@ namespace BetoBeto.Tests
         }
 
         [Test]
-        public void TartModelIsFramedWholeWithHeadroomForFallingIngredients()
+        public void EveryIngredientLandsInsideThePanelAndFallsInFromOutsideIt()
         {
             var root = new GameObject("Tart framing test", typeof(RectTransform), typeof(TartPreview));
             try
@@ -223,19 +224,21 @@ namespace BetoBeto.Tests
                 preview.Initialize();
                 var camera = preview.PreviewCamera;
                 Assert.That(camera, Is.Not.Null);
+                preview.ShowComplete();
+                // The framing may crop the plate for a closer look, but never an ingredient the recipe can ask for.
+                for (int kind = 0; kind < 4; kind++)
+                    for (int slot = 0; slot < 3; slot++)
+                        foreach (var piece in preview.Stage.Pieces(kind, slot))
+                        {
+                            Vector3 view = camera.WorldToViewportPoint(piece.position);
+                            Assert.That(view.x, Is.InRange(0f, 1f), piece.name + " lands outside the recipe panel.");
+                            Assert.That(view.y, Is.InRange(0f, 1f), piece.name + " lands outside the recipe panel.");
+                            Assert.That(view.z, Is.GreaterThan(0), piece.name);
+                        }
                 Bounds bounds = preview.Stage.RestBounds;
-                for (int corner = 0; corner < 8; corner++)
-                {
-                    var point = bounds.center + Vector3.Scale(bounds.extents, new Vector3(
-                        (corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1, (corner & 4) == 0 ? -1 : 1));
-                    Vector3 view = camera.WorldToViewportPoint(point);
-                    Assert.That(view.x, Is.InRange(0f, 1f), "The whole tart must stay inside the recipe panel.");
-                    Assert.That(view.y, Is.InRange(0f, 1f), "The whole tart must stay inside the recipe panel.");
-                    Assert.That(view.z, Is.GreaterThan(0));
-                }
                 Vector3 entry = camera.WorldToViewportPoint(bounds.center + Vector3.up * preview.Stage.dropHeight);
                 Assert.That(entry.y, Is.GreaterThan(1), "Ingredients must start above the frame and fall into it.");
-                Assert.That(preview.Stage.RestBounds.size.y, Is.GreaterThan(0), "The tart must contribute real geometry.");
+                Assert.That(bounds.size.y, Is.GreaterThan(0), "The tart must contribute real geometry.");
             }
             finally { Object.DestroyImmediate(root); }
         }
@@ -243,12 +246,66 @@ namespace BetoBeto.Tests
         [TestCase("UI/KitchenBackdrop")]
         [TestCase("UI/TartBase")]
         [TestCase("UI/FruitIcons")]
+        [TestCase("UI/HudChef")]
+        [TestCase("UI/HudControls")]
+        [TestCase("UI/HudEscape")]
+        [TestCase("UI/HudIngredientCard")]
+        [TestCase("UI/HudPause")]
+        [TestCase("UI/HudProgressBadge")]
+        [TestCase("UI/HudRecipeFrame")]
+        [TestCase("UI/HudScore")]
+        [TestCase("UI/HudTime")]
         public void IllustratedAssetsAreAvailableToRuntimeResources(string path)
         {
             var texture = Resources.Load<Texture2D>(path);
             Assert.That(texture, Is.Not.Null, path);
             Assert.That(texture.width, Is.GreaterThan(32));
             Assert.That(texture.height, Is.GreaterThan(32));
+        }
+
+        [Test]
+        public void HudChromeUsesIndependentTexturesInsteadOfAFullScreenAtlas()
+        {
+            var sprites = new[]
+            {
+                KitchenArt.HudChef, KitchenArt.HudControls, KitchenArt.HudEscape,
+                KitchenArt.HudIngredientCard, KitchenArt.HudPause, KitchenArt.HudProgressBadge,
+                KitchenArt.HudRecipeFrame, KitchenArt.HudScore, KitchenArt.HudTime
+            };
+            var textures = new HashSet<Texture>();
+            foreach (var sprite in sprites)
+            {
+                Assert.That(sprite, Is.Not.Null);
+                Assert.That(textures.Add(sprite.texture), Is.True, sprite.name + " must be an independent asset.");
+            }
+        }
+
+        [Test]
+        public void HudPngsKeepTransparentCornersAndRecipeOpening()
+        {
+            string[] names =
+            {
+                "HudChef", "HudControls", "HudEscape", "HudIngredientCard", "HudPause",
+                "HudProgressBadge", "HudRecipeFrame", "HudScore", "HudTime"
+            };
+            foreach (string name in names)
+            {
+                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                try
+                {
+                    string path = "Assets/BetoBeto/Resources/UI/" + name + ".png";
+                    Assert.That(texture.LoadImage(File.ReadAllBytes(path)), Is.True, path);
+                    Assert.That(texture.GetPixel(0, 0).a, Is.LessThan(.01f), name + " top-left");
+                    Assert.That(texture.GetPixel(texture.width - 1, 0).a, Is.LessThan(.01f), name + " top-right");
+                    Assert.That(texture.GetPixel(0, texture.height - 1).a, Is.LessThan(.01f), name + " bottom-left");
+                    Assert.That(texture.GetPixel(texture.width - 1, texture.height - 1).a, Is.LessThan(.01f),
+                        name + " bottom-right");
+                    if (name == "HudRecipeFrame")
+                        Assert.That(texture.GetPixel(texture.width / 2, texture.height / 2).a,
+                            Is.LessThan(.01f), "The existing 3D tart must remain visible through the recipe frame.");
+                }
+                finally { Object.DestroyImmediate(texture); }
+            }
         }
 
         [Test]

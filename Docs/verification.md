@@ -1,3 +1,13 @@
+# HUD個別素材化の確認（2026-09-06）
+
+ゲーム画面のHUDを9点の独立した透過PNGに分割し、背景画像を撤去しました。背景領域は今後のメッシュ実装用に残し、レシピ欄のタルトは既存の3D `TartPreview` を継続利用しています。
+
+- Unityコンパイル：エラー0件。
+- `BetoBeto.Tests.KitchenUiTests`：39/39件成功。
+- HUD素材のResources読み込み、フルスクリーンアトラス不使用、外周四隅とレシピ中央穴の透過を自動確認。
+- 1600×900のGame Viewを `Assets/Docs/UI/hud-individual.png` に保存し、個別HUD、実テキスト、3Dタルトを目視確認。
+- 独立レビューで指摘されたステージ名サイズ、SCORE/TIME位置、透過回帰テストを修正済み。
+
 # プロトタイプの確認記録
 
 2026-09-05 / Windows / Unity 6000.6.0f1 / UnityCLI + Unity Pipeline
