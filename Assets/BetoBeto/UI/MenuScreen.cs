@@ -33,11 +33,17 @@ namespace BetoBeto.UI
             if (screen == MenuKind.Title) BuildTitle();
             else if (screen == MenuKind.StageSelect) BuildStageSelect();
             else BuildResult();
-            FocusScope(root, primary);
+            if (screen == MenuKind.Title && TitleOpening.ShouldPlay)
+            {
+                // The movie covers the finished title, so nothing is focused until it fades away.
+                DisableNavigation();
+                TitleOpening.Show(() => { if (this != null) FocusScope(root, primary); });
+            }
+            else FocusScope(root, primary);
         }
         void Update()
         {
-            if (GameFlow.IsLoading) return;
+            if (GameFlow.IsLoading || TitleOpening.IsPlaying) return;
             if (GamepadControls.CancelPressed)
             {
                 if (options != null) CloseOptions();

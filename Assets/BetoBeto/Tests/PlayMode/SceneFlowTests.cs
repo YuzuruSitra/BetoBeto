@@ -13,6 +13,9 @@ namespace BetoBeto.Tests
 {
     public sealed class SceneFlowTests
     {
+        // These tests drive the title menu straight away; the opening movie has its own test.
+        [SetUp] public void SkipTheOpeningMovie() => TitleOpening.Enabled = false;
+
         [UnityTest]
         public IEnumerator StagePagesCanSelectEveryCatalogEntryAndReturnToPreviousPage()
         {

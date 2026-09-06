@@ -3,6 +3,7 @@ using BetoBeto.Audio;
 using BetoBeto.Core;
 using BetoBeto.Player;
 using BetoBeto.Stage;
+using BetoBeto.UI;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,6 +21,7 @@ namespace BetoBeto.Tests
         GameController game;
         [UnitySetUp] public IEnumerator Setup()
         {
+            TitleOpening.Enabled = false; // the pad drives the title menu directly here
             pad = new PadTestInput();
             yield return SceneManager.LoadSceneAsync("Kitchen");
             yield return null; yield return null;
