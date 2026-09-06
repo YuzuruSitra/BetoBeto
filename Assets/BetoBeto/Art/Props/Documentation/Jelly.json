@@ -34,7 +34,8 @@
       "vertices": 241,
       "triangles": 474,
       "shapeKeys": [],
-      "shards": 0
+      "shards": 0,
+      "widthTileUnits": 1.04
     },
     {
       "name": "JellyBody",

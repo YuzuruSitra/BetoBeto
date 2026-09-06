@@ -8,9 +8,12 @@ Shader "BetoBeto/Polished Prop Metal"
         _BumpScale ("Normal strength", Float) = 1
         _Smoothness ("Polish", Range(0,1)) = .84
         _Metallic ("Metallic", Range(0,1)) = 1
-        _ReflectionStrength ("Kitchen reflection exposure", Range(0,4)) = 2.2
-        _MetalReflection ("Blade contrast reflection", Cube) = "black" {}
-        _MetalReflectionStrength ("Additive highlight reflection", Range(0,2)) = .28
+        _ReflectionStrength ("Kitchen reflection exposure", Range(0,4)) = .8
+        _BladePlanarMap ("Planar silver reflection bands", 2D) = "gray" {}
+        _PlanarStrength ("Planar reflection exposure", Range(0,4)) = .65
+        _PlanarScale ("Bands per local unit", Float) = 1.3
+        _EyeWarp ("View direction distortion", Range(0,1)) = .35
+        _OrthoReflectionFov ("Reflection FOV for orthographic camera", Range(10,90)) = 45
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 2
     }
     SubShader
@@ -31,10 +34,12 @@ Shader "BetoBeto/Polished Prop Metal"
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-            TEXTURECUBE(_MetalReflection); SAMPLER(sampler_MetalReflection);
+            TEXTURE2D(_BladePlanarMap); SAMPLER(sampler_BladePlanarMap);
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor;
-                half _Smoothness, _Metallic, _ReflectionStrength, _MetalReflectionStrength;
+                half _Smoothness, _Metallic, _ReflectionStrength;
+                float _PlanarStrength, _PlanarScale;
+                float _EyeWarp, _OrthoReflectionFov;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; };
             struct Varyings
@@ -67,10 +72,26 @@ Shader "BetoBeto/Polished Prop Metal"
                 BRDFData brdf;InitializeBRDFData(surface,brdf);
                 half3 direction=reflect(-v,n);
                 half3 environment=GlossyEnvironmentReflection(direction,input.positionWS,1-_Smoothness,1);
-                half mip=PerceptualRoughnessToMipmapLevel(1-_Smoothness);
-                half3 dedicated=SAMPLE_TEXTURECUBE_LOD(_MetalReflection,sampler_MetalReflection,direction,mip).rgb;
-                // Preserve the kitchen reflection; black in the highlight map contributes nothing.
-                half3 reflected=environment*_ReflectionStrength+dedicated*_MetalReflectionStrength;
+                // Project in camera-aligned world XZ, relative to the rotor centre.
+                // The bands stay still as the blade spins underneath; object rotation never rotates UVs.
+                float2 cameraRightXZ=UNITY_MATRIX_V[0].xz;
+                cameraRightXZ*=rsqrt(max(dot(cameraRightXZ,cameraRightXZ),.0001));
+                float2 cameraForwardXZ=float2(-cameraRightXZ.y,cameraRightXZ.x);
+                float2 plane=input.positionWS.xz-TransformObjectToWorld(float3(0,0,0)).xz;
+                float2 uv=float2(dot(plane,cameraRightXZ),dot(plane,cameraForwardXZ))*_PlanarScale+.5;
+                // Perspective eye rays bias the reflection across the screen. Orthographic gameplay
+                // uses a virtual reflection-only FOV; the camera and board projection stay unchanged.
+                float4 clip=TransformWorldToHClip(input.positionWS);
+                float2 ndc=clip.xy/max(abs(clip.w),.0001);
+                float2 raySlope=ndc/float2(UNITY_MATRIX_P._m00,UNITY_MATRIX_P._m11);
+                float aspect=abs(UNITY_MATRIX_P._m11/UNITY_MATRIX_P._m00);
+                float2 orthoSlope=ndc*float2(aspect,1)*tan(radians(_OrthoReflectionFov*.5));
+                raySlope=lerp(raySlope,orthoSlope,unity_OrthoParams.w);
+                float2 eye=normalize(float3(raySlope,1)).xy;
+                // Offset and gently stretch bands toward the peripheral eye direction.
+                uv+=_EyeWarp*(eye+.45*eye*dot(uv-.5,eye));
+                half3 planar=SAMPLE_TEXTURE2D(_BladePlanarMap,sampler_BladePlanarMap,uv).rgb;
+                half3 reflected=environment*_ReflectionStrength+planar*_PlanarStrength;
                 half fresnel=Pow4(1-saturate(dot(n,v)));
                 half3 color=LightingPhysicallyBased(brdf,light,n,v)
                     +EnvironmentBRDF(brdf,SampleSH(n),reflected,fresnel);

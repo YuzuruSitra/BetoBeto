@@ -48,6 +48,7 @@ namespace BetoBeto.Editor
                 model.transform.localRotation=Quaternion.Euler(0,180,0);
                 PrefabUtility.SaveAsPrefabAsset(wrapper,Root+"/Prefabs/"+name+".prefab");UnityEngine.Object.DestroyImmediate(wrapper);
             }
+            RefreshBackgroundProps();
             var active=SceneManager.GetActiveScene();
             // Existing shared scenes are edited by artists; rebuild is intentionally only for first creation.
             if(File.Exists(KitchenEnvironmentLoader.ScenePath))throw new InvalidOperationException("Shared environment already exists. Edit that scene directly; use Migrate Stage Lighting to update stages.");
@@ -93,6 +94,37 @@ namespace BetoBeto.Editor
             ApplyBladeMap();AssetDatabase.SaveAssets();
             Debug.Log("Shared kitchen environment created; stage lights migrated.");
         }
+        [MenuItem("BetoBeto/Refresh Background Cookie And Cloth Materials")]
+        public static void RefreshBackgroundProps()
+        {
+            if(EditorApplication.isPlayingOrWillChangePlaymode)throw new InvalidOperationException("Stop Play before updating background art.");
+            string texturePath=Root+"/Textures/GinghamCloth_Albedo.png";
+            AssetDatabase.ImportAsset(texturePath,ImportAssetOptions.ForceUpdate|ImportAssetOptions.ForceSynchronousImport);
+            var textureImporter=(TextureImporter)AssetImporter.GetAtPath(texturePath);
+            textureImporter.sRGBTexture=true;textureImporter.mipmapEnabled=true;
+            textureImporter.wrapMode=TextureWrapMode.Clamp;textureImporter.anisoLevel=4;textureImporter.maxTextureSize=1024;
+            textureImporter.SaveAndReimport();
+            string materialPath=Root+"/Materials/Decor_GinghamCloth.mat";
+            var cloth=AssetDatabase.LoadAssetAtPath<Material>(materialPath);
+            if(cloth==null){cloth=new Material(Shader.Find("Universal Render Pipeline/Lit"));AssetDatabase.CreateAsset(cloth,materialPath);}
+            cloth.SetColor("_BaseColor",Color.white);cloth.SetFloat("_Metallic",0);cloth.SetFloat("_Smoothness",.1f);
+            cloth.SetFloat("_Cull",(float)CullMode.Off);
+            cloth.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath));EditorUtility.SetDirty(cloth);
+            foreach(var name in new[]{"CookieBakingTray","GinghamTowel"})
+            {
+                string path=Root+"/Models/"+name+".fbx";
+                AssetDatabase.ImportAsset(path,ImportAssetOptions.ForceUpdate|ImportAssetOptions.ForceSynchronousImport);
+                var importer=(ModelImporter)AssetImporter.GetAtPath(path);
+                importer.importAnimation=false;importer.importBlendShapes=false;
+                importer.importNormals=ModelImporterNormals.Import;importer.importTangents=ModelImporterTangents.CalculateMikk;
+                importer.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material),"Decor_GinghamCloth"),cloth);
+                foreach(var matName in new[]{"BreakableCookie_Surface","BreakableCookie_Crumb"})
+                    importer.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material),matName),AssetDatabase.LoadAssetAtPath<Material>("Assets/BetoBeto/Art/Props/Materials/"+matName+".mat"));
+                importer.SaveAndReimport();
+            }
+            AssetDatabase.SaveAssets();
+        }
+
         static void SetLayer(GameObject root,int layer){foreach(var t in root.GetComponentsInChildren<Transform>(true))t.gameObject.layer=layer;}
 
         [MenuItem("BetoBeto/Open Shared Kitchen Environment")]
@@ -137,12 +169,67 @@ namespace BetoBeto.Editor
         }
         public static void ApplyBladeMap()
         {
-            var map=AssetDatabase.LoadAssetAtPath<Cubemap>(Root+"/BladeReflection.exr");
             foreach(var name in new[]{"Shredder_BladeSteel","MovingShredder_BladeSteel"})
             {
                 var material=AssetDatabase.LoadAssetAtPath<Material>("Assets/BetoBeto/Art/Props/Materials/"+name+".mat");
-                material.SetTexture("_MetalReflection",map);material.SetFloat("_MetalReflectionStrength",.28f);material.SetFloat("_ReflectionStrength",2.2f);material.SetFloat("_Metallic",1);EditorUtility.SetDirty(material);
+                ConfigureBladeMaterial(material);
             }
+        }
+
+        public static void ConfigureDroolReflection(Material material)
+        {
+            material.SetTexture("_CeilingMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Root+"/KitchenReflection_Source.png"));
+            material.SetFloat("_CeilingStrength",.32f);
+            material.SetFloat("_CeilingScale",.24f);
+            material.SetFloat("_CeilingEyeWarp",.18f);
+            material.SetFloat("_LiquidNormalStrength",.18f);
+            material.SetFloat("_LiquidWaveScale",2.6f);
+            material.SetFloat("_LiquidWaveSpeed",.7f);
+            EditorUtility.SetDirty(material);
+        }
+
+        public static void ConfigureBladeMaterial(Material material)
+        {
+            material.SetTexture("_BladePlanarMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Root+"/BladePlanarReflection.png"));
+            material.SetFloat("_PlanarStrength",.65f);
+            material.SetFloat("_PlanarScale",1.3f);
+            material.SetFloat("_EyeWarp",.35f);
+            material.SetFloat("_OrthoReflectionFov",45f);
+            material.SetFloat("_ReflectionStrength",.8f);
+            material.SetFloat("_Metallic",1);
+            EditorUtility.SetDirty(material);
+        }
+
+        [MenuItem("BetoBeto/Rebuild Blade Planar Reflection")]
+        public static void BuildBladePlanarMap()
+        {
+            // Deliberately authored bands, not an environment capture or a normal-based lookup.
+            const int size=512;
+            var texture=new Texture2D(size,size,TextureFormat.RGB24,false,true);
+            var stops=new[]{0f,.08f,.16f,.20f,.225f,.26f,.39f,.48f,.52f,.57f,.61f,.635f,.67f,.81f,.91f,1f};
+            var levels=new[]{.42f,.58f,.13f,.065f,.065f,.98f,.70f,.44f,.25f,.11f,.10f,.92f,.96f,.60f,.30f,.42f};
+            var pixels=new Color[size*size];
+            for(int y=0;y<size;y++)for(int x=0;x<size;x++)
+            {
+                float u=(x+.5f)/size,v=(y+.5f)/size;
+                float t=Mathf.Repeat(u+v+.035f*Mathf.Sin(v*Mathf.PI*2),1);
+                int s=0;while(s<stops.Length-2&&t>stops[s+1])s++;
+                float k=Mathf.SmoothStep(0,1,Mathf.InverseLerp(stops[s],stops[s+1],t));
+                float value=Mathf.Lerp(levels[s],levels[s+1],k);
+                pixels[y*size+x]=new Color(value*.91f,value*.96f,value,1);
+            }
+            texture.SetPixels(pixels);texture.Apply();
+            string path=Root+"/BladePlanarReflection.png";
+            File.WriteAllBytes(path,texture.EncodeToPNG());UnityEngine.Object.DestroyImmediate(texture);
+            AssetDatabase.ImportAsset(path,ImportAssetOptions.ForceUpdate|ImportAssetOptions.ForceSynchronousImport);
+            var importer=(TextureImporter)AssetImporter.GetAtPath(path);
+            importer.textureType=TextureImporterType.Default;importer.textureShape=TextureImporterShape.Texture2D;
+            importer.sRGBTexture=false;importer.wrapMode=TextureWrapMode.Repeat;
+            importer.mipmapEnabled=true;importer.filterMode=FilterMode.Trilinear;
+            importer.textureCompression=TextureImporterCompression.Uncompressed;importer.maxTextureSize=size;
+            importer.SaveAndReimport();
+            AssetDatabase.ImportAsset(path,ImportAssetOptions.ForceUpdate|ImportAssetOptions.ForceSynchronousImport);
+            ApplyBladeMap();AssetDatabase.SaveAssets();
         }
     }
 }

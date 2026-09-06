@@ -12,13 +12,37 @@
 
 小物の編集用blend：`G:\Blender\CleanAssets\BETOBETO\Environment\Decor`。Unity用は `Models` / `Prefabs` / `Materials` に保存しています。blendでは部品を分け、FBXでは小物単位に結合して描画数を抑えています。再生成元は `Tools/Blender/build_kitchen_decor.py` です。
 
+## 背景小物の更新
+
+トレーの6枚のクッキーは、ステージの `BreakableCookie` の未破壊形状に置き換え、`BreakableCookie_Surface` / `BreakableCookie_Crumb` の材質を共有しています。背景用にはシェイプキーを焼き付けた静的メッシュを使用します。
+
+`GinghamTowel` は4頂点・2三角形の板ポリ1枚です。チェック模様と織り目は `Textures/GinghamCloth_Albedo.png` にまとめ、厚み・しわ・チェックの個別メッシュを使用しません。材質はURP Lit、非金属、Smoothness 0.1、両面表示です。画像は内蔵image_genで生成し、プロンプトを `Comcept/PropReferences/Background/generation-prompts.json` に保存しています。
+
+編集用blendとUnity用FBXを更新済みです。再生成は `Tools/Blender/refresh_background_props.py`、材質の再適用は `BetoBeto > Refresh Background Cookie And Cloth Materials`。既存シーンの配置は維持し、参照するモデル・材質だけを更新します。
+
+保存ポット・ボウルと泡立て器・麺棒の外注画像と構造メモは `Comcept/PropReferences/Background` にあります。この3点の本番モデルは外注差し替え待ちです。
+
 ## シュレッダーの刃
 
-刃は元の平らな8歯ローターで、切削端に細い面取りを付けています。持ち上げ・反り・ひねりは取り消しました。金属の照明計算と暗部の修正は維持し、`BladeReflection.exr` の白い帯と暗い間隔を使用します。平面の反射方向を時間だけで動かす表現は加えていません。
+刃は8歯ローターで、中心部は平らに保ち、切削端だけ最大0.024マスの浅い起伏と0.004マスの面取りを付けています。刃全体の高さや外径は据え置きです。`BladePlanarReflection.png` をカメラ方向に揃えたワールドXZ平面から投影し、法線が一様な面にも銀色・暗部・白い帯を出します。MatCapや反射方向による専用Cubemap参照ではありません。
 
-専用マップは内蔵image_genで生成した元画像を、Blenderで最大14の輝度に展開したEXRです。UnityではRGBAHalf・通常のミップマップとしてインポートし、線形HDRとして読み取ります。刃の `Metallic` は1.0で、URPのBRDF計算に実際に使用しています。キッチン反射を銀色のベースにし、黒背景の専用マップを追加のハイライトとして加算します。黒い部分はベース反射を暗くしません。材質の `Kitchen reflection exposure` は2.2、`Additive highlight reflection` は0.28です。編集用 `BladeReflection.blend` と元画像を保存しています。
+専用平面マップは明暗の幅を数値で設計した512×512の線形RGB画像です。Repeat・ミップ付き・Trilinearで取り込みます。刃の中心を投影の原点にし、投影の軸はカメラ基準で固定します。帯は刃の回転に追従せず、その中を刃だけが回ります。移動シュレッダーでは原点が本体の移動に追従します。時間によるスクロールもありません。これは見栄えを優先した疑似反射で、キッチンの物体位置を正確に映すものではありません。
+
+画面上の位置と視線方向による反射の偏り・伸縮も加えています。透視投影では投影行列のFOVを使い、平行投影では反射用の仮想FOV（既定45度）を使います。ゲームカメラ自体の投影は変更しません。`View direction distortion`（既定0.35）で歪みを調整でき、0では従来の平面投影です。帯の投影軸は刃の回転に追従しませんが、実際の浅い歯の傾斜に対する直接光・環境反射は回転で変わります。
+
+刃の `Metallic` は1.0でURPのBRDF計算に使用します。`Planar reflection exposure` は0.65、`Bands per local unit` は1.3。実際のキッチン反射も `Kitchen reflection exposure` 0.8で加えています。固定・移動シュレッダー共通です。再生成と適用は `BetoBeto > Rebuild Blade Planar Reflection`。生成元は `KitchenEnvironmentBuilder.BuildBladePlanarMap`、再インポート時の材質設定も同クラスの `ConfigureBladeMaterial` に統一しています。形状の生成元は `Tools/Blender/prepare_props.py` の `create_shredder_rotor`。既存の外装を保って刃だけを更新するスクリプトは `Tools/Blender/update_shallow_blades.py` です。
+
+以前の専用Cubemap `BladeReflection.exr` は現在の刃では使用しません。編集用 `BladeReflection.blend` と元画像は保存しています。以下はその旧マップの生成記録です。
 
 生成プロンプト：Create a 2:1 equirectangular HDR reflection SOURCE texture specifically for extremely flashy spinning metal blades in a stylized game. Abstract reflection environment only: deep near-black charcoal background, a few broad brilliant white curved light bands with razor-sharp edges, thin icy blue-white strips, one subtle warm gold strip, large black intervals for maximal contrast. Bright angular white patches around the equator and upper hemisphere, asymmetrical rhythmic arrangement so spinning metal shows alternating dark and dazzling bright reflections. No room, no objects, no blade, no text, no logos, no material spheres, no lens flare baked in. Full spherical equirectangular panorama, seamless left-right, 2:1 wide image. White sources will be expanded to HDR intensity in Blender. Art-directed chrome reflection map, intentionally dramatic rather than soft studio illumination.
+
+## 床のよだれの天井反射
+
+`DroolPuddle_Liquid` に、`KitchenReflection_Source.png` の天井・窓上部を使った平面投影の疑似反射を追加しています。画面内の位置と視線方向による歪み、液面の緩い曲率を加えています。金属用の反射帯は使用せず、木材の色を抑えた柔らかい窓明かりを、明るい部分だけ薄く合成します。透明な部分では床が見え、既存の輪郭光・きらめき・通常の環境反射も残ります。
+
+`Ceiling reflection opacity` は0.32、`Ceiling projection scale` は0.24、`Ceiling view distortion` は0.18です。メタルネスは0のままです。設定元は `KitchenEnvironmentBuilder.ConfigureDroolReflection`、再インポート時も適用します。他の透明小物はこの効果が既定0で、口からのしずくは変更していません。確認用静止画は `DroolCeilingPreview.png` です。
+
+液面の法線には方向・波長の異なる3つの緩い波を合成しています。`Liquid ripple normal strength` は0.18、`Liquid waves per world unit` は2.6、`Liquid ripple speed` は0.7です。ワールド座標から波の勾配を計算し、直接光・環境反射・輪郭光に適用します。天井画像も同じ法線で歪ませるため、水面の波と映り込みが連動します。メッシュや判定は動かさず、床のよだれだけで有効です。強度0で停止前の平滑な表面に戻せます。
 
 ## キッチンHDRと木漏れ日
 

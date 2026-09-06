@@ -85,10 +85,11 @@
     },
     {
       "name": "Blade",
-      "vertices": 768,
-      "triangles": 1532,
+      "vertices": 832,
+      "triangles": 1660,
       "shapeKeys": [],
-      "shards": 0
+      "shards": 0,
+      "tipRelief": 0.024
     },
     {
       "name": "Hub",

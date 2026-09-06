@@ -112,9 +112,7 @@ namespace BetoBeto.Editor
             mat.SetColor("_BaseColor", tint);
             if (polished)
             {
-                mat.SetFloat("_ReflectionStrength", 2.2f);
-                mat.SetTexture("_MetalReflection", AssetDatabase.LoadAssetAtPath<Cubemap>("Assets/BetoBeto/Art/Environment/BladeReflection.exr"));
-                mat.SetFloat("_MetalReflectionStrength", .28f);
+                KitchenEnvironmentBuilder.ConfigureBladeMaterial(mat);
             }
             mat.SetFloat("_Smoothness", 1 - spec.roughness); mat.SetFloat("_Metallic", polished ? 1 : spec.metallic);
             mat.SetTexture("_BaseMap", Texture(spec.BaseColor));
@@ -133,7 +131,11 @@ namespace BetoBeto.Editor
                 bool drool = spec.name == "DroolPuddle_Liquid";
                 mat.SetFloat("_FillStrength", spec.name == "Jelly_GrapeGelatin" ? .28f : 0);
                 mat.SetFloat("_SparkleStrength", drool ? 2.4f : 0);
-                if (drool) { mat.SetFloat("_FresnelStrength", 2.1f); mat.SetFloat("_EdgeOpacity", .42f); }
+                if (drool)
+                {
+                    mat.SetFloat("_FresnelStrength", 2.1f); mat.SetFloat("_EdgeOpacity", .42f);
+                    KitchenEnvironmentBuilder.ConfigureDroolReflection(mat);
+                }
             }
             if (!transparent && !polished)
             {

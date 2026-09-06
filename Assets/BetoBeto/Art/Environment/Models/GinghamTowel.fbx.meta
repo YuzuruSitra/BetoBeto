@@ -7,6 +7,16 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: BreakableCookie_Crumb
+    second: {fileID: 2100000, guid: 68aff881c5590214aaf216e8a65d224a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BreakableCookie_Surface
+    second: {fileID: 2100000, guid: 3a8ed46cd9b8c50488f86b0fd635bd6c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Decor_Chocolate
     second: {fileID: 2100000, guid: 569444193a272a74da78326e2b04d495, type: 2}
   - first:
@@ -19,6 +29,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Decor_Cream
     second: {fileID: 2100000, guid: b3900ce4245231f49a360dd1b72749c7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Decor_GinghamCloth
+    second: {fileID: 2100000, guid: 419c9415c1a007a49be8a4bb865d05cd, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -113,7 +128,7 @@ ModelImporter:
     preBakeTriangleCollisionMesh: 0
     importPhysicalCameras: 1
     importVisibility: 1
-    importBlendShapes: 1
+    importBlendShapes: 0
     importCameras: 0
     importLights: 0
     nodeNameCollisionStrategy: 1
