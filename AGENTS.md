@@ -1,5 +1,11 @@
 # BetoBeto project context
 
+## HUD on model background (2026-09-06)
+- Gameplay HUD now uses the existing 3D kitchen surround. Do not call `BuildBackdrop` from `GameHud` or cover the scene with background art.
+- HUD source PNGs contain transparent padding: size the painted interior, not just the RectTransform, against the labels. In particular `HudControls` paints approximately y=794..872 in the 900-high design despite its rectangle extending below 900.
+- Ingredient numbers are centered inside each card; the 100% badge, SCORE/TIME and long-hold control instruction have been checked in rendered Play mode. Max-charge instruction measures 255 design pixels within its 331-pixel label.
+- Latest check: compilation passed, KitchenUiTests 39/39, pause/resume via HUD and recipe 13/13 live counter update passed. Screenshots: `Assets/Docs/UI/hud-model-background.png`, `hud-model-complete.png` (1920x1080 Game View captured at 1600x900).
+
 ## UI implementation (2026-09-06)
 - Visual target: `ui-images-unique-2026-09-06/完成イメージ.png`. Other supplied images are supporting asset/style references.
 - Goal: make the gameplay HUD resemble the supplied finished image. The environment/background is intentionally excluded from generated UI art because it will be implemented as scene mesh geometry.

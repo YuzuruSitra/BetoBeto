@@ -40,85 +40,97 @@ namespace BetoBeto.UI
         void BuildHud()
         {
             StretchArt(root, "Escape HUD", KitchenArt.HudEscape, new Vector2(430, -8), new Vector2(450, 140));
-            StretchArt(root, "Score HUD", KitchenArt.HudScore, new Vector2(900, -10), new Vector2(285, 130));
-            StretchArt(root, "Time HUD", KitchenArt.HudTime, new Vector2(1184, -12), new Vector2(230, 124));
+            StretchArt(root, "Score HUD", KitchenArt.HudScore, new Vector2(900, -2), new Vector2(285, 176));
+            StretchArt(root, "Time HUD", KitchenArt.HudTime, new Vector2(1184, -12), new Vector2(230, 150));
             StretchArt(root, "Pause HUD", KitchenArt.HudPause, new Vector2(1410, -19), new Vector2(184, 102));
-            Art(root, "Recipe HUD", KitchenArt.HudRecipeFrame, new Vector2(1151, -146), new Vector2(440, 620));
-            Art(root, "Chef ghost", KitchenArt.HudChef, new Vector2(1503, -151), new Vector2(91, 91));
-            StretchArt(root, "Controls HUD", KitchenArt.HudControls, new Vector2(398, -790), new Vector2(800, 88));
+            StretchArt(root, "Recipe HUD", KitchenArt.HudRecipeFrame, new Vector2(1146, -156), new Vector2(445, 400));
+            Art(root, "Chef ghost", KitchenArt.HudChef, new Vector2(1480, -135), new Vector2(118, 118));
+            // These source textures include transparent margins. Size their painted interiors to the text.
+            StretchArt(root, "Controls HUD", KitchenArt.HudControls, new Vector2(365, -758), new Vector2(835, 170));
             stageText = Label(root, "", new Vector2(155, -24), new Vector2(278, 30), 16, Cream,
                 FontStyle.Bold, TextAnchor.MiddleCenter);
-            Label(root, "脱出", new Vector2(570, -42), new Vector2(88, 42), 27, Color.white, FontStyle.Bold);
+            Label(root, "脱出", new Vector2(570, -49), new Vector2(88, 42), 29, Color.white, FontStyle.Bold);
             var danger = Box(root, "Escape counter", new Vector2(660, -36), new Vector2(186, 48), Color.clear);
             escapeText = Label(danger, "", Vector2.zero, new Vector2(186, 48), 29, Color.white,
                 FontStyle.Bold, TextAnchor.MiddleCenter);
             escapeLimitText = Label(root, "", new Vector2(570, -85), new Vector2(278, 22), 13,
                 Hex("A82A55"), FontStyle.Bold, TextAnchor.MiddleCenter);
-            Label(root, "SCORE", new Vector2(1030, -43), new Vector2(120, 18), 12, Navy,
+            Label(root, "SCORE", new Vector2(1020, -58), new Vector2(120, 24), 17, Ink,
                 FontStyle.Bold, TextAnchor.MiddleCenter);
-            scoreText = Label(root, "0", new Vector2(1028, -59), new Vector2(124, 38), 27, Ink,
+            scoreText = Label(root, "0", new Vector2(1018, -82), new Vector2(124, 43), 36, Ink,
                 FontStyle.Bold, TextAnchor.MiddleCenter);
-            Label(root, "TIME", new Vector2(1307, -45), new Vector2(91, 18), 11, Navy,
+            Label(root, "TIME", new Vector2(1286, -63), new Vector2(91, 20), 14, Navy,
                 FontStyle.Bold, TextAnchor.MiddleCenter);
-            timeText = Label(root, "00:00", new Vector2(1292, -62), new Vector2(122, 35), 25, Navy,
+            timeText = Label(root, "00:00", new Vector2(1267, -81), new Vector2(130, 35), 27, Navy,
                 FontStyle.Bold, TextAnchor.MiddleCenter);
             Button(root, "一時停止  II", new Vector2(1421, -36), new Vector2(164, 60), Color.clear,
                 Color.white, TogglePause, 19);
 
-            Label(root, "TODAY'S RECIPE", new Vector2(1191, -181), new Vector2(290, 22), 13, Navy,
-                FontStyle.Bold, TextAnchor.MiddleCenter);
-            dessertText = Label(root, game.Board.Data.dessert, new Vector2(1174, -205), new Vector2(324, 42), 23,
+            dessertText = Label(root, game.Board.Data.dessert, new Vector2(1230, -185), new Vector2(268, 38), 24,
                 Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-            dessertText.resizeTextForBestFit = true; dessertText.resizeTextMinSize = 16; dessertText.resizeTextMaxSize = 23;
-            tart = Dessert(root, new Vector2(1188, -296), .74f);
+            dessertText.resizeTextForBestFit = true; dessertText.resizeTextMinSize = 16; dessertText.resizeTextMaxSize = 24;
+            Label(root, "をつくろう！", new Vector2(1230, -222), new Vector2(268, 30), 22,
+                Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
+            tart = Dessert(root, new Vector2(1154, -278), .86f);
             for (int i = 0; i < 4; i++)
             {
-                float x = 1176 + i % 2 * 205, y = -548 - i / 2 * 92;
+                float x = 1158 + i % 2 * 216, y = -558 - i / 2 * 104;
                 var card = Box(root, "Ingredient card " + FruitNames[i], new Vector2(x, y),
-                    new Vector2(194, 82), Color.white);
+                    new Vector2(212, 100), Color.white);
                 var cardImage = card.GetComponent<Image>();
                 cardImage.sprite = KitchenArt.HudIngredientCard;
                 cardImage.type = Image.Type.Simple;
                 cardImage.color = Color.Lerp(Color.white, FruitColors[i], .08f);
-                Art(card, FruitNames[i] + " icon", KitchenArt.Fruit(i), new Vector2(8, -4), new Vector2(66, 66));
-                Label(card, FruitNames[i], new Vector2(70, -13), new Vector2(127, 23), 14, Ink, FontStyle.Bold);
-                recipeCounts[i] = Label(card, "0 / 0", new Vector2(76, -35), new Vector2(111, 29), 20, Ink,
-                    FontStyle.Bold, TextAnchor.MiddleRight);
-                recipeFills[i] = Fill(Box(card, "Ingredient track", new Vector2(74, -68),
-                    new Vector2(111, 4), new Color(1, 1, 1, .35f)), FruitColors[i]);
+                Art(card, FruitNames[i] + " icon", KitchenArt.Fruit(i), new Vector2(12, -18), new Vector2(65, 65));
+                Label(card, FruitNames[i], new Vector2(78, -25), new Vector2(117, 24), 15, Ink, FontStyle.Bold,
+                    TextAnchor.MiddleCenter);
+                recipeCounts[i] = Label(card, "0 / 0", new Vector2(78, -48), new Vector2(117, 30), 23, Ink,
+                    FontStyle.Bold, TextAnchor.MiddleCenter);
+                Numeric(recipeCounts[i]);
+                recipeFills[i] = Fill(Box(card, "Ingredient track", new Vector2(86, -79),
+                    new Vector2(97, 4), new Color(1, 1, 1, .35f)), FruitColors[i]);
             }
-            Art(root, "Recipe progress badge", KitchenArt.HudProgressBadge, new Vector2(1476, -431),
-                new Vector2(110, 85));
-            Label(root, "できあがり", new Vector2(1475, -441), new Vector2(108, 25), 13, Color.white,
+            StretchArt(root, "Recipe progress badge", KitchenArt.HudProgressBadge, new Vector2(1444, -433),
+                new Vector2(151, 124));
+            Label(root, "できあがり", new Vector2(1462, -467), new Vector2(115, 22), 14, Color.white,
                 FontStyle.Bold, TextAnchor.MiddleCenter);
-            countText = Label(root, "0%", new Vector2(1481, -469), new Vector2(94, 42), 27, Color.white,
+            countText = Label(root, "0%", new Vector2(1462, -488), new Vector2(115, 34), 28, Color.white,
                 FontStyle.Bold, TextAnchor.MiddleCenter);
-            recipeFill = Fill(Box(root, "Recipe progress", new Vector2(1183, -744),
-                new Vector2(386, 7), new Color(1, 1, 1, .35f)), Pink);
+            recipeFill = Fill(Box(root, "Recipe progress", new Vector2(1183, -775),
+                new Vector2(386, 5), new Color(1, 1, 1, .35f)), Pink);
 
             noticeText = Label(root, "", new Vector2(145, -748), new Vector2(950, 31), 16, Cream,
                 FontStyle.Bold, TextAnchor.MiddleCenter);
             countdown = Label(root, "", new Vector2(290, -371), new Vector2(580, 150), 88, Cream,
                 FontStyle.Bold, TextAnchor.MiddleCenter);
             Border(countdown.rectTransform, Navy, 3);
-            Label(root, "移動", new Vector2(431, -810), new Vector2(74, 23), 15, Navy, FontStyle.Bold);
-            Label(root, "左スティック", new Vector2(421, -833), new Vector2(102, 18), 9, Navy);
+            ControlBadge("L", new Vector2(390, -812), Hex("A47D6A"));
+            ControlBadge("A", new Vector2(544, -812), Hex("4C9BE9"));
+            ControlBadge("X", new Vector2(807, -812), Hex("EC6097"));
+            Label(root, "移動", new Vector2(431, -811), new Vector2(90, 23), 16, Navy, FontStyle.Bold);
+            Label(root, "左スティック", new Vector2(431, -837), new Vector2(95, 18), 11, Navy);
             Box(root, "Control divider", new Vector2(530, -808), new Vector2(1, 39), Hex("E6C2A8"));
-            droolText = Label(root, "よだれ", new Vector2(552, -810), new Vector2(225, 24), 14, Navy, FontStyle.Bold);
-            Label(root, "下ボタン（A / ×）で足元に置く", new Vector2(551, -833), new Vector2(237, 18), 9, Navy);
+            droolText = Label(root, "よだれ", new Vector2(584, -811), new Vector2(207, 24), 15, Navy, FontStyle.Bold);
+            Label(root, "下ボタン（A / ×）で足元に置く", new Vector2(547, -839), new Vector2(243, 18), 11, Navy);
             Box(root, "Control divider", new Vector2(794, -808), new Vector2(1, 39), Hex("E6C2A8"));
-            scareText = Label(root, "", new Vector2(816, -810), new Vector2(347, 24), 14, Navy, FontStyle.Bold);
-            Label(root, "左ボタン（X / □） 単押し：前方 / 長押し：周囲", new Vector2(815, -833),
-                new Vector2(365, 18), 9, Navy);
-            scareCharge = Fill(Box(root, "Scare charge track", new Vector2(816, -853),
+            scareText = Label(root, "", new Vector2(847, -811), new Vector2(331, 24), 15, Navy, FontStyle.Bold);
+            Label(root, "左ボタン（X / □） 単押し：前方 / 長押し：周囲", new Vector2(810, -839),
+                new Vector2(373, 18), 11, Navy);
+            scareCharge = Fill(Box(root, "Scare charge track", new Vector2(816, -861),
                 new Vector2(347, 3), Hex("EDDECE")), Hex("AD82D6"));
             feedbackLayer = new GameObject("Floating feedback", typeof(RectTransform)).GetComponent<RectTransform>();
             feedbackLayer.SetParent(root, false);
             feedbackLayer.anchorMin = Vector2.zero; feedbackLayer.anchorMax = Vector2.one;
             feedbackLayer.offsetMin = feedbackLayer.offsetMax = Vector2.zero;
             foreach (var value in new[] { escapeText, scoreText, timeText, countText, countdown }) Numeric(value);
-            scoreText.resizeTextForBestFit = true; scoreText.resizeTextMinSize = 18; scoreText.resizeTextMaxSize = 31;
+            scoreText.resizeTextForBestFit = true; scoreText.resizeTextMinSize = 18; scoreText.resizeTextMaxSize = 36;
             stageText.resizeTextForBestFit = true; stageText.resizeTextMinSize = 11; stageText.resizeTextMaxSize = 16;
+        }
+        void ControlBadge(string text, Vector2 position, Color color)
+        {
+            var badge = Box(root, "Control " + text, position, new Vector2(32, 27), color);
+            Label(badge, text, Vector2.zero, new Vector2(32, 27), 19, Color.white,
+                FontStyle.Bold, TextAnchor.MiddleCenter);
         }
         public FloatingWord FloatMessage(Vector3 worldPoint, string message, Color color, int size, string channel = null)
         {
