@@ -22,7 +22,7 @@ MonoBehaviour:
   scone: {fileID: 6896649677481040043, guid: 493c5978a1863db4782b93030dcca861, type: 3}
   freezer: {fileID: 221621058381168258, guid: 67e39205b88352d4babf9d15375308d2, type: 3}
   iceWall: {fileID: 2337798189569438236, guid: aedefb91bbd7e67479d726b487027650, type: 3}
-  jellyMaterial: {fileID: 2100000, guid: 439b75ae8655ca447b456f03d4c1a869, type: 2}
+  jellyMaterial: {fileID: 2100000, guid: b59e1df6bafe53940a6a65bb660e25a3, type: 2}
   cookieMaterial: {fileID: 2100000, guid: 362f14c2fe918f949a2bfd95eeb503a1, type: 2}
   frostMaterial: {fileID: 2100000, guid: 17368bcc08a3ce145984d93457490e52, type: 2}
   exit: {fileID: 914409903353964397, guid: 852bd4130ada0184280751566c075af3, type: 3}
@@ -60,4 +60,4 @@ MonoBehaviour:
   sparkleMaterial: {fileID: 2100000, guid: 7062605f2d1eec94fb4c73da2557bfc5, type: 2}
   placementMaterial: {fileID: 2100000, guid: 94b9a68d820e9fc4ba033dc5ccba3598, type: 2}
   effectMaterial: {fileID: 2100000, guid: fc98ca3d39901fc4a815ea9ca74d3afd, type: 2}
-  droolMaterial: {fileID: 2100000, guid: dd88d76cd18297349802e99bb02c29ed, type: 2}
+  droolMaterial: {fileID: 2100000, guid: 2af268637f5b81e4db368a2f14a8d4fb, type: 2}
