@@ -1,0 +1,48 @@
+{
+  "name": "Scone",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\cheese+wedge+3d+model.zip",
+  "sourceId": 3,
+  "materials": [
+    {
+      "name": "Scone_Surface",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness": 0.4,
+      "metallic": 0,
+      "alpha": 1,
+      "BaseColor": "Scone_BaseColor.png",
+      "Normal": "Scone_Normal.png",
+      "Roughness": "Scone_Roughness.png",
+      "Metallic": "Scone_Metallic.png"
+    },
+    {
+      "name": "Scone_Crumb",
+      "color": [
+        0.43,
+        0.205,
+        0.072,
+        1
+      ],
+      "roughness": 0.85,
+      "metallic": 0,
+      "alpha": 1
+    }
+  ],
+  "objects": [
+    {
+      "name": "Scone",
+      "vertices": 1465,
+      "triangles": 2790,
+      "shapeKeys": [
+        "Basis",
+        "Crack",
+        "Break"
+      ],
+      "shards": 26
+    }
+  ]
+}

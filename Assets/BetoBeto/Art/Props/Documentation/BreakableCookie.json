@@ -1,0 +1,48 @@
+{
+  "name": "BreakableCookie",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\cookie+3d+model (1).zip",
+  "sourceId": 5,
+  "materials": [
+    {
+      "name": "BreakableCookie_Surface",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness": 0.4,
+      "metallic": 0,
+      "alpha": 1,
+      "BaseColor": "BreakableCookie_BaseColor.png",
+      "Normal": "BreakableCookie_Normal.png",
+      "Roughness": "BreakableCookie_Roughness.png",
+      "Metallic": "BreakableCookie_Metallic.png"
+    },
+    {
+      "name": "BreakableCookie_Crumb",
+      "color": [
+        0.43,
+        0.205,
+        0.072,
+        1
+      ],
+      "roughness": 0.85,
+      "metallic": 0,
+      "alpha": 1
+    }
+  ],
+  "objects": [
+    {
+      "name": "BreakableCookie",
+      "vertices": 1194,
+      "triangles": 2300,
+      "shapeKeys": [
+        "Basis",
+        "Crack",
+        "Break"
+      ],
+      "shards": 22
+    }
+  ]
+}

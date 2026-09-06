@@ -48,6 +48,8 @@ namespace BetoBeto.UI
         void BuildStage(float aspect)
         {
             rig = new GameObject("Recipe tart preview");
+            var environment = UnityEngine.SceneManagement.SceneManager.GetSceneByName(BetoBeto.Presentation.KitchenEnvironmentLoader.SceneName);
+            if (environment.isLoaded) UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(rig, environment);
             // A free pocket, never a shared one: two previews in one place would light and film each other.
             for (pocket = 0; !takenPockets.Add(pocket); pocket++) { }
             rig.transform.position = StageOrigin + new Vector3(pocket * 40, 0, 0);

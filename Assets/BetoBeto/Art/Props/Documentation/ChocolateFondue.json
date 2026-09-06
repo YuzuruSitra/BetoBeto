@@ -1,0 +1,39 @@
+{
+  "name": "ChocolateFondue",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\chocolate+fondue+3d+model (1).zip",
+  "sourceId": 4,
+  "materials": [
+    {
+      "name": "ChocolateFondue_Surface",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness": 0.4,
+      "metallic": 0,
+      "alpha": 1,
+      "BaseColor": "ChocolateFondue_BaseColor.png",
+      "Normal": "ChocolateFondue_Normal.png",
+      "Roughness": "ChocolateFondue_Roughness.png",
+      "Metallic": "ChocolateFondue_Metallic.png"
+    }
+  ],
+  "objects": [
+    {
+      "name": "ChocolateFondue",
+      "vertices": 232,
+      "triangles": 464,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "ChocolateFlow",
+      "vertices": 60,
+      "triangles": 108,
+      "shapeKeys": [],
+      "shards": 0
+    }
+  ]
+}

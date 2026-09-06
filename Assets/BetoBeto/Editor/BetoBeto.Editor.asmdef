@@ -1,7 +1,7 @@
 {
   "name": "BetoBeto.Editor",
   "rootNamespace": "BetoBeto.Editor",
-  "references": ["BetoBeto.Runtime"],
+  "references": ["BetoBeto.Runtime", "Unity.RenderPipelines.Universal.Runtime"],
   "includePlatforms": ["Editor"],
   "autoReferenced": true
 }

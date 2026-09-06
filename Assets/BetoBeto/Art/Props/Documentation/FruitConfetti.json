@@ -1,0 +1,130 @@
+{
+  "name": "FruitConfetti",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\fruit+pieces+3d+model.zip",
+  "sourceId": 7,
+  "materials": [
+    {
+      "name": "FruitConfetti_Surface",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness": 0.4,
+      "metallic": 0,
+      "alpha": 1,
+      "BaseColor": "FruitConfetti_BaseColor.png",
+      "Normal": "FruitConfetti_Normal.png",
+      "Roughness": "FruitConfetti_Roughness.png",
+      "Metallic": "FruitConfetti_Metallic.png"
+    }
+  ],
+  "objects": [
+    {
+      "name": "FruitPiece_00",
+      "vertices": 28,
+      "triangles": 52,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_01",
+      "vertices": 27,
+      "triangles": 50,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_02",
+      "vertices": 16,
+      "triangles": 28,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_03",
+      "vertices": 16,
+      "triangles": 28,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_04",
+      "vertices": 8,
+      "triangles": 6,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_05",
+      "vertices": 8,
+      "triangles": 6,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_06",
+      "vertices": 8,
+      "triangles": 6,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_07",
+      "vertices": 27,
+      "triangles": 50,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_08",
+      "vertices": 18,
+      "triangles": 32,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_09",
+      "vertices": 17,
+      "triangles": 30,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_10",
+      "vertices": 21,
+      "triangles": 38,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_11",
+      "vertices": 20,
+      "triangles": 36,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_12",
+      "vertices": 16,
+      "triangles": 28,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_13",
+      "vertices": 25,
+      "triangles": 46,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "FruitPiece_14",
+      "vertices": 17,
+      "triangles": 30,
+      "shapeKeys": [],
+      "shards": 0
+    }
+  ]
+}

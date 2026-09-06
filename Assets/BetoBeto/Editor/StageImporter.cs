@@ -142,23 +142,22 @@ namespace BetoBeto.Editor
             string counterPath = "Assets/BetoBeto/Art/Materials/Countertop.mat";
             var existing = AssetDatabase.LoadAssetAtPath<Material>(counterPath);
             if (existing == null) AssetDatabase.CreateAsset(counterMaterial, counterPath); else { UnityEngine.Object.DestroyImmediate(counterMaterial); counterMaterial = existing; }
-            PrototypeArt.Box(environment, "Kitchen countertop", new Vector3(0, -.31f, 0), new Vector3(data.width + 1.3f, .38f, data.height + 1.25f), counterMaterial);
-            var light = new GameObject("Soft kitchen light").AddComponent<Light>();
-            light.type = LightType.Directional; light.intensity = 1.8f; light.color = new Color(1, .94f, .84f); light.shadows = LightShadows.Soft;
-            light.shadowStrength = .58f; light.transform.rotation = Quaternion.Euler(48, -34, 0);
-            RenderSettings.ambientMode = AmbientMode.Flat; RenderSettings.ambientLight = new Color(.67f, .76f, .82f);
-            RenderSettings.skybox = null;
+            if (assets.countertop != null)
+            {
+                var counter = (GameObject)PrefabUtility.InstantiatePrefab(assets.countertop, environment);
+                counter.name = "Kitchen countertop";
+                counter.transform.localPosition = new Vector3(0, -.31f, 0);
+                counter.transform.localScale = new Vector3(data.width + 1.3f, .38f, data.height + 1.25f);
+            }
+            else PrototypeArt.Box(environment, "Kitchen countertop", new Vector3(0, -.31f, 0), new Vector3(data.width + 1.3f, .38f, data.height + 1.25f), counterMaterial);
             var camera = new GameObject("Kitchen Camera").AddComponent<Camera>(); camera.tag = "MainCamera";
             camera.orthographic = true; camera.orthographicSize = 6.6f; camera.nearClipPlane = .1f; camera.farClipPlane = 100;
             camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = new Color(.11f, .22f, .28f);
             camera.transform.position = new Vector3(0, 18, -10.4f); camera.transform.LookAt(new Vector3(0, .3f, 0));
             camera.gameObject.AddComponent<AudioListener>();
-            // A separate clear camera fills the letterbox/sidebar area behind the gameplay viewport.
-            var backdrop = new GameObject("Backdrop Camera").AddComponent<Camera>();
-            backdrop.clearFlags = CameraClearFlags.SolidColor; backdrop.backgroundColor = camera.backgroundColor;
-            backdrop.cullingMask = 0; backdrop.depth = -10;
             var game = new GameObject("BetoBeto Game").AddComponent<GameController>();
             game.assets = assets; game.layout = layout; game.gameCamera = camera;
+            game.gameObject.AddComponent<BetoBeto.Presentation.KitchenEnvironmentLoader>();
             Directory.CreateDirectory(Path.GetDirectoryName(scenePath));
             EditorSceneManager.SaveScene(scene, scenePath);
             RegisterStage(scenePath, json);
@@ -332,6 +331,7 @@ namespace BetoBeto.Editor
                 Instantiate(assets.drool, diorama, new Vector3(-.8f, -.02f, -.9f), "Drool puddle");
             }
             RenderSettings.ambientMode = AmbientMode.Flat; RenderSettings.ambientLight = new Color(.67f, .76f, .82f); RenderSettings.skybox = null;
+            StudioReflectionImporter.ApplyToActiveScene();
             EditorSceneManager.SaveScene(scene, path);
         }
         public static GameObject PlacementPrefab(GameAssets assets, char symbol) => symbol switch

@@ -60,6 +60,14 @@ namespace BetoBeto.UI
         }
         protected void BuildBackdrop(bool gameplay = false)
         {
+            if (gameplay)
+            {
+                // Leave the tabletop visible; only the information cards cover the 3D surround.
+                Box(root, "Kitchen header card", new Vector2(180,-10), new Vector2(1200,94), new Color(1,.96f,.89f,.94f));
+                Box(root, "Recipe card", new Vector2(1060,-123), new Vector2(500,620), new Color(1,.97f,.91f,.93f));
+                Box(root, "Controls card", new Vector2(270,-810), new Vector2(1010,74), new Color(1,.97f,.91f,.94f));
+                return;
+            }
             var backdrop = new GameObject("Illustrated kitchen surround", typeof(RectTransform), typeof(KitchenBackdropGraphic));
             var rect = backdrop.GetComponent<RectTransform>(); rect.SetParent(root, false);
             rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.offsetMin = rect.offsetMax = Vector2.zero;

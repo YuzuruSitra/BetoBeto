@@ -22,7 +22,7 @@ MonoBehaviour:
   scone: {fileID: 6896649677481040043, guid: 493c5978a1863db4782b93030dcca861, type: 3}
   freezer: {fileID: 221621058381168258, guid: 67e39205b88352d4babf9d15375308d2, type: 3}
   iceWall: {fileID: 2337798189569438236, guid: aedefb91bbd7e67479d726b487027650, type: 3}
-  jellyMaterial: {fileID: 2100000, guid: b59e1df6bafe53940a6a65bb660e25a3, type: 2}
+  jellyMaterial: {fileID: 2100000, guid: 439b75ae8655ca447b456f03d4c1a869, type: 2}
   cookieMaterial: {fileID: 2100000, guid: 362f14c2fe918f949a2bfd95eeb503a1, type: 2}
   frostMaterial: {fileID: 2100000, guid: 17368bcc08a3ce145984d93457490e52, type: 2}
   exit: {fileID: 914409903353964397, guid: 852bd4130ada0184280751566c075af3, type: 3}
@@ -30,6 +30,23 @@ MonoBehaviour:
   ghost: {fileID: 6986263598238758455, guid: 1c3a4a7155d1d8042abf0f1a2a1e2b34, type: 3}
   ice: {fileID: 5442817956387831448, guid: ffc0a5dbfd41f3941b7d6c3b2d54f723, type: 3}
   drool: {fileID: 4097679366210277601, guid: 693608889429ed348bfcac3221aea0a5, type: 3}
+  countertop: {fileID: 8316756919424031105, guid: 202b4951b60dae94f8385140c020a1d3, type: 3}
+  fruitConfetti:
+  - {fileID: 8560434544801356023, guid: 06cc7879eb94aac439c1cdb895f806f8, type: 3}
+  - {fileID: 1911141364102404116, guid: ee3dfa85fe0b47b4eb9b6fdf8366c22a, type: 3}
+  - {fileID: 5633079740743655341, guid: 8c4eebab9de09a243851f235c98294c0, type: 3}
+  - {fileID: 8145230750958811001, guid: ab78a695eef575c499a6c5a19b9113c8, type: 3}
+  - {fileID: 8291278215592968428, guid: 5faae03ded6211348bae6f14331e4f8f, type: 3}
+  - {fileID: 3825423720590832444, guid: a77ce2acab9014e468895539136953dd, type: 3}
+  - {fileID: 6439507425222038411, guid: c8b4022a48954974b977b3b47b575709, type: 3}
+  - {fileID: 1088331772715955811, guid: 81e8dc77c130e9f4eaeaf3338642b951, type: 3}
+  - {fileID: 3787472242144221856, guid: f73958dce699e2d409ac5e1889b725dc, type: 3}
+  - {fileID: 8980141367244936365, guid: 3912b6722590f52429e36234f98dfb5b, type: 3}
+  - {fileID: 3346671289116311910, guid: c9e29b0c21cdaf842b5ac2f2e581c3c8, type: 3}
+  - {fileID: 1784028083765468513, guid: 8dca270b3618c0a4a8fd5999b3b34d4e, type: 3}
+  - {fileID: 6618812984230288276, guid: 59b6043ed0d73424185887d7bf42ab07, type: 3}
+  - {fileID: 448937247861023674, guid: 881cecf00605555429b5aacd387a3c52, type: 3}
+  - {fileID: 2636779827355402294, guid: 5b2f34c8c209cb4429f3b0993f7381ae, type: 3}
   fruits:
   - {fileID: 5968596507438207331, guid: b321e6727569b3f4f9d52fa6f5e0b450, type: 3}
   - {fileID: 107356315629159679, guid: 099ee13a884c66f4cb8a3e67d8078485, type: 3}
@@ -43,4 +60,4 @@ MonoBehaviour:
   sparkleMaterial: {fileID: 2100000, guid: 7062605f2d1eec94fb4c73da2557bfc5, type: 2}
   placementMaterial: {fileID: 2100000, guid: 94b9a68d820e9fc4ba033dc5ccba3598, type: 2}
   effectMaterial: {fileID: 2100000, guid: fc98ca3d39901fc4a815ea9ca74d3afd, type: 2}
-  droolMaterial: {fileID: 2100000, guid: 2af268637f5b81e4db368a2f14a8d4fb, type: 2}
+  droolMaterial: {fileID: 2100000, guid: dd88d76cd18297349802e99bb02c29ed, type: 2}

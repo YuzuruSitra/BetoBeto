@@ -1,0 +1,62 @@
+{
+  "name": "IceWall",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\ice+cube+3d+model (1).zip",
+  "sourceId": 10,
+  "materials": [
+    {
+      "name": "IceWall_FrostedIce",
+      "color": [
+        0.29,
+        0.69,
+        0.84,
+        0.62
+      ],
+      "roughness": 0.18,
+      "metallic": 0,
+      "alpha": 0.62
+    },
+    {
+      "name": "IceWall_FractureFace",
+      "color": [
+        0.64,
+        0.87,
+        0.96,
+        1
+      ],
+      "roughness": 0.24,
+      "metallic": 0,
+      "alpha": 1
+    }
+  ],
+  "objects": [
+    {
+      "name": "Ice",
+      "vertices": 142,
+      "triangles": 280,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "Crack_0",
+      "vertices": 24,
+      "triangles": 36,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "Crack_1",
+      "vertices": 18,
+      "triangles": 24,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "Crack_2",
+      "vertices": 18,
+      "triangles": 24,
+      "shapeKeys": [],
+      "shards": 0
+    }
+  ],
+  "rigs": []
+}

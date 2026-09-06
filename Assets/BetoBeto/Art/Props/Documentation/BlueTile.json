@@ -1,0 +1,32 @@
+{
+  "name": "BlueTile",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\blue+square+3d+model (1).zip",
+  "sourceId": 2,
+  "materials": [
+    {
+      "name": "BlueTile_Surface",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness": 0.4,
+      "metallic": 0,
+      "alpha": 1,
+      "BaseColor": "BlueTile_BaseColor.png",
+      "Normal": "BlueTile_Normal.png",
+      "Roughness": "BlueTile_Roughness.png",
+      "Metallic": "BlueTile_Metallic.png"
+    }
+  ],
+  "objects": [
+    {
+      "name": "BlueTile",
+      "vertices": 231,
+      "triangles": 458,
+      "shapeKeys": [],
+      "shards": 0
+    }
+  ]
+}
