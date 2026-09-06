@@ -53,6 +53,8 @@ namespace BetoBeto.Audio
             Player.GamepadControls.UnlockBrowser();
             if (!music.isPlaying) music.Play();
         }
+        /// <summary>Silences the loop while the opening movie has the screen, without losing its place.</summary>
+        public void MuteMusic(bool muted) { if (music != null) music.volume = muted ? 0 : MusicVolume; }
         public void SetMusic(float volume) { MusicVolume = Mathf.Clamp01(volume); music.volume = MusicVolume; PlayerPrefs.SetFloat("BetoBeto.Music", MusicVolume); }
         public void SetEffects(float volume) { EffectsVolume = Mathf.Clamp01(volume); effects.volume = EffectsVolume; PlayerPrefs.SetFloat("BetoBeto.Sfx", EffectsVolume); }
         public void Play(string cue)
