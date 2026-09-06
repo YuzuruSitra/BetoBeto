@@ -56,6 +56,7 @@ namespace BetoBeto.Editor
         [MenuItem("BetoBeto/Build/WebGL")]
         public static void Build()
         {
+            StageBuildScenes.Synchronize();
             Configure();
             var scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
             if (scenes.Length == 0 || !scenes[0].EndsWith("/Title.unity")) throw new BuildFailedException("Title must be the first enabled build scene.");

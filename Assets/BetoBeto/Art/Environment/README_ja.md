@@ -20,7 +20,11 @@
 
 編集用blendとUnity用FBXを更新済みです。再生成は `Tools/Blender/refresh_background_props.py`、材質の再適用は `BetoBeto > Refresh Background Cookie And Cloth Materials`。既存シーンの配置は維持し、参照するモデル・材質だけを更新します。
 
-保存ポット・ボウルと泡立て器・麺棒の外注画像と構造メモは `Comcept/PropReferences/Background` にあります。この3点の本番モデルは外注差し替え待ちです。
+保存ポット・ボウルと泡立て器・麺棒は、`G:\Blender\Assets\BETOBETO_Pack\Back` の納品モデルへ差し替え済みです。対応表と寸法・三角形数は `DeliveredBackground.json`、外注画像は `Comcept/PropReferences/Background` に保存しています。既存Prefabとシーンの配置を維持し、FBXと材質を更新しています。
+
+木・陶器は非金属、泡立て器は納品の金属度マップを使い、粗さからSmoothnessを作成しました。アルベド・法線は最大2048px、金属度／Smoothnessマスクは1024pxです。ボウルの開口部を横切っていた不要な三角面2枚を除去しました。
+
+編集用は `G:\Blender\CleanAssets\BETOBETO\Environment\Decor\FlourCanister.blend` / `MixingBowlWhisk.blend` / `RollingPin.blend`。未加工モデルは各blendの非表示SOURCEコレクションに残しています。再生成は `Tools/Blender/prepare_background_delivery.py`、Unityへの再適用は `BetoBeto > Apply Delivered Background Models`。旧背景生成スクリプトは、納品版がある場合にこの3点を上書きしません。
 
 ## シュレッダーの刃
 

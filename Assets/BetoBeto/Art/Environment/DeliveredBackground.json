@@ -1,0 +1,45 @@
+[
+  {
+    "name": "FlourCanister",
+    "material": "FlourCanister_Delivered",
+    "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Back\\ceramic+jar+3d+model.zip",
+    "BaseColor": "FlourCanister_Delivered_BaseColor.png",
+    "Normal": "FlourCanister_Delivered_Normal.png",
+    "Mask": "FlourCanister_Delivered_Mask.png",
+    "dimensions": [
+      1.1200000047683716,
+      1.1160166263580322,
+      1.3590041399002075
+    ],
+    "triangles": 1040
+  },
+  {
+    "name": "RollingPin",
+    "material": "RollingPin_Delivered",
+    "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Back\\wooden+rolling+pin+3d+model.zip",
+    "BaseColor": "RollingPin_Delivered_BaseColor.png",
+    "Normal": "RollingPin_Delivered_Normal.png",
+    "Mask": "RollingPin_Delivered_Mask.png",
+    "dimensions": [
+      3.0,
+      0.3913044333457947,
+      0.3913043439388275
+    ],
+    "triangles": 1024
+  },
+  {
+    "name": "MixingBowlWhisk",
+    "material": "MixingBowlWhisk_Delivered",
+    "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Back\\kitchen+tool+3d+model.zip",
+    "removedSpuriousCaps": 2,
+    "BaseColor": "MixingBowlWhisk_Delivered_BaseColor.png",
+    "Normal": "MixingBowlWhisk_Delivered_Normal.png",
+    "Mask": "MixingBowlWhisk_Delivered_Mask.png",
+    "dimensions": [
+      1.6235030889511108,
+      2.0,
+      1.3616862297058105
+    ],
+    "triangles": 2946
+  }
+]

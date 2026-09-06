@@ -299,6 +299,7 @@ namespace BetoBeto.Editor
                 AssetDatabase.SaveAssets();
             }
             else AssetDatabase.SaveAssetIfDirty(catalog);
+            StageBuildScenes.Synchronize();
         }
         static void EnsureMenuScene(MenuKind kind)
         {

@@ -74,6 +74,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Decor_WhiskSteel
     second: {fileID: 2100000, guid: 06e3eda11e33f0f43a0eda680a952d50, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RollingPin_Delivered
+    second: {fileID: 2100000, guid: 1eebc650f51156240914cda696e37eed, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

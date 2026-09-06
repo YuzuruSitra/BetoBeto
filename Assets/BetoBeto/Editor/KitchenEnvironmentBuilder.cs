@@ -49,6 +49,7 @@ namespace BetoBeto.Editor
                 PrefabUtility.SaveAsPrefabAsset(wrapper,Root+"/Prefabs/"+name+".prefab");UnityEngine.Object.DestroyImmediate(wrapper);
             }
             RefreshBackgroundProps();
+            if(File.Exists(Root+"/DeliveredBackground.json"))DeliveredBackgroundImporter.Apply();
             var active=SceneManager.GetActiveScene();
             // Existing shared scenes are edited by artists; rebuild is intentionally only for first creation.
             if(File.Exists(KitchenEnvironmentLoader.ScenePath))throw new InvalidOperationException("Shared environment already exists. Edit that scene directly; use Migrate Stage Lighting to update stages.");

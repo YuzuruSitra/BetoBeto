@@ -44,8 +44,21 @@ namespace BetoBeto.Core
         static void Load(string scene)
         {
             if (IsLoading) return;
+            if (string.IsNullOrWhiteSpace(scene) || !Application.CanStreamedLevelBeLoaded(scene))
+            {
+                Debug.LogError("シーンを読み込めません。ビルドシーンへの登録を確認してください: " + scene);
+                return;
+            }
             IsLoading = true;
-            SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            try
+            {
+                if (SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single) == null) IsLoading = false;
+            }
+            catch
+            {
+                IsLoading = false;
+                throw;
+            }
         }
     }
 }
