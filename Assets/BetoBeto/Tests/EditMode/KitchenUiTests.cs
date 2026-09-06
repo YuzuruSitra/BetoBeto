@@ -2,6 +2,7 @@ using BetoBeto.Core;
 using BetoBeto.Stage;
 using BetoBeto.UI;
 using NUnit.Framework;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -108,33 +109,46 @@ namespace BetoBeto.Tests
             {
                 var preview = root.GetComponent<TartPreview>();
                 preview.Initialize();
+                var stage = preview.Stage;
+                Assert.That(stage, Is.Not.Null, "The recipe tart model must load from Resources.");
                 var data = new StageData { recipe = new Recipe { strawberry = 7, blueberry = 5, orange = 0, melon = 2 } };
                 var session = new GameSession(data) { State = GameState.Playing };
+                preview.Refresh(session);
                 session.Harvest(FruitKind.Strawberry, 1);
                 for (int i = 0; i < 12; i++) session.Harvest(FruitKind.Blueberry, 1);
                 preview.Refresh(session);
 
-                Assert.That(Topping(root, 0, 0).color, Is.EqualTo(Color.white));
-                Assert.That(Topping(root, 0, 1).color.a, Is.LessThan(.25f));
+                Assert.That(stage.IsCollected(0, 0), Is.True);
+                Assert.That(stage.IsCollected(0, 1), Is.False);
                 for (int slot = 0; slot < 3; slot++)
                 {
-                    Assert.That(Topping(root, 1, slot).color, Is.EqualTo(Color.white), "Surplus berries must saturate their own group.");
-                    Assert.That(Topping(root, 2, slot).gameObject.activeSelf, Is.False, "Zero-goal fruit must not leave ghost toppings.");
-                    Assert.That(Topping(root, 3, slot).color.a, Is.LessThan(.25f), "Surplus berries must not complete missing melon.");
+                    Assert.That(stage.IsCollected(1, slot), Is.True, "Surplus berries must fill their own group.");
+                    Assert.That(stage.IsCollected(2, slot), Is.False, "Zero-goal fruit must not leave ghost toppings.");
+                    Assert.That(stage.IsCollected(3, slot), Is.False, "Surplus berries must not complete missing melon.");
+                    foreach (var piece in stage.Pieces(2, slot))
+                        Assert.That(piece.gameObject.activeSelf, Is.False, piece.name);
+                    foreach (var piece in stage.Pieces(3, slot))
+                        Assert.That(piece.gameObject.activeSelf, Is.False, piece.name);
+                }
+                Assert.That(stage.IsDropping(0, 0), Is.True, "A newly earned ingredient must fall onto the tart.");
+                foreach (var piece in stage.Pieces(0, 0))
+                {
+                    Assert.That(piece.gameObject.activeSelf, Is.True, piece.name);
+                    Assert.That(piece.localPosition.y, Is.GreaterThanOrEqualTo(stage.dropHeight),
+                        "A dropping ingredient starts a full drop above its place on the tart.");
                 }
 
                 preview.Refresh(new GameSession(data));
-                for (int slot = 0; slot < 3; slot++)
-                {
-                    Assert.That(Topping(root, 0, slot).color.a, Is.LessThan(.25f));
-                    Assert.That(Topping(root, 1, slot).color.a, Is.LessThan(.25f), "Retry must clear previously completed ingredient art.");
-                    Assert.That(Topping(root, 2, slot).gameObject.activeSelf, Is.False);
-                }
-                foreach (var graphic in root.GetComponentsInChildren<Image>(true))
-                {
-                    Assert.That(graphic.sprite, Is.Not.Null, graphic.name);
+                for (int kind = 0; kind < 4; kind++)
+                    for (int slot = 0; slot < 3; slot++)
+                    {
+                        Assert.That(stage.IsCollected(kind, slot), Is.False, "Retry must clear the tart.");
+                        Assert.That(stage.IsDropping(kind, slot), Is.False, "Retry must cancel ingredients in mid air.");
+                        foreach (var piece in stage.Pieces(kind, slot))
+                            Assert.That(piece.gameObject.activeSelf, Is.False, piece.name);
+                    }
+                foreach (var graphic in root.GetComponentsInChildren<Graphic>(true))
                     Assert.That(graphic.raycastTarget, Is.False, "Decorative art must not block mouse controls.");
-                }
             }
             finally { Object.DestroyImmediate(root); }
         }
@@ -147,14 +161,81 @@ namespace BetoBeto.Tests
             {
                 var preview = root.GetComponent<TartPreview>();
                 preview.Initialize();
+                var stage = preview.Stage;
                 preview.Refresh(new GameSession(new StageData { recipe = new Recipe { strawberry = 1, blueberry = 0, orange = 0, melon = 0 } }));
                 preview.ShowComplete();
                 for (int kind = 0; kind < 4; kind++)
                     for (int slot = 0; slot < 3; slot++)
                     {
-                        Assert.That(Topping(root, kind, slot).gameObject.activeSelf, Is.True);
-                        Assert.That(Topping(root, kind, slot).color, Is.EqualTo(Color.white));
+                        Assert.That(stage.IsCollected(kind, slot), Is.True);
+                        Assert.That(stage.IsDropping(kind, slot), Is.False, "A finished showcase must not animate its tart together.");
+                        foreach (var piece in stage.Pieces(kind, slot))
+                        {
+                            Assert.That(piece.gameObject.activeSelf, Is.True, piece.name);
+                            Assert.That(piece.localPosition.y, Is.LessThan(stage.dropHeight), piece.name);
+                        }
                     }
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
+        [Test]
+        public void HarvestThatFinishesNoGroupStillHopsItsIngredients()
+        {
+            var root = new GameObject("Tart hop test", typeof(RectTransform), typeof(TartPreview));
+            try
+            {
+                var preview = root.GetComponent<TartPreview>();
+                preview.Initialize();
+                var stage = preview.Stage;
+                var data = new StageData { recipe = new Recipe { strawberry = 8, blueberry = 0, orange = 0, melon = 0 } };
+                var session = new GameSession(data) { State = GameState.Playing };
+                session.Harvest(FruitKind.Strawberry, 1);
+                preview.Refresh(session);
+                Assert.That(stage.IsCollected(0, 0), Is.True);
+                Assert.That(stage.IsDropping(0, 0), Is.False, "The opening state is placed, not dropped.");
+                var placed = new List<float>();
+                foreach (var piece in stage.Pieces(0, 0)) placed.Add(piece.localPosition.y);
+
+                session.Harvest(FruitKind.Strawberry, 1);
+                preview.Refresh(session);
+                Assert.That(stage.IsCollected(0, 1), Is.False, "Two of eight must not finish the next group.");
+                Assert.That(stage.IsDropping(0, 0), Is.True, "Every harvest must show on the tart.");
+                int index = 0;
+                foreach (var piece in stage.Pieces(0, 0))
+                {
+                    Assert.That(piece.localPosition.y, Is.GreaterThan(placed[index]), piece.name);
+                    Assert.That(piece.localPosition.y, Is.LessThan(placed[index] + stage.dropHeight * .5f),
+                        "A count that finishes no group only hops its ingredients.");
+                    index++;
+                }
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
+        [Test]
+        public void TartModelIsFramedWholeWithHeadroomForFallingIngredients()
+        {
+            var root = new GameObject("Tart framing test", typeof(RectTransform), typeof(TartPreview));
+            try
+            {
+                var preview = root.GetComponent<TartPreview>();
+                preview.Initialize();
+                var camera = preview.PreviewCamera;
+                Assert.That(camera, Is.Not.Null);
+                Bounds bounds = preview.Stage.RestBounds;
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    var point = bounds.center + Vector3.Scale(bounds.extents, new Vector3(
+                        (corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1, (corner & 4) == 0 ? -1 : 1));
+                    Vector3 view = camera.WorldToViewportPoint(point);
+                    Assert.That(view.x, Is.InRange(0f, 1f), "The whole tart must stay inside the recipe panel.");
+                    Assert.That(view.y, Is.InRange(0f, 1f), "The whole tart must stay inside the recipe panel.");
+                    Assert.That(view.z, Is.GreaterThan(0));
+                }
+                Vector3 entry = camera.WorldToViewportPoint(bounds.center + Vector3.up * preview.Stage.dropHeight);
+                Assert.That(entry.y, Is.GreaterThan(1), "Ingredients must start above the frame and fall into it.");
+                Assert.That(preview.Stage.RestBounds.size.y, Is.GreaterThan(0), "The tart must contribute real geometry.");
             }
             finally { Object.DestroyImmediate(root); }
         }
@@ -198,8 +279,5 @@ namespace BetoBeto.Tests
             foreach (char character in text)
                 Assert.That(font.HasCharacter(character), Is.True, path + " is missing " + character);
         }
-
-        static Image Topping(GameObject root, int kind, int slot)
-            => root.transform.Find("Ingredient " + kind + " " + slot).GetComponent<Image>();
     }
 }

@@ -4,7 +4,8 @@
 
 ## 使い方
 
-- `Prefabs/FruitTart_Assembled.prefab` をシーンへドラッグすると、皿・タルト・各フルーツ・ミント・スプーンを組み立てた見本を配置できます。Hierarchy内の各子オブジェクトを個別に移動・回転・拡縮できます。
+- `Resources/FruitTart_Assembled.prefab` をシーンへドラッグすると、皿・タルト・各フルーツ・ミント・スプーンを組み立てた見本を配置できます。Hierarchy内の各子オブジェクトを個別に移動・回転・拡縮できます。
+  - このPrefabはHUDのレシピ表示が実行時に `Resources.Load` するため、納品時の `Prefabs/` から `Resources/` へ移動しています（`Documentation/delivery_manifest.json` のパスは納品時のまま）。子オブジェクトの名前は `TartModelStage.ToppingParts` が参照しているので、リネームするとそのトッピングがHUDに出なくなります。
 - `Prefabs/Parts/` は単品の配置用Prefabです。マテリアルとColliderを設定済みで、Rigidbodyは付けていません。
 - `Prefabs/Physics/` はフルーツ5種・ミント・スプーンのRigidbody付きPrefabです。重力が有効なため、床や受け皿のあるシーンに配置してください。
 - `Prefabs/FruitTart_PartsGallery.prefab` で全10種類を一覧配置できます。
