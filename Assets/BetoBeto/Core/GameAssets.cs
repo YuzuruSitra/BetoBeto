@@ -23,6 +23,8 @@ namespace BetoBeto.Core
         public GameObject ghost;
         public GameObject ice;
         public GameObject drool;
+        public GameObject countertop;
+        public GameObject[] fruitConfetti;
         public GameObject[] fruits = new GameObject[4];
         public Material[] fruitMaterials = new Material[4];
         public Material sparkleMaterial;

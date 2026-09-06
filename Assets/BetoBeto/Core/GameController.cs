@@ -42,10 +42,12 @@ namespace BetoBeto.Core
         int lastWidth, lastHeight;
         GameState shownState;
         bool hadController;
+        KitchenEnvironmentLoader environmentLoader;
 
         void Awake()
         {
             Instance = this;
+            environmentLoader = GetComponent<KitchenEnvironmentLoader>();
             GameFlow.SceneReady();
             Application.targetFrameRate = 60;
             Application.runInBackground = true;
@@ -67,7 +69,7 @@ namespace BetoBeto.Core
             if (GamepadControls.PausePressed || (Hud.ModalOpen && GamepadControls.CancelPressed)) Hud.TogglePause();
             if (hadController && !GamepadControls.Ready && Session.State == GameState.Playing) Hud.ShowOptions();
             hadController = GamepadControls.Ready;
-            if (Session.State == GameState.Playing && GamepadControls.Ready)
+            if (Session.State == GameState.Playing && GamepadControls.Ready && (environmentLoader == null || environmentLoader.Ready))
             {
                 float dt = Feedback.SimulationDelta;
                 DroolCooldown = Mathf.Max(0, DroolCooldown - dt);
@@ -151,6 +153,8 @@ namespace BetoBeto.Core
             var instance = Instantiate(assets.fruits[(int)kind], Board.Data.World(cell), Quaternion.identity, actors);
             var fruit = instance.GetComponent<FruitAgent>();
             fruit.Initialize(this, cell, turnLeft: false);
+            if (Board.Objects.TryGetValue(cell, out var sourcePipe))
+                sourcePipe.GetComponent<PropMechanismVisual>()?.OpenOutlet();
             fruits.Add(fruit);
             return fruit;
         }
@@ -274,12 +278,15 @@ namespace BetoBeto.Core
         {
             for (int i = 0; i < amount; i++)
             {
-                var bit = GameObject.CreatePrimitive(i % 3 == 0 ? PrimitiveType.Cube : PrimitiveType.Sphere);
-                bit.name = "Fruit confetti"; Destroy(bit.GetComponent<Collider>());
+                bool authored = assets.fruitConfetti != null && assets.fruitConfetti.Length > 0;
+                var bit = authored ? Instantiate(assets.fruitConfetti[Random.Range(0, assets.fruitConfetti.Length)])
+                    : GameObject.CreatePrimitive(i % 3 == 0 ? PrimitiveType.Cube : PrimitiveType.Sphere);
+                bit.name = "Fruit confetti";
+                if (!authored) Destroy(bit.GetComponent<Collider>());
                 bit.transform.SetParent(effects);
                 bit.transform.position = position + Vector3.up * .45f;
                 bit.transform.localScale = Vector3.one * Random.Range(.08f, .19f);
-                bit.GetComponent<Renderer>().sharedMaterial = i % 4 == 0 ? assets.sparkleMaterial : assets.fruitMaterials[(int)kind];
+                if (!authored) bit.GetComponent<Renderer>().sharedMaterial = i % 4 == 0 ? assets.sparkleMaterial : assets.fruitMaterials[(int)kind];
                 bit.AddComponent<BurstEffect>().Initialize(new Vector3(Random.Range(-2f, 2f), Random.Range(1.5f, 3.5f), Random.Range(-2f, 2f)), Random.Range(.5f, .9f));
             }
         }

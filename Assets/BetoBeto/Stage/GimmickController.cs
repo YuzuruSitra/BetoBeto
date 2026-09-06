@@ -139,6 +139,8 @@ namespace BetoBeto.Stage
             if (wall != null)
             {
                 wall.gameObject.SetActive(state.Raised);
+                var damage = wall.GetComponentInChildren<BetoBeto.Presentation.PropDamageVisual>(true);
+                if (damage != null) damage.SetDamage(state.Damaged ? .5f : 0, false);
                 var cracks = wall.Find("Cracks");
                 if (cracks != null) cracks.gameObject.SetActive(state.Damaged);
             }
@@ -162,6 +164,12 @@ namespace BetoBeto.Stage
         void UpdateScone(Vector2Int cell, int hitsLeft)
         {
             if (!board.Objects.TryGetValue(cell, out var view) || view == null) return;
+            var damage = view.GetComponent<BetoBeto.Presentation.PropDamageVisual>();
+            if (damage != null)
+            {
+                damage.SetDamage(1 - (float)hitsLeft / GimmickRules.SconeMaxHits, hitsLeft <= 0);
+                return;
+            }
             foreach (var renderer in view.GetComponentsInChildren<Renderer>(true)) renderer.enabled = hitsLeft > 0;
             for (int i = 1; i <= 2; i++)
             {
@@ -188,6 +196,12 @@ namespace BetoBeto.Stage
         void UpdateCookie(Vector2Int cell, CookieState state)
         {
             if (!board.Objects.TryGetValue(cell, out var view) || view == null) return;
+            var damage = view.GetComponent<BetoBeto.Presentation.PropDamageVisual>();
+            if (damage != null)
+            {
+                damage.SetDamage(1 - (float)state.HitsLeft / state.MaxHits, state.Broken);
+                return;
+            }
             var solid = view.transform.Find("Solid");
             if (solid != null)
             {

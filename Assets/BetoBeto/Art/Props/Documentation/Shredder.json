@@ -1,0 +1,90 @@
+{
+  "name": "Shredder",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\pink+gear+prop+3d+model (1).zip",
+  "sourceId": 12,
+  "materials": [
+    {
+      "name": "Shredder_Surface",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness": 0.4,
+      "metallic": 0,
+      "alpha": 1,
+      "BaseColor": "Shredder_BaseColor.png",
+      "Normal": "Shredder_Normal.png",
+      "Roughness": "Shredder_Roughness.png",
+      "Metallic": "Shredder_Metallic.png"
+    },
+    {
+      "name": "Shredder_BladeSteel",
+      "color": [
+        0.58,
+        0.7,
+        0.82,
+        1
+      ],
+      "roughness": 0.16,
+      "metallic": 1,
+      "alpha": 1
+    },
+    {
+      "name": "Shredder_BladeWell",
+      "color": [
+        0.018,
+        0.032,
+        0.045,
+        1
+      ],
+      "roughness": 0.32,
+      "metallic": 0.35,
+      "alpha": 1
+    },
+    {
+      "name": "Shredder_HubBrass",
+      "color": [
+        0.62,
+        0.36,
+        0.09,
+        1
+      ],
+      "roughness": 0.25,
+      "metallic": 0.75,
+      "alpha": 1
+    }
+  ],
+  "objects": [
+    {
+      "name": "Shredder",
+      "vertices": 274,
+      "triangles": 444,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "BladeWell",
+      "vertices": 96,
+      "triangles": 188,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "Blade",
+      "vertices": 768,
+      "triangles": 1532,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "Hub",
+      "vertices": 64,
+      "triangles": 124,
+      "shapeKeys": [],
+      "shards": 0
+    }
+  ],
+  "rigs": []
+}

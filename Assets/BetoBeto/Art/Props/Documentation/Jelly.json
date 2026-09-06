@@ -1,0 +1,58 @@
+{
+  "name": "Jelly",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\purple+gelatin+3d+model.zip",
+  "sourceId": 14,
+  "materials": [
+    {
+      "name": "Jelly_Porcelain",
+      "color": [
+        0.8,
+        0.79,
+        0.68,
+        1
+      ],
+      "roughness": 0.25,
+      "metallic": 0,
+      "alpha": 1
+    },
+    {
+      "name": "Jelly_GrapeGelatin",
+      "color": [
+        0.48,
+        0.12,
+        0.7,
+        0.76
+      ],
+      "roughness": 0.24,
+      "metallic": 0,
+      "alpha": 0.76
+    }
+  ],
+  "objects": [
+    {
+      "name": "Plate",
+      "vertices": 241,
+      "triangles": 474,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "JellyBody",
+      "vertices": 850,
+      "triangles": 1696,
+      "shapeKeys": [],
+      "shards": 0
+    }
+  ],
+  "rigs": [
+    {
+      "name": "JellyRig",
+      "bones": [
+        "JellyRoot",
+        "JellyLower",
+        "JellyMiddle",
+        "JellyTop"
+      ]
+    }
+  ]
+}

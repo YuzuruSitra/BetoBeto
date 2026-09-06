@@ -1,0 +1,29 @@
+{
+  "name": "DroolPuddle",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\green+slime+3d+model.zip",
+  "sourceId": 9,
+  "materials": [
+    {
+      "name": "DroolPuddle_Liquid",
+      "color": [
+        0.72,
+        0.88,
+        0.94,
+        0.13
+      ],
+      "roughness": 0.06,
+      "metallic": 0,
+      "alpha": 0.13
+    }
+  ],
+  "objects": [
+    {
+      "name": "DroolPuddle",
+      "vertices": 289,
+      "triangles": 574,
+      "shapeKeys": [],
+      "shards": 0
+    }
+  ],
+  "rigs": []
+}

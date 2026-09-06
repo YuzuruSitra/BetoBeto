@@ -117,8 +117,9 @@ namespace BetoBeto.Presentation
                 return;
             }
             Ring(point, color, .18f, 1.25f, .28f);
+            fruit.GetComponentInChildren<FruitModelVisual>()?.Rebound();
             Splash(point, fruit.Forward, 10, scone ? game.assets.cookieMaterial : game.assets.jellyMaterial, 2.5f);
-            Wobble(cell, fruit.Forward);
+            Wobble(cell, scone ? fruit.Forward : -fruit.Forward);
             Kick(.09f, .025f);
             game.Hud.FloatMessage(point + Vector3.up * 1.15f, scone ? "カーン！" + (hitsLeft >= 0 ? " あと" + hitsLeft + "回" : "") : "ぷるん！", color, 26);
             game.Audio.Play(scone ? "scone" : "jelly");
@@ -192,6 +193,9 @@ namespace BetoBeto.Presentation
         void Wobble(Vector2Int cell, Vector3 direction)
         {
             if (!props.TryGetValue(cell, out var prop) || prop == null) return;
+            // The porcelain plate stays still while the gelatin deforms.
+            var gelatin = prop.GetComponent<JellyBoneWobble>();
+            if (gelatin != null) { gelatin.Hit(direction); return; }
             var wobble = prop.GetComponent<ImpactWobble>();
             if (wobble == null) wobble = prop.gameObject.AddComponent<ImpactWobble>();
             wobble.Hit(direction);

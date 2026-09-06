@@ -1,0 +1,29 @@
+{
+  "name": "IceWater",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\blue+pool+float+3d+model (1).zip",
+  "sourceId": 0,
+  "materials": [
+    {
+      "name": "IceWater_Liquid",
+      "color": [
+        0.11,
+        0.49,
+        0.69,
+        0.56
+      ],
+      "roughness": 0.12,
+      "metallic": 0,
+      "alpha": 0.56
+    }
+  ],
+  "objects": [
+    {
+      "name": "IceWater",
+      "vertices": 279,
+      "triangles": 442,
+      "shapeKeys": [],
+      "shards": 0
+    }
+  ],
+  "rigs": []
+}

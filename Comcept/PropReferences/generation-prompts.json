@@ -1,0 +1,157 @@
+{
+  "tool": "Built-in image_gen",
+  "created": "2026-09-06",
+  "direction": "黒背景、正方形、斜め上視点の3DCG。美術案とゲーム上の機能を基準に作成。プレースホルダ撮影画像を入力にした版は不採用・削除。",
+  "assets": [
+    {
+      "file": "blue_tile.png",
+      "label": "青い床タイル",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Stage/BlueTile.prefab",
+      "prompt": "Use case: stylized-concept, production 3D prop modeling reference for BetoBeto kitchen puzzle game. Image1 is the project's WORLD/MATERIAL art reference only; Image2 is finished character CGI render quality only. Do not include any characters or UI from references. Produce ONE SQUARE image of the specified prop, viewed FROM DIAGONALLY ABOVE: camera roughly 35 degrees elevation and 45 degrees yaw, three-quarter product view revealing top and side thickness. Full silhouette centered at about 78 percent of canvas, clean margin all around. Genuine dimensional high-quality 3D CGI, physically based materials, realistic microtexture restrained enough for stylized game use, modeled bevels, continuous rounded shading and contact shadows within object. Large soft upper-left key light, gentle fill, subtle right edge light to keep silhouette visible against solid PURE BLACK #000000 backdrop. No gray backdrop, horizon, floor plane, stand, labels, measurements, text, montage, extra views, ink outlines, flat vector or cel shading. Preserve function and clean readable mass. ASSET: ONE modular square glazed blue ceramic kitchen floor tile, slightly rounded bevel corners, blue #679CB7 glaze with subtle glaze variation and tiny ceramic surface imperfections, thin solid slab with visible pale unglazed ceramic side edge. Top width one unit and thickness 0.15 units. Single tile, not a tiled board, no pattern or icon.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\アートスタイル（ラフイメージ．UIは準拠しないでください）.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-05ce1bf0-ab04-4f05-aeba-3bc266fb8789.png"
+    },
+    {
+      "file": "biscuit_wall.png",
+      "label": "壊れないビスケット壁",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Stage/CookieWall.prefab",
+      "prompt": "Use case: stylized-concept, production 3D prop modeling reference for BetoBeto kitchen puzzle game. Image1 is the project's WORLD/MATERIAL art reference only; Image2 is finished character CGI render quality only. Do not include any characters or UI from references. Produce ONE SQUARE image of the specified prop, viewed FROM DIAGONALLY ABOVE: camera roughly 35 degrees elevation and 45 degrees yaw, three-quarter product view revealing top and side thickness. Full silhouette centered at about 78 percent of canvas, clean margin all around. Genuine dimensional high-quality 3D CGI, physically based materials, realistic microtexture restrained enough for stylized game use, modeled bevels, continuous rounded shading and contact shadows within object. Large soft upper-left key light, gentle fill, subtle right edge light to keep silhouette visible against solid PURE BLACK #000000 backdrop. No gray backdrop, horizon, floor plane, stand, labels, measurements, text, montage, extra views, ink outlines, flat vector or cel shading. Preserve function and clean readable mass. ASSET: ONE square sandwich biscuit obstacle, two thick golden baked biscuits surrounding a clearly visible ivory vanilla cream filling layer. Broad rounded square footprint, total height about 0.45 of width, baked scalloped or softly ridged edges and 3 by 3 neat small top dimples. Golden tan top #E9B876 and toasted brown edge #B9793F, finely porous crumb and sugar grain detail, intact robust shape. No chocolate chips; must visually differ from the round breakable chocolate cookie. No plate or garnishes.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\アートスタイル（ラフイメージ．UIは準拠しないでください）.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-2e59d58b-9079-41c0-b336-3b7063bb629e.png"
+    },
+    {
+      "file": "breakable_cookie.png",
+      "label": "壊れる丸いクッキー",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Stage/BreakableCookie.prefab",
+      "prompt": "Use case: stylized-concept, production 3D prop modeling reference for BetoBeto kitchen puzzle game. Image1 is the project's WORLD/MATERIAL art reference only; Image2 is finished character CGI render quality only. Do not include any characters or UI from references. Produce ONE SQUARE image of the specified prop, viewed FROM DIAGONALLY ABOVE: camera roughly 35 degrees elevation and 45 degrees yaw, three-quarter product view revealing top and side thickness. Full silhouette centered at about 78 percent of canvas, clean margin all around. Genuine dimensional high-quality 3D CGI, physically based materials, realistic microtexture restrained enough for stylized game use, modeled bevels, continuous rounded shading and contact shadows within object. Large soft upper-left key light, gentle fill, subtle right edge light to keep silhouette visible against solid PURE BLACK #000000 backdrop. No gray backdrop, horizon, floor plane, stand, labels, measurements, text, montage, extra views, ink outlines, flat vector or cel shading. Preserve function and clean readable mass. ASSET: ONE thick ROUND golden chocolate-chip cookie obstacle lying horizontally, height about 0.4 of diameter, rounded lightly rough baked edge, about seven dark irregular chocolate chunks embedded in top, crisp porous crumb. Intact default state, no dramatic broken pieces, a few natural fine baking fissures are okay. Clearly round and chocolate-chip covered to distinguish from square vanilla sandwich biscuit wall. No sandwich filling, no plate.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\アートスタイル（ラフイメージ．UIは準拠しないでください）.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-8f240f1e-03d9-41aa-b12a-fff86b038a04.png"
+    },
+    {
+      "file": "scone.png",
+      "label": "スコーン",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Stage/Scone.prefab",
+      "prompt": "Use case: precise-object-edit of a polished 3D food prop design for external modeling. Keep this reference's delicious detailed baked crust, golden crumb, rich material depth and two raisins. Correct the game-functional shape: the horizontal FOOTPRINT MUST be a RIGHT ISOSCELES TRIANGLE, as if a perfect square scone were cut corner-to-corner in half. Two straight equal-length edges meet at EXACTLY 90 degrees, with a single straight hypotenuse joining their other ends. Keep a constant low thickness about 0.28 times leg length, flat triangular top, vertical side walls, NOT a ramp, cake sector or acute pizza wedge. Show this with an elevated orthographic camera aligned along one leg, so the top-left right-angle corner appears as horizontal and vertical edges on the image, and the hypotenuse is the diagonal front face. No reference to blockout geometry; retain the high-quality appetizing sculpted pastry design. The DIAGONAL side is the bounce face: coat it with a smooth thin ivory icing layer, two perpendicular straight sides remain golden uniced crust. Preserve the straight load-bearing faces, no bulging perimeter. Slight edge chamfer only, the 90-degree corner must be obvious. ONE square black-background image, clear three-dimensional top and side thickness, generous margin, no arrows/text, ruler, plate or additional items. Polish-level reference suitable to model directly without redesign.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\PropReferences\\scone.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-84d99dab-e4db-4d59-91d4-008b7e4fa0d0.png"
+    },
+    {
+      "file": "jelly.png",
+      "label": "ゼリー",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Stage/Jelly.prefab",
+      "prompt": "Use case: stylized-concept, production 3D prop modeling reference for BetoBeto kitchen puzzle game. Image1 is the project's WORLD/MATERIAL art reference only; Image2 is finished character CGI render quality only. Do not include any characters or UI from references. Produce ONE SQUARE image of the specified prop, viewed FROM DIAGONALLY ABOVE: camera roughly 35 degrees elevation and 45 degrees yaw, three-quarter product view revealing top and side thickness. Full silhouette centered at about 78 percent of canvas, clean margin all around. Genuine dimensional high-quality 3D CGI, physically based materials, realistic microtexture restrained enough for stylized game use, modeled bevels, continuous rounded shading and contact shadows within object. Large soft upper-left key light, gentle fill, subtle right edge light to keep silhouette visible against solid PURE BLACK #000000 backdrop. No gray backdrop, horizon, floor plane, stand, labels, measurements, text, montage, extra views, ink outlines, flat vector or cel shading. Preserve function and clean readable mass. ASSET: ONE squat purple grape gelatin dessert bumper on a thin ivory ceramic saucer. Main gelatin form a rounded molded body with eight soft vertical flutes, broad flat slightly domed top, height about half its diameter. Translucent grape-purple #BA80DA with genuine internal refraction, subsurface absorption, bright wet studio highlights, subtle bubbles, plump springy volume. Clean legible bounce-obstacle silhouette, no fruit toppings, face, spoon or garnish.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\アートスタイル（ラフイメージ．UIは準拠しないでください）.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-f0acc285-4cb2-41fb-bfe8-987bc25a0840.png"
+    },
+    {
+      "file": "chocolate_fondue.png",
+      "label": "チョコフォンデュ",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Stage/ChocolateFondue.prefab",
+      "prompt": "Use case: stylized-concept, production 3D prop modeling reference for BetoBeto kitchen puzzle game. Image1 is the project's WORLD/MATERIAL art reference only; Image2 is finished character CGI render quality only. Do not include any characters or UI from references. Produce ONE SQUARE image of the specified prop, viewed FROM DIAGONALLY ABOVE: camera roughly 35 degrees elevation and 45 degrees yaw, three-quarter product view revealing top and side thickness. Full silhouette centered at about 78 percent of canvas, clean margin all around. Genuine dimensional high-quality 3D CGI, physically based materials, realistic microtexture restrained enough for stylized game use, modeled bevels, continuous rounded shading and contact shadows within object. Large soft upper-left key light, gentle fill, subtle right edge light to keep silhouette visible against solid PURE BLACK #000000 backdrop. No gray backdrop, horizon, floor plane, stand, labels, measurements, text, montage, extra views, ink outlines, flat vector or cel shading. Preserve function and clean readable mass. ASSET: ONE low chocolate fondue fountain obstacle: shallow ivory ceramic round dish with two small brass handles, a broad shiny dark milk-chocolate pool and a short central round chocolate fountain cap supported by a short stem. Viscous chocolate flows in a few thick smooth streams from low rounded crown into the dish. Total height under half dish diameter, open chocolate pool easy to see, one restrained cream-colored swirl on surface. Tangible melted chocolate #693B27, soft ceramic glaze and brushed brass. No tall multi-tier wedding fountain, no skewers, fruit, faces or other props.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\アートスタイル（ラフイメージ．UIは準拠しないでください）.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-2a29665b-da1c-4805-9575-e5e0bcb988c5.png"
+    },
+    {
+      "file": "shredder.png",
+      "label": "固定シュレッダー",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Stage/Shredder.prefab",
+      "prompt": "Use case: precise-object-edit. Preserve this polished pink retro kitchen machine's art direction, materials and detailing. Correct the functional construction for a game where rolling fruit slides into it from ANY SIDE. Make the square enamel machine a VERY LOW PLINTH (height 0.15 of its width), with the exposed horizontal stainless-steel serrated cutter disc on the top at or slightly above the thin upper rim. NO deep recessed bowl and NO tall wall or lip around the cutter that blocks an incoming fruit. Keep same round eight-tooth rotor, brass center hub, pink rounded square body, dark navy inset beneath blade, two small ivory lights and restrained stainless trim. A fruit skimming over the low beveled machine edge meets exposed blade directly. Grounded clean product geometry, tangible high-quality PBR enamel and brushed metal, attractive friendly kitchen palette. One SQUARE image, elevated 3/4 view approximately 40 degrees down to show low profile and entire blade, PURE BLACK background, full object, no text, fruits, faces, wheels, scenery or diagrams. Suitable for external model production without needing structural changes.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\PropReferences\\shredder.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-3251a030-8b9b-4b03-8a29-94b74566591b.png"
+    },
+    {
+      "file": "moving_shredder.png",
+      "label": "移動シュレッダー",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Stage/MovingShredder.prefab",
+      "prompt": "Use case: identity-preserve variant of finished game prop. Create the MOVING version of this exact finished low pink fruit shredder. Same pink enamel square low chassis, brushed stainless horizontal eight-tooth disc, brass hub, dark top inset, two ivory front indicators and same attractive 3D material/render quality. Add FOUR SMALL DARK RUBBER WHEELS partially recessed into the lower chassis, two visible on the front edge and two corresponding wheels on back edge; axles parallel to front-back so wheels roll along LEFT-RIGHT only. Show the visible wheels and a hint of one rear wheel. Their tread bottoms touch ground and wheels must be able to rotate without clipping into housing. Keep chassis VERY LOW, total body plus wheels height no more than about 0.20 of square width. Cutter remains accessible at the top without tall surrounding wall; a rolling fruit can reach it. Add two small neat brass outward-pointing chevrons inset on LEFT and RIGHT opposing rim edges to communicate horizontal back-and-forth travel, no upright protruding rods obstructing fruit. Wheel and blade are separate modeled mechanical parts. One single square image, same elevated three-quarter camera and framing, pure BLACK #000000 background. No floor, text, faces, fruit, rails, giant wheels, car body, handles, labels or diagram. This must remain recognizably the same machine as reference with small wheels added, suitable to model directly.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\PropReferences\\shredder.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-1ac4c771-7efc-451a-8dad-31d3a616de70.png"
+    },
+    {
+      "file": "fruit_pipe.png",
+      "label": "フルーツ供給パイプ",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Stage/FruitPipe.prefab",
+      "prompt": "Precise local edit: remove ONLY the small green arrow symbol from the white floor/lip at the outlet. Replace it with clean unmarked white material matching its immediate surroundings. The arrow is misleading for the intended flow. Preserve EVERY other detail exactly: clear food-grade glass vertical tube, rings and clamps, full open-front white base, top-hinged outward-opening transparent flap, open interior, geometry, pose, framing, lighting, pure black background and fully 3D CGI quality. One square image. Do not add any other arrow, text, face, object or mark.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\PropReferences\\fruit_pipe.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-1f1d2b08-b219-468e-9f3b-c5ed0e830551.png"
+    },
+    {
+      "file": "ice_water.png",
+      "label": "氷壁の水たまり状態",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Stage/IceWall.prefab · Water",
+      "prompt": "Use case: stylized-concept, production 3D prop modeling reference for BetoBeto kitchen puzzle game. Image1 is the project's WORLD/MATERIAL art reference only; Image2 is finished character CGI render quality only. Do not include any characters or UI from references. Produce ONE SQUARE image of the specified prop, viewed FROM DIAGONALLY ABOVE: camera roughly 35 degrees elevation and 45 degrees yaw, three-quarter product view revealing top and side thickness. Full silhouette centered at about 78 percent of canvas, clean margin all around. Genuine dimensional high-quality 3D CGI, physically based materials, realistic microtexture restrained enough for stylized game use, modeled bevels, continuous rounded shading and contact shadows within object. Large soft upper-left key light, gentle fill, subtle right edge light to keep silhouette visible against solid PURE BLACK #000000 backdrop. No gray backdrop, horizon, floor plane, stand, labels, measurements, text, montage, extra views, ink outlines, flat vector or cel shading. Preserve function and clean readable mass. ASSET: ONE shallow clear pale-blue WATER PUDDLE for a freezing game obstacle. Broad irregular rounded pool with one small attached lobe and a tiny low concentric ripple ring. Transparent clean water tinted light blue #74CFE5, thin thickness at meniscus, physically refracted white studio highlights and subtle caustic-like detail contained inside puddle. NO ice yet, no floating droplets, no plate, tile, ground, character or scenery. Shape should be mostly circular with one offset lobe, distinct from mint-green viscous drool. An isolated dimensional water puddle prop on pure black. Functional constraint: virtually flush to walking surface, no obstacle-like rim or pedestal; fruit must pass across it freely in this unfrozen state.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\アートスタイル（ラフイメージ．UIは準拠しないでください）.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-bd5b7b86-a9d5-4d66-9a58-5b201209d364.png"
+    },
+    {
+      "file": "ice_wall.png",
+      "label": "立ち上がった氷壁",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Stage/IceWall.prefab · Wall",
+      "prompt": "Use case: stylized-concept, production 3D prop modeling reference for BetoBeto kitchen puzzle game. Image1 is the project's WORLD/MATERIAL art reference only; Image2 is finished character CGI render quality only. Do not include any characters or UI from references. Produce ONE SQUARE image of the specified prop, viewed FROM DIAGONALLY ABOVE: camera roughly 35 degrees elevation and 45 degrees yaw, three-quarter product view revealing top and side thickness. Full silhouette centered at about 78 percent of canvas, clean margin all around. Genuine dimensional high-quality 3D CGI, physically based materials, realistic microtexture restrained enough for stylized game use, modeled bevels, continuous rounded shading and contact shadows within object. Large soft upper-left key light, gentle fill, subtle right edge light to keep silhouette visible against solid PURE BLACK #000000 backdrop. No gray backdrop, horizon, floor plane, stand, labels, measurements, text, montage, extra views, ink outlines, flat vector or cel shading. Preserve function and clean readable mass. ASSET: ONE raised ice barrier game prop emerging from a thin pale-blue puddle at its base. Broad chunky roughly square-section vertical ICE BLOCK, width and depth about 0.87 and height 1.1 relative units, three modest staggered frozen crests across top, softened sharp ice edges. Clear pale cyan #A3E9ED physically refractive ice with internal tiny trapped air bubbles and subtle frosty core, transparent outer edges and strong studio edge reflections. Intact default raised state, no exploding shards or major cracks. Clearly a solid block that can hold back rolling fruit, not an icy castle or stalagmite cluster. No tile, character, face or icon. Functional constraint: a continuous solid block with four broad mostly flat vertical stopping faces and sufficient height to stop rolling fruit, NOT a fence with openings or scattered spikes. Keep strong readable clear-to-frosted ice silhouette on black.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\アートスタイル（ラフイメージ．UIは準拠しないでください）.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-445278a1-b4e8-4c51-ae7f-8e4e3e2966bc.png"
+    },
+    {
+      "file": "drool_puddle.png",
+      "label": "よだれ",
+      "implementationSource": "Assets/BetoBeto/Prefabs/Abilities/DroolPuddle.prefab",
+      "prompt": "Use case: stylized-concept, production 3D prop modeling reference for BetoBeto kitchen puzzle game. Image1 is the project's WORLD/MATERIAL art reference only; Image2 is finished character CGI render quality only. Do not include any characters or UI from references. Produce ONE SQUARE image of the specified prop, viewed FROM DIAGONALLY ABOVE: camera roughly 35 degrees elevation and 45 degrees yaw, three-quarter product view revealing top and side thickness. Full silhouette centered at about 78 percent of canvas, clean margin all around. Genuine dimensional high-quality 3D CGI, physically based materials, realistic microtexture restrained enough for stylized game use, modeled bevels, continuous rounded shading and contact shadows within object. Large soft upper-left key light, gentle fill, subtle right edge light to keep silhouette visible against solid PURE BLACK #000000 backdrop. No gray backdrop, horizon, floor plane, stand, labels, measurements, text, montage, extra views, ink outlines, flat vector or cel shading. Preserve function and clean readable mass. ASSET: ONE slippery thick mint-green ghost DROOL PUDDLE game prop. Low broad irregular glossy pool, main oval with a small attached rounded dribble lobe to one side. Saturated mint-teal #63D7C1 translucent viscous saliva, raised rounded meniscus and syrup-like thickness, small natural trapped bubbles, white physically reflected studio highlights with visible thickness and internal light transmission. Distinct from pale blue clean water. No eyes, mouth, face, characters, floating droplets, plate, tile or background floor. Low isolated liquid prop. Functional constraint: the layer must remain almost flush to floor, no lump or giant slime mound that would look like a barrier; rolling fruit should obviously be able to pass over and slip.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\アートスタイル（ラフイメージ．UIは準拠しないでください）.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-a04c0f0b-92f3-4930-a8b1-1828f9ea6641.png"
+    },
+    {
+      "file": "countertop.png",
+      "label": "盤面を支えるキッチン天板",
+      "implementationSource": "Assets/BetoBeto/Editor/StageImporter.cs · Kitchen countertop",
+      "prompt": "Use case: stylized-concept, production 3D prop modeling reference for BetoBeto kitchen puzzle game. Image1 is the project's WORLD/MATERIAL art reference only; Image2 is finished character CGI render quality only. Do not include any characters or UI from references. Produce ONE SQUARE image of the specified prop, viewed FROM DIAGONALLY ABOVE: camera roughly 35 degrees elevation and 45 degrees yaw, three-quarter product view revealing top and side thickness. Full silhouette centered at about 78 percent of canvas, clean margin all around. Genuine dimensional high-quality 3D CGI, physically based materials, realistic microtexture restrained enough for stylized game use, modeled bevels, continuous rounded shading and contact shadows within object. Large soft upper-left key light, gentle fill, subtle right edge light to keep silhouette visible against solid PURE BLACK #000000 backdrop. No gray backdrop, horizon, floor plane, stand, labels, measurements, text, montage, extra views, ink outlines, flat vector or cel shading. Preserve function and clean readable mass. ASSET: ONE standalone broad rectangular kitchen countertop slab used as the foundation for a tiled game board. Dark desaturated teal #32576B, gently rounded outer corners, smoothly beveled thick edge, clean subtle fine stone/composite countertop grain. Width about 1.3 times depth, thickness about 0.06 of width. Uniform unpatterned top surface, physically polished satin finish with a soft wide studio highlight, visible front and right side thickness. No legs, cabinets, tiles, sink, food, appliances, border rail or extra furniture. Isolated platform slab only.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\アートスタイル（ラフイメージ．UIは準拠しないでください）.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-1aaa79c6-2a78-4712-9372-db6d0e34b520.png"
+    },
+    {
+      "file": "fruit_confetti.png",
+      "label": "収穫時のフルーツ破片",
+      "implementationSource": "Assets/BetoBeto/Core/GameController.cs · Burst",
+      "prompt": "Use case: stylized-concept, production 3D prop modeling reference for BetoBeto kitchen puzzle game. Image1 is the project's WORLD/MATERIAL art reference only; Image2 is finished character CGI render quality only. Do not include any characters or UI from references. Produce ONE SQUARE image of the specified prop, viewed FROM DIAGONALLY ABOVE: camera roughly 35 degrees elevation and 45 degrees yaw, three-quarter product view revealing top and side thickness. Full silhouette centered at about 78 percent of canvas, clean margin all around. Genuine dimensional high-quality 3D CGI, physically based materials, realistic microtexture restrained enough for stylized game use, modeled bevels, continuous rounded shading and contact shadows within object. Large soft upper-left key light, gentle fill, subtle right edge light to keep silhouette visible against solid PURE BLACK #000000 backdrop. No gray backdrop, horizon, floor plane, stand, labels, measurements, text, montage, extra views, ink outlines, flat vector or cel shading. Preserve function and clean readable mass. ASSET: ONE small compact assortment of edible FRUIT CONFETTI pieces used as harvest VFX mesh references: a few tiny red strawberry chunks with one or two golden seeds, a few smooth deep-blue blueberry fragments with pale interior, orange pulp pieces with glistening citrus vesicles, small green melon cubes with pale-green flesh, plus a few tiny ivory sparkle beads. Arrange about twelve clearly separated pieces in a tidy loose shallow cluster with no overlaps, all seen in the same elevated three-quarter camera, so each volume is readable. Physically modeled juicy fruit flesh and rind details, no whole fruits, faces, limbs, bowl, plate, explosions, motion blur or floating particle trails. This ONE image is a reusable small debris assortment reference, pure black backdrop.",
+      "imageReferences": [
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\アートスタイル（ラフイメージ．UIは準拠しないでください）.png",
+        "C:\\Unity\\GJ2609\\BetoBeto\\Comcept\\CharacterFinals\\strawberry_normal.png"
+      ],
+      "generatedSource": "C:\\Users\\ymdak\\.codex\\generated_images\\01a06fe8-dd9f-77c2-aaa2-a173941418ee\\exec-03844ea3-ce53-460b-a1d1-0dc8ec9ee4c9.png"
+    }
+  ]
+}

@@ -19,10 +19,13 @@ namespace BetoBeto.Presentation
         int slideMotion, currentMotion = -1;
         Quaternion restRotation;
         float spinSpeed, spinAngle;
+        Vector3 restPosition, restScale;
+        float reboundAge = 1;
 
         void Awake()
         {
             restRotation = transform.localRotation;
+            restPosition = transform.localPosition; restScale = transform.localScale;
             fruit = GetComponentInParent<FruitAgent>();
             expression = GetComponentInChildren<FruitExpressionSwitcher>(true);
             animator = GetComponentInChildren<Animator>(true);
@@ -34,13 +37,25 @@ namespace BetoBeto.Presentation
         void LateUpdate()
         {
             Refresh();
-            if (animator == null || spinSpeed == 0 || animator.speed == 0) return;
             var game = GameController.Instance;
             float dt = game != null && game.Feedback != null ? game.Feedback.SimulationDelta : Time.deltaTime;
+            bool paused = game != null && game.Session != null && game.Session.State != GameState.Playing;
+            if (!paused && reboundAge < .34f)
+            {
+                reboundAge = Mathf.Min(.34f, reboundAge + dt);
+                float stretch = reboundAge < .065f ? -.24f * (1 - reboundAge / .065f)
+                    : Mathf.Sin((reboundAge - .065f) / .275f * Mathf.PI * 2) * .18f * (1 - (reboundAge - .065f) / .275f);
+                transform.localScale = Vector3.Scale(restScale, new Vector3(1 - stretch * .45f, 1 + stretch, 1 - stretch * .45f));
+                transform.localPosition = restPosition + Vector3.up * (Mathf.Sin(reboundAge / .34f * Mathf.PI) * .18f);
+                if (reboundAge >= .34f) { transform.localScale = restScale; transform.localPosition = restPosition; }
+            }
+            if (animator == null || spinSpeed == 0 || animator.speed == 0) return;
             spinAngle = Mathf.Repeat(spinAngle + spinSpeed * dt * animator.speed, 360);
             // Only the visual rotates; navigation and the facing marker keep their travel direction.
             transform.localRotation = Quaternion.AngleAxis(spinAngle, Vector3.up) * restRotation;
         }
+
+        public void Rebound() { reboundAge = 0; }
 
         public void Refresh()
         {

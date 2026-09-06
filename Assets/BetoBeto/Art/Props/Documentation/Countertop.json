@@ -1,0 +1,32 @@
+{
+  "name": "Countertop",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\blue+rectangular+slab+3d+model.zip",
+  "sourceId": 1,
+  "materials": [
+    {
+      "name": "Countertop_Surface",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness": 0.4,
+      "metallic": 0,
+      "alpha": 1,
+      "BaseColor": "Countertop_BaseColor.png",
+      "Normal": "Countertop_Normal.png",
+      "Roughness": "Countertop_Roughness.png",
+      "Metallic": "Countertop_Metallic.png"
+    }
+  ],
+  "objects": [
+    {
+      "name": "Countertop",
+      "vertices": 296,
+      "triangles": 588,
+      "shapeKeys": [],
+      "shards": 0
+    }
+  ]
+}

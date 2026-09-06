@@ -1,0 +1,32 @@
+{
+  "name": "BiscuitWall",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\cookie+sandwich+3d+model.zip",
+  "sourceId": 6,
+  "materials": [
+    {
+      "name": "BiscuitWall_Surface",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness": 0.4,
+      "metallic": 0,
+      "alpha": 1,
+      "BaseColor": "BiscuitWall_BaseColor.png",
+      "Normal": "BiscuitWall_Normal.png",
+      "Roughness": "BiscuitWall_Roughness.png",
+      "Metallic": "BiscuitWall_Metallic.png"
+    }
+  ],
+  "objects": [
+    {
+      "name": "BiscuitWall",
+      "vertices": 252,
+      "triangles": 500,
+      "shapeKeys": [],
+      "shards": 0
+    }
+  ]
+}

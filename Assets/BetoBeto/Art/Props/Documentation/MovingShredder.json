@@ -1,0 +1,158 @@
+{
+  "name": "MovingShredder",
+  "sourceZip": "G:\\Blender\\Assets\\BETOBETO_Pack\\Props\\pink+square+car+3d+model (1).zip",
+  "sourceId": 13,
+  "materials": [
+    {
+      "name": "MovingShredder_Surface",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness": 0.4,
+      "metallic": 0,
+      "alpha": 1,
+      "BaseColor": "MovingShredder_BaseColor.png",
+      "Normal": "MovingShredder_Normal.png",
+      "Roughness": "MovingShredder_Roughness.png",
+      "Metallic": "MovingShredder_Metallic.png"
+    },
+    {
+      "name": "MovingShredder_BladeSteel",
+      "color": [
+        0.58,
+        0.7,
+        0.82,
+        1
+      ],
+      "roughness": 0.16,
+      "metallic": 1,
+      "alpha": 1
+    },
+    {
+      "name": "MovingShredder_BladeWell",
+      "color": [
+        0.018,
+        0.032,
+        0.045,
+        1
+      ],
+      "roughness": 0.32,
+      "metallic": 0.35,
+      "alpha": 1
+    },
+    {
+      "name": "MovingShredder_HubBrass",
+      "color": [
+        0.62,
+        0.36,
+        0.09,
+        1
+      ],
+      "roughness": 0.25,
+      "metallic": 0.75,
+      "alpha": 1
+    },
+    {
+      "name": "MovingShredder_Rubber",
+      "color": [
+        0.018,
+        0.022,
+        0.028,
+        1
+      ],
+      "roughness": 0.6,
+      "metallic": 0,
+      "alpha": 1
+    }
+  ],
+  "objects": [
+    {
+      "name": "MovingShredder",
+      "vertices": 278,
+      "triangles": 454,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "BladeWell",
+      "vertices": 96,
+      "triangles": 188,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "Blade",
+      "vertices": 768,
+      "triangles": 1532,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "Hub",
+      "vertices": 64,
+      "triangles": 124,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "Wheel_0",
+      "vertices": 48,
+      "triangles": 92,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "AxleCap_0",
+      "vertices": 40,
+      "triangles": 76,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "Wheel_1",
+      "vertices": 48,
+      "triangles": 92,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "AxleCap_1",
+      "vertices": 40,
+      "triangles": 76,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "Wheel_2",
+      "vertices": 48,
+      "triangles": 92,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "AxleCap_2",
+      "vertices": 40,
+      "triangles": 76,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "Wheel_3",
+      "vertices": 48,
+      "triangles": 92,
+      "shapeKeys": [],
+      "shards": 0
+    },
+    {
+      "name": "AxleCap_3",
+      "vertices": 40,
+      "triangles": 76,
+      "shapeKeys": [],
+      "shards": 0
+    }
+  ],
+  "rigs": []
+}
