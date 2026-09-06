@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "name": "クッキークラッシャーキッチン",
+  "dessert": "さくさくフルーツタルト",
+  "width": 20,
+  "height": 12,
+  "rows": [
+    "#PP#################",
+    "#..1...2######V#.V##",
+    "I....FV.....2V....##",
+    "I.G....3####C....C##",
+    "#....#####1.CCC...2#",
+    "I......I.F...C....3#",
+    "#.....##.#4.CCC...2#",
+    "#4..........C.C...3#",
+    "##4..........C.2242#",
+    "###4.......J.......#",
+    "############4..34.3#",
+    "####################"
+  ],
+  "recipe": {
+    "strawberry": 10,
+    "blueberry": 0,
+    "orange": 10,
+    "melon": 0
+  },
+  "escapeLimit": 6,
+  "spawnInterval": 2.1,
+  "iceLifetime": 5,
+  "droolLifetime": 10,
+  "cookieHits": 3,
+  "cookieRespawnSeconds": 20,
+  "sconeRespawnSeconds": 5,
+  "movingShredderSpeed": 1,
+  "freezerSeconds": 3,
+  "frozenSpeedMultiplier": 0.35
+}
