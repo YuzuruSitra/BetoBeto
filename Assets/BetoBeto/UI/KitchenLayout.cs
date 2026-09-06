@@ -6,7 +6,7 @@ namespace BetoBeto.UI
     public static class KitchenLayout
     {
         public static readonly Vector2 DesignSize = new Vector2(1600, 900);
-        public static readonly Rect Board = new Rect(134, 108, 894, 650);
+        public static readonly Rect Board = new Rect(20, 96, 1100, 674);
         // Screen-space footprint of the real towel behind the recipe, in bottom-left design coordinates.
         public static readonly Rect RecipeCloth = new Rect(1130, 318, 462, 415);
 

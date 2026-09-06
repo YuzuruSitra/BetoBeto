@@ -40,6 +40,8 @@ namespace BetoBeto.Core
         float spawnTimer;
         int spawnIndex;
         int lastWidth, lastHeight;
+        static readonly Vector3 CameraCenter = new Vector3(0, .45f, .2f);
+        public Vector3 CameraFollowOffset { get; private set; }
         GameState shownState;
         bool hadController;
         KitchenEnvironmentLoader environmentLoader;
@@ -296,12 +298,22 @@ namespace BetoBeto.Core
             gameCamera.rect = BetoBeto.UI.KitchenLayout.Viewport(Screen.width, Screen.height);
             gameCamera.backgroundColor = new Color(.61f, .39f, .24f);
             float aspect = Mathf.Max(.5f, Screen.width * gameCamera.rect.width / (Screen.height * gameCamera.rect.height));
-            float vertical = Board.Data.height * .866f + 2.3f;
-            gameCamera.orthographicSize = Mathf.Max(vertical * .5f, (Board.Data.width + 1.7f) / (2 * aspect));
-            var target = new Vector3(0, .45f, .2f);
-            gameCamera.transform.position = target + new Vector3(0, 18, -10.3923f);
-            gameCamera.transform.LookAt(target);
+            float vertical = Board.Data.height * .866f + 1.7f;
+            gameCamera.orthographicSize = Mathf.Max(vertical * .5f, (Board.Data.width + 1.2f) / (2 * aspect));
+            gameCamera.transform.position = CameraCenter + new Vector3(0, 18, -10.3923f);
+            gameCamera.transform.LookAt(CameraCenter);
             Feedback.SetCameraRest();
+        }
+
+        // Keep pitch, yaw and roll fixed so the grid never tilts during tracking.
+        // Feedback adds this small translation to the fixed rest position before impact shake.
+        public void UpdateCameraFollow()
+        {
+            if (Player == null || Session.State != GameState.Playing) return;
+            Vector3 playerOffset = Player.transform.position - CameraCenter;
+            var desired = new Vector3(Mathf.Clamp(playerOffset.x * .08f, -.35f, .35f), 0,
+                Mathf.Clamp(playerOffset.z * .08f, -.25f, .25f));
+            CameraFollowOffset = Vector3.Lerp(CameraFollowOffset, desired, 1 - Mathf.Exp(-Time.unscaledDeltaTime / .4f));
         }
         static void ClearChildren(Transform root)
         {

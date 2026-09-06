@@ -34,17 +34,18 @@ namespace BetoBeto.Presentation
         public void ResetFeedback()
         {
             freezeUntil = shake = shakeRemaining = 0;
-            game.GameCamera.transform.position = cameraRest;
+            game.GameCamera.transform.position = cameraRest + game.CameraFollowOffset;
             game.GameCamera.orthographicSize = cameraSize;
         }
         void LateUpdate()
         {
             if (game.Session.State == GameState.Paused) return;
+            game.UpdateCameraFollow();
             shakeRemaining = Mathf.Max(0, shakeRemaining - Time.unscaledDeltaTime);
             float envelope = Mathf.Clamp01(shakeRemaining / .3f);
             float t = Time.unscaledTime * 70;
             Vector3 offset = game.GameCamera.transform.right * Mathf.Sin(t) + game.GameCamera.transform.up * Mathf.Cos(t * 1.37f) * .65f;
-            game.GameCamera.transform.position = cameraRest + offset * (shake * envelope * envelope);
+            game.GameCamera.transform.position = cameraRest + game.CameraFollowOffset + offset * (shake * envelope * envelope);
             game.GameCamera.orthographicSize = cameraSize * (1 - .014f * envelope);
             if (shakeRemaining == 0) shake = 0;
         }

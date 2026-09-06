@@ -4,6 +4,8 @@ using UnityEngine.Rendering;
 
 namespace BetoBeto.Presentation
 {
+    // Copy the final stage view after player tracking and impact shake, avoiding a one-frame seam.
+    [DefaultExecutionOrder(100)]
     public sealed class KitchenEnvironment : MonoBehaviour
     {
         public Cubemap reflection;
