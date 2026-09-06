@@ -19,7 +19,7 @@ MonoBehaviour:
     sceneName: Kitchen
     layoutJson: {fileID: 4900000, guid: 0ed3330bb355b5445ad3e2bcb4949bc8, type: 3}
   - id: Kitchen02
-    title: "\u3072\u308D\u3073\u308D\u30D9\u30EA\u30FC\u5DE5\u623F"
+    title: "\u305D\u308C\u3086\u3051\u30AF\u30C3\u30AD\u30FC\u30AF\u30E9\u30C3\u30B7\u30E3\u30FC"
     description: "2\u3064\u306E\u659C\u9762\u3092\u3064\u306A\u3050\u5927\u9023\u9396\u3002\u51CD\u7D50\u3068\u3001\u7E26\u6A2A\u306B\u52D5\u304F\u5203\u306E\u30BF\u30A4\u30DF\u30F3\u30B0\u3092\u8AAD\u3082\u3046\u3002"
     sceneName: Kitchen02
     layoutJson: {fileID: 4900000, guid: b9983547fe791c5419b2e2aa27f63d6f, type: 3}
